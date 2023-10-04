@@ -1,4 +1,11 @@
 
+using CorsairMessengerServer.Data;
+using CorsairMessengerServer.Services.PasswordHasher;
+using CorsairMessengerServer.Services.Repositories.Users;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+
 namespace CorsairMessengerServer
 {
     public class Program
@@ -7,16 +14,39 @@ namespace CorsairMessengerServer
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddAuthorization();
+
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = AuthOptions.ISSUER,
+                        ValidateIssuer = true,
+                        ValidAudience = AuthOptions.AUDIENCE,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = AuthOptions.SymmetricSecurityKey,
+                        ValidateIssuerSigningKey = true,
+                    };
+                });
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddDbContext<DataContext>(options =>
+            {
+                options.UseNpgsql(connectionString);
+            });
+
+            builder.Services.AddTransient<IPasswordHasher, Sha256PasswordHasher>();
+            builder.Services.AddTransient<UserRepository>();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -26,7 +56,6 @@ namespace CorsairMessengerServer
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
