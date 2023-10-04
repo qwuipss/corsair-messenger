@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace CorsairMessengerServer.Extensions
+﻿namespace CorsairMessengerServer.Extensions
 {
     public static class Int32Extensions
     {

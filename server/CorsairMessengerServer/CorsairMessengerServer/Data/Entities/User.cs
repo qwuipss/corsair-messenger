@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace CorsairMessengerServer.Data.Entities
+﻿namespace CorsairMessengerServer.Data.Entities
 {
     public class User
     {

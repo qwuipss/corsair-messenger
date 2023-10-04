@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using static CorsairMessengerServer.Data.Constraints.UserEntityConstraints;
 
 namespace CorsairMessengerServer.Controllers
 {
@@ -18,18 +19,7 @@ namespace CorsairMessengerServer.Controllers
     [Route("account")]
     public class AccountController : ControllerBase
     {
-        private static class Constraints
-        {
-            public const int PASSWORD_MIN_LENGTH = 7;
-
-            public const int PASSWORD_MAX_LENGTH = 30;
-
-            public const int NICKNAME_MIN_LENGTH = 5;
-
-            public const int NICKNAME_MAX_LENGTH = 25;
-
-            public const int AuthTokenLifetimeMinutes = 365 * 24 * 60;
-        }
+        private const int AuthTokenLifetimeMinutes = 365 * 24 * 60;
 
         private readonly UserRepository _userRepository;
 
@@ -69,7 +59,7 @@ namespace CorsairMessengerServer.Controllers
         {
             var nickname = request.Nickname;
 
-            if (!nickname.Length.InRange(Constraints.NICKNAME_MIN_LENGTH, Constraints.NICKNAME_MAX_LENGTH))
+            if (!nickname.Length.InRange(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH))
             {
                 return BadRequest(new { Field = nameof(nickname) });
             }
@@ -83,7 +73,7 @@ namespace CorsairMessengerServer.Controllers
 
             var password = request.Password;
 
-            if (!password.Length.InRange(Constraints.PASSWORD_MIN_LENGTH, Constraints.PASSWORD_MAX_LENGTH))
+            if (!password.Length.InRange(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH))
             {
                 return BadRequest(new { Field = nameof(password) });
             }
@@ -128,7 +118,7 @@ namespace CorsairMessengerServer.Controllers
                     issuer: AuthOptions.ISSUER,
                     audience: AuthOptions.AUDIENCE,
                     claims: claims,
-                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(Constraints.AuthTokenLifetimeMinutes)),
+                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(AuthTokenLifetimeMinutes)),
                     signingCredentials: new SigningCredentials(AuthOptions.SymmetricSecurityKey, SecurityAlgorithms.HmacSha256));
 
             var token = new JwtSecurityTokenHandler().WriteToken(jwt);

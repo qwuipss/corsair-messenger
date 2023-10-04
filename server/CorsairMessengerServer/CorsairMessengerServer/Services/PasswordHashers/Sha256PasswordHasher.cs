@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using CorsairMessengerServer.Data.Constraints;
+using System.Security.Cryptography;
 
 namespace CorsairMessengerServer.Services.PasswordHasher
 {
@@ -6,9 +7,9 @@ namespace CorsairMessengerServer.Services.PasswordHasher
     {
         private const int REHASH_COUNT = 10000;
 
-        private const int SALT_SIZE_BYTES = 16;
-
         private const int HASH_SIZE_BYTES = 16;
+
+        private const int SALT_SIZE_BYTES = 16;
 
         public string Hash(string password)
         {
