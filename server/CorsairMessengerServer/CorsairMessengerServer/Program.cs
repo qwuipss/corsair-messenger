@@ -1,7 +1,10 @@
 
 using CorsairMessengerServer.Data;
+using CorsairMessengerServer.Data.Repositories.Users;
+using CorsairMessengerServer.Data.Repositories.WebTokens;
+using CorsairMessengerServer.Managers;
+using CorsairMessengerServer.Services.MessageBrokers;
 using CorsairMessengerServer.Services.PasswordHasher;
-using CorsairMessengerServer.Services.Repositories.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -43,7 +46,12 @@ namespace CorsairMessengerServer
             });
 
             builder.Services.AddTransient<IPasswordHasher, Sha256PasswordHasher>();
-            builder.Services.AddTransient<UserRepository>();
+            builder.Services.AddTransient<IMessageBroker, QueryMessageBroker>();
+
+            builder.Services.AddTransient<WebTokensManager>();
+            
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IWebTokensRepository, WebTokensRepository>();
 
             var app = builder.Build();
 
@@ -54,10 +62,10 @@ namespace CorsairMessengerServer
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
             app.MapControllers();
+            app.UseWebSockets();
+
 
             app.Run();
         }

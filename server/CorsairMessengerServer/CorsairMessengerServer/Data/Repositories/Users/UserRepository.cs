@@ -1,10 +1,9 @@
-﻿using CorsairMessengerServer.Data;
-using CorsairMessengerServer.Data.Entities;
+﻿using CorsairMessengerServer.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CorsairMessengerServer.Services.Repositories.Users
+namespace CorsairMessengerServer.Data.Repositories.Users
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly DataContext _context;
 

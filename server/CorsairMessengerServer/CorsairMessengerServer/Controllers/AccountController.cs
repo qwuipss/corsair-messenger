@@ -1,10 +1,10 @@
 ﻿using CorsairMessengerServer.Data.Entities;
+using CorsairMessengerServer.Data.Repositories.Users;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Helpers;
 using CorsairMessengerServer.Models.Auth;
 using CorsairMessengerServer.Models.Register;
 using CorsairMessengerServer.Services.PasswordHasher;
-using CorsairMessengerServer.Services.Repositories.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -21,9 +21,9 @@ namespace CorsairMessengerServer.Controllers
     {
         private const int AuthTokenLifetimeMinutes = 365 * 24 * 60;
 
-        private readonly UserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public AccountController(UserRepository userRepository)
+        public AccountController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
