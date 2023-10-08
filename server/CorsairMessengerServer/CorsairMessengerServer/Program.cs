@@ -1,8 +1,9 @@
 
 using CorsairMessengerServer.Data;
 using CorsairMessengerServer.Data.Repositories.Users;
-using CorsairMessengerServer.Data.Repositories.WebTokens;
+using CorsairMessengerServer.Data.Repositories.WebSockets;
 using CorsairMessengerServer.Managers;
+using CorsairMessengerServer.Middlewares.Extensions;
 using CorsairMessengerServer.Services.MessageBrokers;
 using CorsairMessengerServer.Services.PasswordHasher;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -48,10 +49,10 @@ namespace CorsairMessengerServer
             builder.Services.AddTransient<IPasswordHasher, Sha256PasswordHasher>();
             builder.Services.AddTransient<IMessageBroker, QueryMessageBroker>();
 
-            builder.Services.AddTransient<WebTokensManager>();
+            builder.Services.AddTransient<WebSocketsManager>();
             
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IWebTokensRepository, WebTokensRepository>();
+            builder.Services.AddTransient<IUserRepository, UserRepository>();
+            builder.Services.AddTransient<IWebSocketsRepository, WebSocketsRepository>();
 
             var app = builder.Build();
 
@@ -61,11 +62,12 @@ namespace CorsairMessengerServer
                 app.UseSwaggerUI();
             }
 
+            app.MapControllers();
+
             app.UseHttpsRedirection();
             app.UseAuthorization();
-            app.MapControllers();
             app.UseWebSockets();
-
+            app.UseWebSocketsConnections();
 
             app.Run();
         }

@@ -1,10 +1,13 @@
-﻿namespace CorsairMessengerServer.Models.Message
+﻿using System.Text.Json.Serialization;
+
+namespace CorsairMessengerServer.Models.Message
 {
     public class MessageSendingRequest
     {
-        public required int RecieverId { get; set; }
+        [JsonIgnore]
+        public int SenderId { get; set; }
 
-        public required int SenderId { get; set; }
+        public required int RecieverId { get; set; }
 
         public required string Content { get; set; }
     }

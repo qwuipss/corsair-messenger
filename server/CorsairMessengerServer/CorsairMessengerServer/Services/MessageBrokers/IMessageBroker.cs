@@ -4,6 +4,6 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 {
     public interface IMessageBroker
     {
-        public void Send(MessageSendingRequest request);
+        public Task DeliverMessage(MessageSendingRequest request);
     }
 }
