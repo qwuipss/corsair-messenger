@@ -14,7 +14,6 @@ namespace CorsairMessengerServer.Data.Repositories.Users
 
         public async Task<User?> GetUserByLogin(string login, bool asNoTracking = false)
         {
-            var x = _context.Users.Count();
             var query = _context.Users
                 .Where(user => user.Email == login || user.Nickname == login);
 

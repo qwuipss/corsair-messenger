@@ -19,7 +19,7 @@ namespace CorsairMessengerServer.Controllers
     [Route("account")]
     public class AccountController : ControllerBase
     {
-        private const int AuthTokenLifetimeMinutes = 365 * 24 * 60;
+        private const int AUTH_TOKEN_LIFETIME_MINUTES = 365 * 24 * 60;
 
         private readonly IUserRepository _userRepository;
 
@@ -118,7 +118,7 @@ namespace CorsairMessengerServer.Controllers
                     issuer: AuthOptions.ISSUER,
                     audience: AuthOptions.AUDIENCE,
                     claims: claims,
-                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(AuthTokenLifetimeMinutes)),
+                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(AUTH_TOKEN_LIFETIME_MINUTES)),
                     signingCredentials: new SigningCredentials(AuthOptions.SymmetricSecurityKey, SecurityAlgorithms.HmacSha256));
 
             var token = new JwtSecurityTokenHandler().WriteToken(jwt);

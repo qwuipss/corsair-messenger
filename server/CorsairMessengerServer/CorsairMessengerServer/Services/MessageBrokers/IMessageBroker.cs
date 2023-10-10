@@ -1,9 +1,9 @@
-﻿using CorsairMessengerServer.Models.Message;
+﻿using CorsairMessengerServer.Data.Entities.Message;
 
 namespace CorsairMessengerServer.Services.MessageBrokers
 {
     public interface IMessageBroker
     {
-        public Task DeliverMessage(MessageSendingRequest request);
+        public Task DeliverMessage(Message message);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using CorsairMessengerServer.Data.Constraints;
+using CorsairMessengerServer.Data.Entities.Message;
 using CorsairMessengerServer.Data.Repositories.WebSockets;
 using CorsairMessengerServer.Extensions;
-using CorsairMessengerServer.Models.Message;
 using CorsairMessengerServer.Services.MessageBrokers;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +18,7 @@ namespace CorsairMessengerServer.Managers
         public record WebSocketConnection(int SocketId, WebSocket WebSocket);
 
         private readonly IWebSocketsRepository _webSocketsRepository;
-        
+
         private readonly IMessageBroker _messageBroker;
 
         public WebSocketsManager(IWebSocketsRepository webSocketsRepository, IMessageBroker messageBroker)
@@ -47,7 +47,7 @@ namespace CorsairMessengerServer.Managers
             var webSocket = webSocketConnection.WebSocket;
 
             var buffer = new byte[MessageEntityConstraints.MESSAGE_MAX_LENGTH * 2];
-            var contentBuilder = new StringBuilder();
+            var contentBuilder = new List<byte>();
 
             while (webSocket.State is WebSocketState.Open)
             {
@@ -55,10 +55,12 @@ namespace CorsairMessengerServer.Managers
 
                 if (receiveResult.MessageType is WebSocketMessageType.Text)
                 {
-                    if (ReceiveMessage(buffer, receiveResult, contentBuilder) 
-                     && TryParseMessageSendingRequest(contentBuilder.ToString(), out var request))
+                    if (ReceiveMessage(buffer, receiveResult, contentBuilder)
+                     && TryParseMessageSendingRequest(contentBuilder.ToArray(), out var message))
                     {
-                        SendMessage(socketId, request);
+                        PostInitMessage(message, socketId);
+
+                        SendMessage(message);
 
                         contentBuilder.Clear();
                     }
@@ -70,23 +72,25 @@ namespace CorsairMessengerServer.Managers
             }
         }
 
-        private static bool ReceiveMessage(byte[] buffer, WebSocketReceiveResult receiveResult, StringBuilder contentBuilder)
+        private static bool ReceiveMessage(byte[] buffer, WebSocketReceiveResult receiveResult, List<byte> contentBuilder)
         {
-            var content = buffer.Decode(receiveResult.Count);
-
-            contentBuilder.Append(content);
+            contentBuilder.ReceiveBytes(buffer, receiveResult);
 
             return receiveResult.EndOfMessage;
         }
 
-        private static bool TryParseMessageSendingRequest(string content, out MessageSendingRequest request)
+        private static bool TryParseMessageSendingRequest(byte[] buffer, out Message request)
         {
             try
             {
-                request = JsonSerializer.Deserialize<MessageSendingRequest>(content, new JsonSerializerOptions
+                var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true,
-                })!;
+                };
+
+                var memoryStream = new MemoryStream(buffer, 0, buffer.Length);
+
+                request = (JsonSerializer.Deserialize(memoryStream, typeof(Message), options) as Message)!;
             }
             catch
             {
@@ -98,11 +102,15 @@ namespace CorsairMessengerServer.Managers
             return true;
         }
 
-        private void SendMessage(int senderId, MessageSendingRequest request)
+        private static void PostInitMessage(Message message, int socketId)
         {
-            request.SenderId = senderId;
+            message.SenderId = socketId;
+            message.SendTime = DateTime.UtcNow;
+        }
 
-            _messageBroker.DeliverMessage(request);
+        private void SendMessage(Message message)
+        {
+            _messageBroker.DeliverMessage(message);
         }
     }
 }

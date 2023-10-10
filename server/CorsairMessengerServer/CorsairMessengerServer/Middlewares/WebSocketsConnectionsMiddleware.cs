@@ -24,6 +24,8 @@ namespace CorsairMessengerServer.Middlewares
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 await _next(context);
+
+                return;
             }
 
             var webSocket = await context.WebSockets.AcceptWebSocketAsync();
