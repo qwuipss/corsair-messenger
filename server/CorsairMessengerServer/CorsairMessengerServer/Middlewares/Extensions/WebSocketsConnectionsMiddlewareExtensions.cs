@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.WebSockets;
-
-namespace CorsairMessengerServer.Middlewares.Extensions
+﻿namespace CorsairMessengerServer.Middlewares.Extensions
 {
     public static class WebSocketsConnectionsMiddlewareExtensions
     {

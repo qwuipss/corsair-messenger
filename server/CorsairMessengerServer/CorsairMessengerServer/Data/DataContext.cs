@@ -1,4 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities;
+using CorsairMessengerServer.Data.Entities.Message;
 using Microsoft.EntityFrameworkCore;
 using static CorsairMessengerServer.Data.Constraints.UserEntityConstraints;
 
@@ -7,6 +8,8 @@ namespace CorsairMessengerServer.Data
     public class DataContext : DbContext
     {
         public DbSet<User> Users { get; set; } = null!;
+
+        public DbSet<Message> Messages { get; set; } = null!;
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {

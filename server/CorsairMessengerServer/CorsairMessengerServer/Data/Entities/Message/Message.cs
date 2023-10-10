@@ -1,5 +1,4 @@
-﻿using System.Net.WebSockets;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace CorsairMessengerServer.Data.Entities.Message
 {
@@ -10,12 +9,9 @@ namespace CorsairMessengerServer.Data.Entities.Message
 
         public required int RecieverId { get; set; }
 
-        public required byte[] Content { get; set; }
+        public required string Text { get; set; }
 
         [JsonIgnore]
         public DateTime SendTime { get; set; }
-
-        [JsonIgnore] // TEMP
-        public MessageType MessageType { get; set; }
     }
 }

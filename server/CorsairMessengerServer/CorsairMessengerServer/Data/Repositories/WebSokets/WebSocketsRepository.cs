@@ -1,7 +1,4 @@
-﻿using CorsairMessengerServer.Data.Entities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Net.WebSockets;
 
 namespace CorsairMessengerServer.Data.Repositories.WebSockets

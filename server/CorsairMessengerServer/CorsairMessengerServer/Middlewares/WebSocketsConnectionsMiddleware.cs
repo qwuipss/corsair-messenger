@@ -1,8 +1,4 @@
-﻿using CorsairMessengerServer.Data.Constraints;
-using CorsairMessengerServer.Extensions;
-using CorsairMessengerServer.Managers;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.WebSockets;
+﻿using CorsairMessengerServer.Managers;
 using System.Security.Claims;
 
 namespace CorsairMessengerServer.Middlewares
@@ -13,7 +9,7 @@ namespace CorsairMessengerServer.Middlewares
 
         private readonly WebSocketsManager _webSocketsManager;
 
-        public WebSocketsConnectionsMiddleware(RequestDelegate next, WebSocketsManager webSocketsManager) 
+        public WebSocketsConnectionsMiddleware(RequestDelegate next, WebSocketsManager webSocketsManager)
         {
             _next = next;
             _webSocketsManager = webSocketsManager;

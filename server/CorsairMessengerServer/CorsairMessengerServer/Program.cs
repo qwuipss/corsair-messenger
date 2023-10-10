@@ -50,7 +50,7 @@ namespace CorsairMessengerServer
             builder.Services.AddTransient<IMessageBroker, QueryMessageBroker>();
 
             builder.Services.AddTransient<WebSocketsManager>();
-            
+
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddTransient<IWebSocketsRepository, WebSocketsRepository>();
 

@@ -1,5 +1,4 @@
 ﻿using CorsairMessengerServer.Data.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace CorsairMessengerServer.Data.Repositories.Users
 {

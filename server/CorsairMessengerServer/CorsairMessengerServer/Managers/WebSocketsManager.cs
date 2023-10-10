@@ -1,14 +1,8 @@
-﻿using CorsairMessengerServer.Data.Constraints;
-using CorsairMessengerServer.Data.Entities.Message;
+﻿using CorsairMessengerServer.Data.Entities.Message;
 using CorsairMessengerServer.Data.Repositories.WebSockets;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Services.MessageBrokers;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Net.Sockets;
 using System.Net.WebSockets;
-using System.Text;
 using System.Text.Json;
 
 namespace CorsairMessengerServer.Managers
@@ -16,6 +10,10 @@ namespace CorsairMessengerServer.Managers
     public class WebSocketsManager
     {
         public record WebSocketConnection(int SocketId, WebSocket WebSocket);
+
+        private const int RECEIVING_PAUSE_DELAY_MS = 300;
+
+        private const int MESSAGE_RECEIVE_BUFFER_SIZE = 1024;
 
         private readonly IWebSocketsRepository _webSocketsRepository;
 
@@ -25,6 +23,8 @@ namespace CorsairMessengerServer.Managers
         {
             _webSocketsRepository = webSocketsRepository;
             _messageBroker = messageBroker;
+
+            _messageBroker.StartSendingMessages();
         }
 
         public WebSocketConnection OnConnected(int socketId, WebSocket webSocket)
@@ -46,7 +46,7 @@ namespace CorsairMessengerServer.Managers
             var socketId = webSocketConnection.SocketId;
             var webSocket = webSocketConnection.WebSocket;
 
-            var buffer = new byte[MessageEntityConstraints.MESSAGE_MAX_LENGTH * 2];
+            var buffer = new byte[MESSAGE_RECEIVE_BUFFER_SIZE];
             var contentBuilder = new List<byte>();
 
             while (webSocket.State is WebSocketState.Open)
@@ -55,15 +55,19 @@ namespace CorsairMessengerServer.Managers
 
                 if (receiveResult.MessageType is WebSocketMessageType.Text)
                 {
-                    if (ReceiveMessage(buffer, receiveResult, contentBuilder)
-                     && TryParseMessageSendingRequest(contentBuilder.ToArray(), out var message))
+                    if (ReceiveMessage(buffer, receiveResult, contentBuilder))
                     {
-                        PostInitMessage(message, socketId);
+                        var message = await TryParseMessage(contentBuilder.ToArray(), socketId);
 
-                        SendMessage(message);
+                        if (message is not null)
+                        {
+                            SendMessage(message);
 
-                        contentBuilder.Clear();
+                            contentBuilder.Clear();
+                        }
                     }
+
+                    await PauseReceiving();
                 }
                 else if (receiveResult.MessageType is WebSocketMessageType.Close)
                 {
@@ -79,8 +83,10 @@ namespace CorsairMessengerServer.Managers
             return receiveResult.EndOfMessage;
         }
 
-        private static bool TryParseMessageSendingRequest(byte[] buffer, out Message request)
+        private static async Task<Message?> TryParseMessage(byte[] buffer, int socketId)
         {
+            Message? message = null;
+
             try
             {
                 var options = new JsonSerializerOptions
@@ -88,24 +94,27 @@ namespace CorsairMessengerServer.Managers
                     PropertyNameCaseInsensitive = true,
                 };
 
-                var memoryStream = new MemoryStream(buffer, 0, buffer.Length);
+                var memoryStream = new MemoryStream(buffer);
 
-                request = (JsonSerializer.Deserialize(memoryStream, typeof(Message), options) as Message)!;
+                message = (await JsonSerializer.DeserializeAsync<Message>(memoryStream, options))!;
             }
             catch
             {
-                request = null!;
-
-                return false;
+                return message;
             }
 
-            return true;
-        }
-
-        private static void PostInitMessage(Message message, int socketId)
-        {
             message.SenderId = socketId;
             message.SendTime = DateTime.UtcNow;
+
+            return message;
+        }
+
+        /// <summary>
+        /// Needed for preventing memory leak due infinite loop message spam
+        /// </summary>
+        private static Task PauseReceiving()
+        {
+            return Task.Delay(RECEIVING_PAUSE_DELAY_MS);
         }
 
         private void SendMessage(Message message)
