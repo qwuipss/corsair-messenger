@@ -1,5 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities.Message;
-using CorsairMessengerServer.Data.Repositories.WebSockets;
+using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Services.MessageBrokers;
 using System.Net.WebSockets;
@@ -15,11 +15,11 @@ namespace CorsairMessengerServer.Managers
 
         private const int MESSAGE_RECEIVE_BUFFER_SIZE = 1024;
 
-        private readonly IWebSocketsRepository _webSocketsRepository;
+        private readonly WebSocketsRepository _webSocketsRepository;
 
         private readonly IMessageBroker _messageBroker;
 
-        public WebSocketsManager(IWebSocketsRepository webSocketsRepository, IMessageBroker messageBroker)
+        public WebSocketsManager(WebSocketsRepository webSocketsRepository, IMessageBroker messageBroker)
         {
             _webSocketsRepository = webSocketsRepository;
             _messageBroker = messageBroker;
@@ -36,12 +36,12 @@ namespace CorsairMessengerServer.Managers
             return webSocketConnection;
         }
 
-        public void OnDisconnected(WebSocketConnection webSocketConnection)
+        public async Task OnDisconnectedAsync(WebSocketConnection webSocketConnection)
         {
-            _webSocketsRepository.RemoveWebSocket(webSocketConnection.SocketId);
+            await _webSocketsRepository.RemoveWebSocketAsync(webSocketConnection.SocketId);
         }
 
-        public async Task StartReceiving(WebSocketConnection webSocketConnection)
+        public async Task StartReceivingAsync(WebSocketConnection webSocketConnection)
         {
             var socketId = webSocketConnection.SocketId;
             var webSocket = webSocketConnection.WebSocket;
@@ -57,7 +57,7 @@ namespace CorsairMessengerServer.Managers
                 {
                     if (ReceiveMessage(buffer, receiveResult, contentBuilder))
                     {
-                        var message = await TryParseMessage(contentBuilder.ToArray(), socketId);
+                        var message = await TryParseMessageAsync(contentBuilder.ToArray(), socketId);
 
                         if (message is not null)
                         {
@@ -67,11 +67,11 @@ namespace CorsairMessengerServer.Managers
                         }
                     }
 
-                    await PauseReceiving();
+                    await PauseReceivingAsync();
                 }
                 else if (receiveResult.MessageType is WebSocketMessageType.Close)
                 {
-                    OnDisconnected(webSocketConnection);
+                    await OnDisconnectedAsync(webSocketConnection);
                 }
             }
         }
@@ -83,7 +83,7 @@ namespace CorsairMessengerServer.Managers
             return receiveResult.EndOfMessage;
         }
 
-        private static async Task<Message?> TryParseMessage(byte[] buffer, int socketId)
+        private static async Task<Message?> TryParseMessageAsync(byte[] buffer, int socketId)
         {
             Message? message = null;
 
@@ -112,14 +112,14 @@ namespace CorsairMessengerServer.Managers
         /// <summary>
         /// Needed for preventing memory leak due infinite loop message spam
         /// </summary>
-        private static Task PauseReceiving()
+        private static async Task PauseReceivingAsync()
         {
-            return Task.Delay(RECEIVING_PAUSE_DELAY_MS);
+            await Task.Delay(RECEIVING_PAUSE_DELAY_MS);
         }
 
         private void SendMessage(Message message)
         {
-            _messageBroker.DeliverMessage(message);
+            _messageBroker.SendMessage(message);
         }
     }
 }

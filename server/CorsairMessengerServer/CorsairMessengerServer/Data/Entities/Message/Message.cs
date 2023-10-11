@@ -4,6 +4,8 @@ namespace CorsairMessengerServer.Data.Entities.Message
 {
     public class Message
     {
+        public int Id { get; set; }
+
         [JsonIgnore]
         public int SenderId { get; set; }
 

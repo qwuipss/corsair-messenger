@@ -1,5 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities.Message;
-using CorsairMessengerServer.Data.Repositories.WebSockets;
+using CorsairMessengerServer.Data.Repositories;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
@@ -11,58 +11,76 @@ namespace CorsairMessengerServer.Services.MessageBrokers
     {
         private static readonly ConcurrentQueue<Message> _messagesQueue;
 
-        private readonly IWebSocketsRepository _webSocketsRepository;
+        private readonly WebSocketsRepository _webSocketsRepository;
 
-        private Thread? _newsletterThread;
+        private readonly MessagesRepository _messagesRepository;
+
+        private Thread? _messagesSendingThread;
 
         static QueryMessageBroker()
         {
             _messagesQueue = new ConcurrentQueue<Message>();
         }
 
-        public QueryMessageBroker(IWebSocketsRepository webSocketsRepository)
+        public QueryMessageBroker(WebSocketsRepository webSocketsRepository, MessagesRepository messagesRepository)
         {
             _webSocketsRepository = webSocketsRepository;
+            _messagesRepository = messagesRepository;
         }
 
         public void StartSendingMessages()
         {
-            if (_newsletterThread is not null)
+            if (_messagesSendingThread is not null)
             {
                 throw new InvalidOperationException("messages sending already started");
             }
 
-            _newsletterThread = new Thread(async () =>
+            _messagesSendingThread = new Thread(async () =>
             {
                 while (true)
                 {
                     if (_messagesQueue.TryDequeue(out var message))
                     {
-                        await SendMessage(message);
+                        var buffer = GetSerializedMessage(message);
+
+                        await AddMessageToRepository(message);
+                        await SendMessage(buffer, message);
                     }
                 }
-            });
+            })
+            {
+                Priority = ThreadPriority.AboveNormal
+            };
 
-            _newsletterThread.Start();
+            _messagesSendingThread.Start();
         }
 
-        public void DeliverMessage(Message message)
+        public void SendMessage(Message message)
         {
             _messagesQueue.Enqueue(message);
         }
 
-        private async Task SendMessage(Message message)
+        private static byte[] GetSerializedMessage(Message message)
         {
             var serializedMessage = JsonSerializer.Serialize(new { message.SenderId, message.Text });
+
             var buffer = Encoding.UTF8.GetBytes(serializedMessage);
 
-            var receiverId = message.RecieverId;
+            return buffer;
+        }
 
-            if (_webSocketsRepository.TryGetWebSocket(receiverId, out var receiverSocket))
+        private async Task SendMessage(byte[] buffer, Message message)
+        {
+            if (_webSocketsRepository.TryGetWebSocket(message.SenderId, out var receiverSocket))
             {
                 await receiverSocket.SendAsync(
                     new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
             }
+        }
+
+        private async Task AddMessageToRepository(Message message)
+        {
+            await _messagesRepository.AddMessageAsync(message);
         }
     }
 }

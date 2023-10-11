@@ -1,7 +1,5 @@
-
 using CorsairMessengerServer.Data;
-using CorsairMessengerServer.Data.Repositories.Users;
-using CorsairMessengerServer.Data.Repositories.WebSockets;
+using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Managers;
 using CorsairMessengerServer.Middlewares.Extensions;
 using CorsairMessengerServer.Services.MessageBrokers;
@@ -46,13 +44,15 @@ namespace CorsairMessengerServer
                 options.UseNpgsql(connectionString);
             });
 
-            builder.Services.AddTransient<IPasswordHasher, Sha256PasswordHasher>();
-            builder.Services.AddTransient<IMessageBroker, QueryMessageBroker>();
-
             builder.Services.AddTransient<WebSocketsManager>();
 
-            builder.Services.AddTransient<IUserRepository, UserRepository>();
-            builder.Services.AddTransient<IWebSocketsRepository, WebSocketsRepository>();
+            builder.Services.AddTransient<UsersRepository>();
+            builder.Services.AddTransient<MessagesRepository>();
+
+            builder.Services.AddTransient<WebSocketsRepository>();
+
+            builder.Services.AddTransient<IPasswordHasher, Sha256PasswordHasher>();
+            builder.Services.AddTransient<IMessageBroker, QueryMessageBroker>();
 
             var app = builder.Build();
 

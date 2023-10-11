@@ -7,15 +7,12 @@ namespace CorsairMessengerServer.Middlewares
     {
         private readonly RequestDelegate _next;
 
-        private readonly WebSocketsManager _webSocketsManager;
-
-        public WebSocketsConnectionsMiddleware(RequestDelegate next, WebSocketsManager webSocketsManager)
+        public WebSocketsConnectionsMiddleware(RequestDelegate next)
         {
             _next = next;
-            _webSocketsManager = webSocketsManager;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, WebSocketsManager webSocketsManager)
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
@@ -37,9 +34,9 @@ namespace CorsairMessengerServer.Middlewares
                 return;
             }
 
-            var webSocketConnection = _webSocketsManager.OnConnected(socketId, webSocket);
+            var webSocketConnection = webSocketsManager.OnConnected(socketId, webSocket);
 
-            await _webSocketsManager.StartReceiving(webSocketConnection);
+            await webSocketsManager.StartReceivingAsync(webSocketConnection);
         }
     }
 }

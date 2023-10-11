@@ -1,5 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities;
-using CorsairMessengerServer.Data.Repositories.Users;
+using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Helpers;
 using CorsairMessengerServer.Models.Auth;
@@ -21,18 +21,18 @@ namespace CorsairMessengerServer.Controllers
     {
         private const int AUTH_TOKEN_LIFETIME_MINUTES = 365 * 24 * 60;
 
-        private readonly IUserRepository _userRepository;
+        private readonly UsersRepository _userRepository;
 
-        public AccountController(IUserRepository userRepository)
+        public AccountController(UsersRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<AuthResponse>> Login([FromBody] AuthRequest request, [FromServices] IPasswordHasher hasher)
+        public async Task<ActionResult<AuthResponse>> LoginAsync([FromBody] AuthRequest request, [FromServices] IPasswordHasher hasher)
         {
-            var user = await _userRepository.GetUserByLogin(request.Login, true);
+            var user = await _userRepository.GetUserByLoginAsync(request.Login, true);
 
             if (user is null)
             {
@@ -55,7 +55,7 @@ namespace CorsairMessengerServer.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request, [FromServices] IPasswordHasher hasher)
+        public async Task<ActionResult<AuthResponse>> RegisterAsync([FromBody] RegisterRequest request, [FromServices] IPasswordHasher hasher)
         {
             var nickname = request.Nickname;
 
@@ -78,14 +78,14 @@ namespace CorsairMessengerServer.Controllers
                 return BadRequest(new { Field = nameof(password) });
             }
 
-            var isNicknameExist = await _userRepository.IsNicknameExist(nickname);
+            var isNicknameExist = await _userRepository.IsNicknameExistAsync(nickname);
 
             if (isNicknameExist)
             {
                 return Conflict(new { Field = nameof(nickname) });
             }
 
-            var isEmailExist = await _userRepository.IsEmailExist(email);
+            var isEmailExist = await _userRepository.IsEmailExistAsync(email);
 
             if (isEmailExist)
             {
@@ -94,7 +94,7 @@ namespace CorsairMessengerServer.Controllers
 
             var user = CreateUser(nickname, email, password, hasher);
 
-            await _userRepository.AddUser(user);
+            await _userRepository.AddUserAsync(user);
 
             var token = GetAuthToken(user);
 

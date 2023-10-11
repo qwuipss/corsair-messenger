@@ -1,9 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Net.WebSockets;
 
-namespace CorsairMessengerServer.Data.Repositories.WebSockets
+namespace CorsairMessengerServer.Data.Repositories
 {
-    public class WebSocketsRepository : IWebSocketsRepository
+    public class WebSocketsRepository
     {
         private static readonly ConcurrentDictionary<int, WebSocket> _connectedWebSockets;
 
@@ -22,11 +22,11 @@ namespace CorsairMessengerServer.Data.Repositories.WebSockets
             return _connectedWebSockets.TryGetValue(socketId, out webSocket!);
         }
 
-        public async Task RemoveWebSocket(int socketId)
+        public async Task RemoveWebSocketAsync(int socketId)
         {
             if (_connectedWebSockets.TryRemove(socketId, out var webSocket))
             {
-                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Web socket close requested", CancellationToken.None);
+                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "web socket close requested", CancellationToken.None);
             }
         }
     }
