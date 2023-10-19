@@ -13,7 +13,6 @@ namespace CorsairMessengerServer.Data
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
@@ -24,7 +23,7 @@ namespace CorsairMessengerServer.Data
             modelBuilder.Entity<User>().Property(user => user.Nickname).HasColumnType($"VARCHAR({NICKNAME_MAX_LENGTH})");
 
             modelBuilder.Entity<User>().ToTable(table =>
-                table.HasCheckConstraint("Nickname", $"LENGTH(\"Nickname\") BETWEEN {NICKNAME_MIN_LENGTH} AND {NICKNAME_MAX_LENGTH}"));
+                table.HasCheckConstraint("Nickname", $"LENGTH(\"Nickname\") >= {NICKNAME_MIN_LENGTH}"));
 
             modelBuilder.Entity<User>().HasAlternateKey(user => user.Nickname);
             modelBuilder.Entity<User>().HasAlternateKey(user => user.Email);

@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CorsairMessengerServer.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231004194859_Initial")]
-    partial class Initial
+    [Migration("20231019101630_AddUserEntity")]
+    partial class AddUserEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,7 +38,7 @@ namespace CorsairMessengerServer.Migrations
 
                     b.Property<string>("Nickname")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("VARCHAR(25)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -50,7 +50,10 @@ namespace CorsairMessengerServer.Migrations
 
                     b.HasAlternateKey("Nickname");
 
-                    b.ToTable("Users");
+                    b.ToTable("User", t =>
+                        {
+                            t.HasCheckConstraint("Nickname", "LENGTH(\"Nickname\") >= 5");
+                        });
                 });
 #pragma warning restore 612, 618
         }

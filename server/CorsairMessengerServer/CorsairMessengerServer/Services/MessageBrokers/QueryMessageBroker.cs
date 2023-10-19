@@ -71,7 +71,7 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 
         private async Task SendMessage(byte[] buffer, Message message)
         {
-            if (_webSocketsRepository.TryGetWebSocket(message.SenderId, out var receiverSocket))
+            if (_webSocketsRepository.TryGetWebSocket(message.RecieverId, out var receiverSocket))
             {
                 await receiverSocket.SendAsync(
                     new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);

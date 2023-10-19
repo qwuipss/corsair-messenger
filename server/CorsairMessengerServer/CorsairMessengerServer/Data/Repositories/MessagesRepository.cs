@@ -16,8 +16,6 @@ namespace CorsairMessengerServer.Data.Repositories
             await _context.Messages.AddAsync(message);
 
             await _context.SaveChangesAsync();
-
-            var x = _context.Messages.FirstOrDefault();
         }
     }
 }
