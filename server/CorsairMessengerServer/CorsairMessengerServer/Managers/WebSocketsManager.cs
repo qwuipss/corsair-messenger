@@ -23,8 +23,6 @@ namespace CorsairMessengerServer.Managers
         {
             _webSocketsRepository = webSocketsRepository;
             _messageBroker = messageBroker;
-
-            _messageBroker.StartSendingMessages();
         }
 
         public WebSocketConnection OnConnected(int socketId, WebSocket webSocket)
@@ -51,7 +49,16 @@ namespace CorsairMessengerServer.Managers
 
             while (webSocket.State is WebSocketState.Open)
             {
-                var receiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                WebSocketReceiveResult receiveResult;
+
+                try
+                {
+                    receiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                }
+                catch (WebSocketException)
+                {
+                    break;
+                }
 
                 if (receiveResult.MessageType is WebSocketMessageType.Text)
                 {
@@ -61,9 +68,9 @@ namespace CorsairMessengerServer.Managers
 
                         if (message is not null)
                         {
-                            SendMessage(message);
+                            await SendMessageAsync(message);
 
-                            contentBuilder.Clear();
+                            contentBuilder = new List<byte>();
                         }
                     }
 
@@ -71,9 +78,11 @@ namespace CorsairMessengerServer.Managers
                 }
                 else if (receiveResult.MessageType is WebSocketMessageType.Close)
                 {
-                    await OnDisconnectedAsync(webSocketConnection);
+                    break;
                 }
             }
+
+            await OnDisconnectedAsync(webSocketConnection);
         }
 
         private static bool ReceiveMessage(byte[] buffer, WebSocketReceiveResult receiveResult, List<byte> contentBuilder)
@@ -117,9 +126,9 @@ namespace CorsairMessengerServer.Managers
             await Task.Delay(RECEIVING_PAUSE_DELAY_MS);
         }
 
-        private void SendMessage(Message message)
+        private async Task SendMessageAsync(Message message)
         {
-            _messageBroker.SendMessage(message);
+            await _messageBroker.SendMessageAsync(message);
         }
     }
 }

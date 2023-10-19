@@ -6,7 +6,7 @@ namespace CorsairMessengerServer.Data.Repositories
     {
         private readonly DataContext _context;
 
-        public MessagesRepository(DataContext context) 
+        public MessagesRepository(DataContext context)
         {
             _context = context;
         }

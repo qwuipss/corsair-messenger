@@ -26,7 +26,12 @@ namespace CorsairMessengerServer.Data.Repositories
         {
             if (_connectedWebSockets.TryRemove(socketId, out var webSocket))
             {
-                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "web socket close requested", CancellationToken.None);
+                if (webSocket.State is WebSocketState.CloseReceived
+                 || webSocket.State is WebSocketState.CloseSent
+                 || webSocket.State is WebSocketState.Open)
+                {
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "web socket close requested by client", CancellationToken.None);
+                }
             }
         }
     }

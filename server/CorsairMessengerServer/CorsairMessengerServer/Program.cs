@@ -52,7 +52,7 @@ namespace CorsairMessengerServer
             builder.Services.AddTransient<WebSocketsRepository>();
 
             builder.Services.AddTransient<IPasswordHasher, Sha256PasswordHasher>();
-            builder.Services.AddTransient<IMessageBroker, QueryMessageBroker>();
+            builder.Services.AddTransient<IMessageBroker, AsyncMessageBroker>();
 
             var app = builder.Build();
 

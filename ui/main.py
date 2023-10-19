@@ -20,7 +20,7 @@ async def client_1():
         while True:
             print("client_1 working")
             await websocket.send(json.dumps({ "recieverid" : 4, "text" : "hello world" }))
-            await asyncio.sleep(5)
+            await asyncio.sleep(3)
 
 #str(base64.b64encode(b'hello world' * 1000)
 async def client_2():    
@@ -34,6 +34,7 @@ async def client_2():
 async def main():
 
     await asyncio.gather(client_1(), client_2())
+    #await asyncio.gather(client_2())
     
 
 if __name__ == '__main__':
@@ -44,3 +45,7 @@ if __name__ == '__main__':
         loop.run_until_complete(main())
     finally:
         loop.close()
+
+
+
+
