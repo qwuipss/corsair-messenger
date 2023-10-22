@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CorsairMessengerServer.Data.Entities.Message
+namespace CorsairMessengerServer.Data.Entities
 {
     public class Message
     {

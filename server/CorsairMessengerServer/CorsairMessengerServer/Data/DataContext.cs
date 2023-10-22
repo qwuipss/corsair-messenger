@@ -1,5 +1,4 @@
 ﻿using CorsairMessengerServer.Data.Entities;
-using CorsairMessengerServer.Data.Entities.Message;
 using Microsoft.EntityFrameworkCore;
 using static CorsairMessengerServer.Data.Constraints.UserEntityConstraints;
 

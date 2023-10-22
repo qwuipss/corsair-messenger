@@ -45,10 +45,8 @@ namespace CorsairMessengerServer
             });
 
             builder.Services.AddTransient<WebSocketsManager>();
-
             builder.Services.AddTransient<UsersRepository>();
             builder.Services.AddTransient<MessagesRepository>();
-
             builder.Services.AddTransient<WebSocketsRepository>();
 
             builder.Services.AddTransient<IPasswordHasher, Sha256PasswordHasher>();

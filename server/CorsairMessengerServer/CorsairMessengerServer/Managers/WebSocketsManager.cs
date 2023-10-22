@@ -1,4 +1,4 @@
-﻿using CorsairMessengerServer.Data.Entities.Message;
+﻿using CorsairMessengerServer.Data.Entities;
 using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Services.MessageBrokers;
