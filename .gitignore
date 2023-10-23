@@ -1,10 +1,10 @@
-server/CorsairMessengerServer/CorsairMessengerServer.sln
+CorsairMessengerServer.sln
 
-server/CorsairMessengerServer/.vs/
+.vs/
 
-server/CorsairMessengerServer/CorsairMessengerServer/obj/
-server/CorsairMessengerServer/CorsairMessengerServer/bin/
+obj/
+bin/
 
-ui/.vscode/
+.vscode/
 
-**/__pycache__
+__pycache__/
