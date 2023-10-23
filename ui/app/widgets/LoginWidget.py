@@ -1,5 +1,4 @@
 from ..qss import LOGIN_WIDGET_QSS
-from helpers.QSSHelper import QSSHelper
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtWidgets import (
                              QVBoxLayout, 
