@@ -6,3 +6,5 @@ server/CorsairMessengerServer/CorsairMessengerServer/obj/
 server/CorsairMessengerServer/CorsairMessengerServer/bin/
 
 ui/.vscode/
+
+*/__pycache__

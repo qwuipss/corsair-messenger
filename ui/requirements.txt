@@ -1,1 +1,1 @@
-websockets pyqt6
+websockets pyqt6 requests
