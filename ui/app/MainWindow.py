@@ -1,6 +1,6 @@
 from .widgets.login.LoginWidget import LoginWidget
+from .SharedQSS import MainWindowSharedQSS
 from helpers.QSSHelper import QSSHelper
-from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import (
     QWidget, QMainWindow, QApplication,
 )
@@ -25,8 +25,8 @@ class MainWindow(QMainWindow):
 
         # todo 
         self.setStyleSheet(QSSHelper.concat(
-            QSSHelper.background_color("f2f2f2"),
-            QSSHelper.color((240, 240, 240)),
+            QSSHelper.background_color(MainWindowSharedQSS.BACKGROUND_COLOR),
+            QSSHelper.color(MainWindowSharedQSS.COLOR),
         ))
 
     def __set_window_geometry(self):
