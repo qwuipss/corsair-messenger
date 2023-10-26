@@ -4,19 +4,19 @@ from PyQt6.QtCore import QSize
 
 class LoginWidgetQSS:
 
-    def __init__(self, screen_size: QSize) -> None:
+    def __init__(self, window_size: QSize) -> None:
         
         self.__logo_label_text = "CORSAIR"
-        self.__logo_label_qss = LoginWidgetQSS.__get_logo_label_qss(screen_size)
+        self.__logo_label_qss = LoginWidgetQSS.__get_logo_label_qss(window_size)
 
         self.__login_label_text = "Login"
         self.__password_label_text = "Password"
         
-        self.__line_edit_qss = LoginWidgetQSS.__get_line_edit_qss(screen_size)
-        self.__line_edit_label_qss = LoginWidgetQSS.__get_line_edit_label_qss(screen_size)
+        self.__line_edit_qss = LoginWidgetQSS.__get_line_edit_qss(window_size)
+        self.__line_edit_label_qss = LoginWidgetQSS.__get_line_edit_label_qss(window_size)
 
         self.__enter_button_text = "Enter"
-        self.__enter_button_qss = LoginWidgetQSS.__get_enter_button_qss(screen_size)
+        self.__enter_button_qss = LoginWidgetQSS.__get_enter_button_qss(window_size)
 
     @property
     def logo_label_text(self) -> str:
@@ -51,12 +51,12 @@ class LoginWidgetQSS:
         return self.__enter_button_qss
 
     @staticmethod
-    def __get_logo_label_qss(screen_size: QSize) -> str:
+    def __get_logo_label_qss(window_size: QSize) -> str:
 
-        if not isinstance(screen_size, QSize):
-            raise TypeError(type(screen_size))
+        if not isinstance(window_size, QSize):
+            raise TypeError(type(window_size))
 
-        width = screen_size.width()
+        width = window_size.width()
 
         qss = QSSHelper.concat(
             QSSHelper.letter_spacing(int(width / 35)),
@@ -67,12 +67,12 @@ class LoginWidgetQSS:
         return qss
     
     @staticmethod
-    def __get_line_edit_label_qss(screen_size: QSize) -> str:
+    def __get_line_edit_label_qss(window_size: QSize) -> str:
 
-        if not isinstance(screen_size, QSize):
-            raise TypeError(type(screen_size))
+        if not isinstance(window_size, QSize):
+            raise TypeError(type(window_size))
         
-        width = screen_size.width()
+        width = window_size.width()
 
         qss = QSSHelper.concat(
             QSSHelper.letter_spacing(int(width / 260)),
@@ -83,12 +83,12 @@ class LoginWidgetQSS:
         return qss
 
     @staticmethod
-    def __get_line_edit_qss(screen_size: QSize) -> str:
+    def __get_line_edit_qss(window_size: QSize) -> str:
 
-        if not isinstance(screen_size, QSize):
-            raise TypeError(type(screen_size))
+        if not isinstance(window_size, QSize):
+            raise TypeError(type(window_size))
         
-        width = screen_size.width()
+        width = window_size.width()
 
         qss = QSSHelper.concat(
             QSSHelper.color(LoginWidgetSharedQSS.LINE_EDIT_COLOR),
@@ -101,12 +101,12 @@ class LoginWidgetQSS:
         return qss
     
     @staticmethod
-    def __get_enter_button_qss(screen_size: QSize) -> str:
+    def __get_enter_button_qss(window_size: QSize) -> str:
 
-        if not isinstance(screen_size, QSize):
-            raise TypeError(type(screen_size))
+        if not isinstance(window_size, QSize):
+            raise TypeError(type(window_size))
         
-        width = screen_size.width()
+        width = window_size.width()
 
         qss = QSSHelper.concat(
             QSSHelper.font_size(int(width / 50)),
