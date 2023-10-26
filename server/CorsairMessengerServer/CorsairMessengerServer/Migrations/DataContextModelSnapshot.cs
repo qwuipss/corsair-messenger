@@ -45,7 +45,7 @@ namespace CorsairMessengerServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("CorsairMessengerServer.Data.Entities.User", b =>
@@ -74,7 +74,7 @@ namespace CorsairMessengerServer.Migrations
 
                     b.HasAlternateKey("Nickname");
 
-                    b.ToTable("Users", t =>
+                    b.ToTable("Users", null, t =>
                         {
                             t.HasCheckConstraint("Nickname", "LENGTH(\"Nickname\") >= 5");
                         });

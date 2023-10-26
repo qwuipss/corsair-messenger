@@ -19,8 +19,6 @@ namespace CorsairMessengerServer.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>().Property(user => user.Nickname).HasColumnType($"VARCHAR({NICKNAME_MAX_LENGTH})");
-
             modelBuilder.Entity<User>().ToTable(table =>
                 table.HasCheckConstraint("Nickname", $"LENGTH(\"Nickname\") >= {NICKNAME_MIN_LENGTH}"));
 

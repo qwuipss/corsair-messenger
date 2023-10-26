@@ -16,8 +16,6 @@ namespace CorsairMessengerServer.Data.Entities
         [RegularExpression(RegexHelper.EmailValidationRegex)]
         public required string Email { get; set; }
 
-        [MinLength(PASSWORD_MIN_LENGTH)]
-        [MaxLength(PASSWORD_MAX_LENGTH)]
         public required string Password { get; set; }
     }
 }
