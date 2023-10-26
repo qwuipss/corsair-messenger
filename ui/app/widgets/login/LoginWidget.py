@@ -1,5 +1,6 @@
 from .LoginWidgetQSS import LoginWidgetQSS
 from PyQt6 import QtGui
+from PyQt6 import QtCore
 from PyQt6.QtCore import (
     Qt, QSize, 
 )
@@ -27,7 +28,7 @@ class LoginWidget(QWidget):
 
         screen_height = window_size.height()
 
-        line_edit_width = int(window_size.width() / 3.5)
+        line_edit_width = int(window_size.width() / 3.4)
         vertical_spacer = int(-screen_height / 7)
 
         label_layout = self.__get_logo_label_layout()
@@ -75,7 +76,12 @@ class LoginWidget(QWidget):
 
         login_label = QLabel(self.__login_widget_qss.login_label_text)
 
+        line_edit_validator = QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("[a-zA-Z0-9_]*"))
+
         login_line_edit = QLineEdit()
+
+        login_line_edit.setMaxLength(25)
+        login_line_edit.setValidator(line_edit_validator)
 
         login_layout.addWidget(login_label, alignment=Qt.AlignmentFlag.AlignCenter)
         login_layout.addSpacerItem(QSpacerItem(0, vertical_spacer))
@@ -106,6 +112,8 @@ class LoginWidget(QWidget):
 
         password_line_edit = QLineEdit()
         password_line_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        
+        password_line_edit.setMaxLength(30)
 
         password_layout.addWidget(password_label, alignment=Qt.AlignmentFlag.AlignCenter)
         password_layout.addSpacerItem(QSpacerItem(0, vertical_spacer))
