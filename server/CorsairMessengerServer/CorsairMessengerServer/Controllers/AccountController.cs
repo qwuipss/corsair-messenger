@@ -59,7 +59,7 @@ namespace CorsairMessengerServer.Controllers
         {
             var nickname = request.Nickname;
 
-            if (!nickname.Length.InRange(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH))
+            if (!nickname.Length.InRange(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH) || !RegexHelper.IsNickname(nickname))
             {
                 return BadRequest(new { Field = nameof(nickname) });
             }
