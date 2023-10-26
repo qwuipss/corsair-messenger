@@ -1,30 +1,34 @@
 from .LoginWidgetQSS import LoginWidgetQSS
-
+from PyQt6 import QtGui
 from PyQt6.QtCore import (
     Qt, QSize, 
 )
-
 from PyQt6.QtWidgets import (
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem,
 )
 
 class LoginWidget(QWidget):
 
-    def __init__(self, screen_size: QSize) -> None:
+    def __init__(self, window_size: QSize, font_id: int) -> None:
 
-        if not isinstance(screen_size, QSize):
-            raise TypeError(type(screen_size))
+        if not isinstance(window_size, QSize):
+            raise TypeError(type(window_size))
+
+        if not isinstance(font_id, int):
+            raise TypeError(type(font_id))
 
         super().__init__()
 
+        self.__font = QtGui.QFont(QtGui.QFontDatabase.applicationFontFamilies(font_id)[0])
+
         self.__layout = QVBoxLayout()
 
-        self.__login_widget_qss = LoginWidgetQSS(screen_size)
+        self.__login_widget_qss = LoginWidgetQSS(window_size)
 
-        screen_height = screen_size.height()
+        screen_height = window_size.height()
 
-        line_edit_width = int(screen_size.width() / 6)
-        vertical_spacer = int(-screen_height / 11)
+        line_edit_width = int(window_size.width() / 3.5)
+        vertical_spacer = int(-screen_height / 7)
 
         label_layout = self.__get_logo_label_layout()
         login_layout = self.__get_login_layout(line_edit_width, vertical_spacer)
@@ -35,7 +39,7 @@ class LoginWidget(QWidget):
         self.__layout.addLayout(login_layout)
         self.__layout.addLayout(password_layout)
 
-        vertical_spacer = int(-screen_height / 25)
+        vertical_spacer = int(-screen_height / 15)
         
         self.__layout.addSpacerItem(QSpacerItem(0, vertical_spacer))
 
@@ -54,6 +58,8 @@ class LoginWidget(QWidget):
         logo_label_layout.addWidget(logo_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         logo_label.setStyleSheet(self.__login_widget_qss.logo_label_qss)
+
+        logo_label.setFont(self.__font)
 
         return logo_label_layout
 
@@ -76,9 +82,13 @@ class LoginWidget(QWidget):
         login_layout.addWidget(login_line_edit, alignment=Qt.AlignmentFlag.AlignCenter)
 
         login_line_edit.setFixedWidth(line_edit_width)
+        login_line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         login_label.setStyleSheet(self.__login_widget_qss.line_edit_label_qss)
         login_line_edit.setStyleSheet(self.__login_widget_qss.line_edit_qss)
+
+        login_label.setFont(self.__font)
+        login_line_edit.setFont(self.__font)
 
         return login_layout
 
@@ -102,9 +112,12 @@ class LoginWidget(QWidget):
         password_layout.addWidget(password_line_edit, alignment=Qt.AlignmentFlag.AlignCenter)
 
         password_line_edit.setFixedWidth(line_edit_width)
+        password_line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         password_label.setStyleSheet(self.__login_widget_qss.line_edit_label_qss)
         password_line_edit.setStyleSheet(self.__login_widget_qss.line_edit_qss)
+
+        password_label.setFont(self.__font)
 
         return password_layout
 
@@ -118,6 +131,8 @@ class LoginWidget(QWidget):
         enter_layout.addWidget(enter_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         enter_button.setStyleSheet(self.__login_widget_qss.enter_button_qss)
+
+        enter_button.setFont(self.__font)
 
         return enter_layout
     

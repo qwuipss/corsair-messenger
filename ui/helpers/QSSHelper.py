@@ -33,7 +33,7 @@ class QSSHelper:
         if not isinstance(border_radius, int):
             raise TypeError(type(border_radius))
 
-        return f"border-radius: {border_radius}px"
+        return f"border-radius: {border_radius}px;"
 
     @staticmethod
     def background_color(hex_color: str) -> str:
