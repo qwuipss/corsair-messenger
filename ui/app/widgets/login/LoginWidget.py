@@ -10,10 +10,10 @@ from PyQt6.QtWidgets import (
 
 class LoginWidget(QWidget):
 
-    def __init__(self, window_size: QSize, font_id: int) -> None:
+    def __init__(self, parent: QWidget, font_id: int) -> None:
 
-        if not isinstance(window_size, QSize):
-            raise TypeError(type(window_size))
+        if not isinstance(parent, QWidget):
+            raise TypeError(type(parent))
 
         if not isinstance(font_id, int):
             raise TypeError(type(font_id))
@@ -22,13 +22,15 @@ class LoginWidget(QWidget):
 
         self.__font = QtGui.QFont(QtGui.QFontDatabase.applicationFontFamilies(font_id)[0])
 
-        self.__layout = QVBoxLayout()
+        layout = QVBoxLayout()
 
-        self.__login_widget_qss = LoginWidgetQSS(window_size)
+        parent_size = parent.size()
 
-        screen_height = window_size.height()
+        self.__login_widget_qss = LoginWidgetQSS(parent_size)
 
-        line_edit_width = int(window_size.width() / 3.4)
+        screen_height = parent_size.height()
+
+        line_edit_width = int(parent_size.width() / 3.4)
         vertical_spacer = int(-screen_height / 7)
 
         label_layout = self.__get_logo_label_layout()
@@ -36,19 +38,17 @@ class LoginWidget(QWidget):
         password_layout = self.__get_password_layout(line_edit_width, vertical_spacer)
         enter_layout = self.__get_enter_layout()
 
-        self.__layout.addLayout(label_layout)
-        self.__layout.addLayout(login_layout)
-        self.__layout.addLayout(password_layout)
+        layout.addLayout(label_layout)
+        layout.addLayout(login_layout)
+        layout.addLayout(password_layout)
 
         vertical_spacer = int(-screen_height / 15)
         
-        self.__layout.addSpacerItem(QSpacerItem(0, vertical_spacer))
+        layout.addSpacerItem(QSpacerItem(0, vertical_spacer))
 
-        self.__layout.addLayout(enter_layout)
+        layout.addLayout(enter_layout)
 
-    @property
-    def layout(self) -> QVBoxLayout:
-        return  self.__layout
+        self.setLayout(layout)
 
     def __get_logo_label_layout(self) -> QVBoxLayout:
         

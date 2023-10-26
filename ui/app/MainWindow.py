@@ -1,4 +1,5 @@
 from .widgets.login.LoginWidget import LoginWidget
+from .widgets.chat.ChatWidget import ChatWidget
 from .SharedQSS import MainWindowSharedQSS
 from helpers.QSSHelper import QSSHelper
 from PyQt6 import QtGui
@@ -21,11 +22,9 @@ class MainWindow(QMainWindow):
 
         self.__set_window_geometry()
         
-        self.__central_widget = QWidget(self)
+        self.__font_id = self.__add_app_font()
 
-        self.__central_widget.setLayout(LoginWidget(self.size(), MainWindow.__get_font_id()).layout)
-
-        self.setCentralWidget(self.__central_widget)
+        self.setCentralWidget(ChatWidget(self, self.__font_id))
 
         self.setStyleSheet(QSSHelper.concat(
             QSSHelper.background_color(MainWindowSharedQSS.BACKGROUND_COLOR),
@@ -33,14 +32,14 @@ class MainWindow(QMainWindow):
         ))
 
     @staticmethod
-    def __get_font_id():
+    def __add_app_font() -> int:
 
         font_path = rf"{dirname(realpath(__file__))}\appFont.ttf"
         font_id = QtGui.QFontDatabase.addApplicationFont(font_path)
 
         return font_id
 
-    def __set_window_geometry(self):
+    def __set_window_geometry(self) -> None:
 
         self.setFixedWidth(int(self.__screen_size.width() / 1.5))
         self.setFixedHeight(int(self.__screen_size.height() / 1.5))
