@@ -76,7 +76,7 @@ class LoginWidget(QWidget):
 
         login_label = QLabel(self.__login_widget_qss.login_label_text)
 
-        line_edit_validator = QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("[a-zA-Z0-9_]*"))
+        line_edit_validator = QtGui.QRegularExpressionValidator(QtCore.QRegularExpression("^[a-zA-Z0-9_]*$"))
 
         login_line_edit = QLineEdit()
 
