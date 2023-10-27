@@ -24,7 +24,11 @@ class MainWindow(QMainWindow):
         
         self.__font_id = self.__add_app_font()
 
-        self.setCentralWidget(ChatWidget(self, self.__font_id))
+        central_widget = ChatWidget(self, self.__font_id)
+        
+        central_widget.setContentsMargins(0, 0, 0, 0)
+
+        self.setCentralWidget(central_widget)
 
         self.setStyleSheet(QSSHelper.concat(
             QSSHelper.background_color(MainWindowSharedQSS.BACKGROUND_COLOR),

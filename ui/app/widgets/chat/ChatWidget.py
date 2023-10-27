@@ -5,14 +5,13 @@ from PyQt6.QtCore import (
     Qt, QSize, 
 )
 from PyQt6.QtWidgets import (
-    QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QScrollArea, QGridLayout, QMessageBox,
+    QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, 
+    QScrollArea, QGridLayout, QMessageBox, QFrame, QSizePolicy, QAbstractScrollArea,
 )
 
 class ChatWidget(QWidget):
 
     def __init__(self, parent: QWidget, font_id: int) -> None:
-
-        #demo
 
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
@@ -22,67 +21,73 @@ class ChatWidget(QWidget):
         
         super().__init__()
 
-        contacts_scroll_area = QScrollArea()
-        contacts_scroll_area.setWidgetResizable(True)
+        (contacts_scroll_area, contacts_layout) = ChatWidget.__get_scroll_area_and_layout(parent)
+        (messages_scroll_area, messages_layout) = ChatWidget.__get_scroll_area_and_layout(parent)
 
-        messages_scroll_area = QScrollArea()
-        messages_scroll_area.setWidgetResizable(True)
+        for i in range(500):
+            contacts_layout.addWidget(QLabel(f"contact{i}"))
+        for i in range(550):
+            al = QLabel()
+            al.setText("mes")
+            messages_layout.addWidget(al)
+            al.setAlignment(Qt.AlignmentFlag.AlignRight)
 
-        contacts_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        contacts_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        
-        messages_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        messages_scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-
-        contacts_layout = QVBoxLayout()
-        contacts_widget = QWidget()
-        contacts_widget.setLayout(contacts_layout)
-
-        messages_layout = QVBoxLayout()
-        messages_widget = QWidget()
-        messages_widget.setLayout(messages_layout)
-
-        for i in range(50):
-            contacts_layout.addWidget(QLabel("contact"))
-
-        for i in range(70):
-            messages_layout.addWidget(QLabel("message"))
-
-        contacts_scroll_area.setWidget(contacts_widget)
-        messages_scroll_area.setWidget(messages_widget)
+        contacts_extended_layout = QVBoxLayout()
+        contacts_extended_layout.addWidget(QLineEdit())
+        contacts_extended_layout.addWidget(contacts_scroll_area)
 
         layout = QHBoxLayout()
+        layout.addLayout(contacts_extended_layout, 2)
+        # layout.addWidget(contacts_scroll_area, 2)
+        layout.addWidget(messages_scroll_area, 5)
 
-        layout.addWidget(contacts_scroll_area, 1)
-        layout.addWidget(messages_scroll_area, 2)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
         self.setLayout(layout)
 
+    @staticmethod
+    def __get_scroll_area_and_layout(parent: QWidget) -> tuple[QScrollArea, QVBoxLayout]:
 
-        def hide_scrollbars(event):
-            contacts_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-            messages_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        if not isinstance(parent, QWidget):
+            raise TypeError(type(parent))
 
-        def show_scrollbars(event):
-            contacts_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-            messages_scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        layout = QVBoxLayout()
 
+        widget = QWidget()
 
-        contacts_scroll_area.enterEvent = show_scrollbars
-        contacts_scroll_area.leaveEvent = hide_scrollbars
-        messages_scroll_area.enterEvent = show_scrollbars
-        messages_scroll_area.leaveEvent = hide_scrollbars
+        widget.setLayout(layout)
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        scroll_area.setWidget(widget)
+
+        scroll_area.enterEvent = \
+            lambda _: scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        
+        scroll_area.leaveEvent = \
+            lambda _: scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         scrollbar_style = """
-        QScrollBar:vertical {
-            width: 8px; 
-        }
-        QScrollBar::handle:vertical {
-            background: #888;
-            min-height: 20px;
-        }
-        """
+            QScrollBar:vertical {
+                width: 3px;
+                background: #555555;
+            }
+            QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical{
+                background: #0c0c0c;
+            }
+            QScrollBar::handle:vertical {
+                min-height: 0px;
+                background: #555555;
+            }   
+            """
+        
+        scroll_area.setStyleSheet(scrollbar_style)
+        #scroll_area.setFixedHeight(parent.size().height())
+        #scroll_area.setFrameShape(QFrame.Shape(0))
 
-        contacts_scroll_area.setStyleSheet(scrollbar_style)
-        messages_scroll_area.setStyleSheet(scrollbar_style)
+        return (scroll_area, layout)
