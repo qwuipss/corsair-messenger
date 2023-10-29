@@ -2,11 +2,11 @@
 from PyQt6 import QtGui
 from PyQt6 import QtCore
 from PyQt6.QtCore import (
-    Qt, QSize, 
+    Qt, QSize, QPropertyAnimation, QVariantAnimation
 )
 from PyQt6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, 
-    QScrollArea, QGridLayout, QMessageBox, QFrame, QSizePolicy, QAbstractScrollArea,
+    QScrollArea, QGridLayout, QMessageBox, QFrame, QSizePolicy, QAbstractScrollArea, 
 )
 
 class ChatWidget(QWidget):
@@ -21,8 +21,10 @@ class ChatWidget(QWidget):
         
         super().__init__()
 
-        (contacts_scroll_area, contacts_layout) = ChatWidget.__get_scroll_area_and_layout(parent)
-        (messages_scroll_area, messages_layout) = ChatWidget.__get_scroll_area_and_layout(parent)
+        (contacts_scroll_area, contacts_layout) = self.__get_scroll_area_and_layout(parent)
+        (messages_scroll_area, messages_layout) = self.__get_scroll_area_and_layout(parent)
+
+
 
         for i in range(500):
             contacts_layout.addWidget(QLabel(f"contact{i}"))
@@ -45,7 +47,6 @@ class ChatWidget(QWidget):
 
         layout = QHBoxLayout()
         layout.addLayout(contacts_extended_layout, 2)
-        # layout.addWidget(contacts_scroll_area, 2)
         layout.addLayout(messages_extended_layout, 5)
 
         layout.setContentsMargins(0, 0, 0, 0)
@@ -53,8 +54,7 @@ class ChatWidget(QWidget):
 
         self.setLayout(layout)
 
-    @staticmethod
-    def __get_scroll_area_and_layout(parent: QWidget) -> tuple[QScrollArea, QVBoxLayout]:
+    def __get_scroll_area_and_layout(self, parent: QWidget) -> tuple[QScrollArea, QVBoxLayout]:
 
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
@@ -68,19 +68,19 @@ class ChatWidget(QWidget):
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
 
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         scroll_area.setWidget(widget)
 
-        scroll_area.enterEvent = \
-            lambda _: scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        
-        scroll_area.leaveEvent = \
-            lambda _: scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll_area.enterEvent = lambda _: self.__show_scrollbar(scroll_area)
+        scroll_area.leaveEvent = lambda _: self.__hide_scrollbar(scroll_area)
 
         scrollbar_style = """
-            QScrollBar:vertical {
+            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+                background: #0c0c0c;                   
+            }
+            QScrollBar::vertical {
                 width: 3px;
                 background: #555555;
             }
@@ -88,13 +88,49 @@ class ChatWidget(QWidget):
                 background: #0c0c0c;
             }
             QScrollBar::handle:vertical {
-                min-height: 0px;
-                background: #555555;
+                background: transparent;
             }   
             """
         
         scroll_area.setStyleSheet(scrollbar_style)
-        #scroll_area.setFixedHeight(parent.size().height())
-        #scroll_area.setFrameShape(QFrame.Shape(0))
+        scroll_area.setFrameShape(QFrame.Shape(0))
 
         return (scroll_area, layout)
+
+    def __show_scrollbar(self, scroll_area: QScrollArea) -> None:
+
+        scrollbar_style = """
+            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+                background: #0c0c0c;                   
+            }
+            QScrollBar::vertical {
+                width: 3px;
+                background: #555555;
+            }
+            QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical{
+                background: #0c0c0c;
+            }
+            QScrollBar::handle:vertical {
+                background: transparent;
+            }   
+            """
+        
+        scroll_area.setStyleSheet(scrollbar_style)
+
+    def __hide_scrollbar(self, scroll_area: QScrollArea) -> None:
+        scrollbar_style = """
+            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+                background: #0c0c0c;                   
+            }
+            QScrollBar::vertical {
+                width: 3px;
+                background: #0c0c0c;
+            }
+            QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical{
+                background: #0c0c0c;
+            }
+            QScrollBar::handle:vertical {
+                background: transparent;
+            }   
+            """
+        scroll_area.setStyleSheet(scrollbar_style)
