@@ -33,13 +33,20 @@ class ChatWidget(QWidget):
             al.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         contacts_extended_layout = QVBoxLayout()
+        contacts_extended_layout.setContentsMargins(0,0,0,0)
         contacts_extended_layout.addWidget(QLineEdit())
         contacts_extended_layout.addWidget(contacts_scroll_area)
+
+        messages_extended_layout = QVBoxLayout()
+        current_contact = QLabel("Anonymous")
+        messages_extended_layout.addWidget(current_contact)
+        messages_extended_layout.addWidget(messages_scroll_area)
+        messages_extended_layout.addWidget(QLineEdit())
 
         layout = QHBoxLayout()
         layout.addLayout(contacts_extended_layout, 2)
         # layout.addWidget(contacts_scroll_area, 2)
-        layout.addWidget(messages_scroll_area, 5)
+        layout.addLayout(messages_extended_layout, 5)
 
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)

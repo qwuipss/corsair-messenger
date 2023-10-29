@@ -25,7 +25,8 @@ class MainWindow(QMainWindow):
         self.__font_id = self.__add_app_font()
 
         central_widget = ChatWidget(self, self.__font_id)
-        
+        #central_widget = LoginWidget(self, self.__font_id)
+
         central_widget.setContentsMargins(0, 0, 0, 0)
 
         self.setCentralWidget(central_widget)
