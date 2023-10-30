@@ -59,8 +59,8 @@ class LoginWidgetQSS:
         width = window_size.width()
 
         qss = QSSHelper.concat(
-            QSSHelper.letter_spacing(int(width / 35)),
-            QSSHelper.font_size(int(width / 18)),
+            QSSHelper.letter_spacing(width // 35),
+            QSSHelper.font_size(width // 18),
             QSSHelper.font_weight(900),
         )
 
@@ -75,8 +75,8 @@ class LoginWidgetQSS:
         width = window_size.width()
 
         qss = QSSHelper.concat(
-            QSSHelper.letter_spacing(int(width / 260)),
-            QSSHelper.font_size(int(width / 50)),
+            QSSHelper.letter_spacing(width // 260),
+            QSSHelper.font_size(width // 50),
             QSSHelper.font_weight(550),
         )
 
@@ -93,7 +93,7 @@ class LoginWidgetQSS:
         qss = QSSHelper.concat(
             QSSHelper.color(LoginWidgetSharedQSS.LINE_EDIT_COLOR),
             QSSHelper.background_color(LoginWidgetSharedQSS.LINE_EDIT_BACKGROUND_COLOR),
-            QSSHelper.font_size(int(width / 62)),
+            QSSHelper.font_size(width // 62),
             QSSHelper.font_weight(500),
             QSSHelper.border_radius(5),
         )
@@ -109,9 +109,9 @@ class LoginWidgetQSS:
         width = window_size.width()
 
         qss = QSSHelper.concat(
-            QSSHelper.font_size(int(width / 50)),
+            QSSHelper.font_size(width // 50),
             QSSHelper.color(LoginWidgetSharedQSS.ENTER_BUTTON_TEXT_COLOR),
-            QSSHelper.letter_spacing(int(width / 200)),
+            QSSHelper.letter_spacing(width // 200),
             QSSHelper.font_weight(550),
             QSSHelper.border_none(),
         )
