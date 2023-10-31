@@ -12,7 +12,7 @@ class ChatWidgetQSS:
 
         self.__scrollbar_common_qss = """
             QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical{
-                background: #""" + ChatWidgetSharedQSS.BACKGROUND_COLOR + """;
+                background: hidden;
             }
             QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical{
                 background: #""" + ChatWidgetSharedQSS.BACKGROUND_COLOR + """;

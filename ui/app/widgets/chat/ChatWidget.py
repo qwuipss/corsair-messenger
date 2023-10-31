@@ -5,7 +5,7 @@ from PyQt6 import (
     QtGui, QtCore, 
 )
 from PyQt6.QtWidgets import (
-    QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QScrollArea, QFrame, 
+    QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QScrollArea, QFrame, QPlainTextEdit, QTextEdit,
 )
 
 class ChatWidget(QWidget):
@@ -80,7 +80,7 @@ class ChatWidget(QWidget):
 
         current_contact_name = QLabel("Anonymous")
         current_contact_name.setStyleSheet("border: 1px solid red;")
-        message_edit = QLineEdit()
+        message_edit = QTextEdit()
 
         messages_extended_layout.addWidget(current_contact_name)
         messages_extended_layout.addWidget(messages_scroll_area)
@@ -89,10 +89,19 @@ class ChatWidget(QWidget):
         height = parent.size().height()
 
         current_contact_name.setFont(self.__font)
-        message_edit.setFont(self.__font)
-
         current_contact_name.setFixedHeight(height // 13)
-        message_edit.setFixedHeight(height // 16)
+        
+
+
+        def a():
+            document_height = message_edit.toPlainText().size().height()
+            message_edit.setFixedHeight(int(document_height))
+
+        message_edit.textChanged.connect(a)
+
+        message_edit.setFont(self.__font)
+        #message_edit.setFixedHeight(height // 16)
+        message_edit.setStyleSheet("border: 1px solid white;")
 
         return messages_extended_layout
 
@@ -118,24 +127,7 @@ class ChatWidget(QWidget):
         scroll_area.enterEvent = lambda _: self.__show_scrollbar(scroll_area)
         scroll_area.leaveEvent = lambda _: self.__hide_scrollbar(scroll_area)
 
-        scrollbar_style = """
-            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
-                background: transparent;                   
-            }
-            QScrollBar::vertical {
-                width: 3px;
-                background: #555555;
-            }
-            QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical{
-                background: #0c0c0c;
-            }
-            QScrollBar::handle:vertical {
-            min-height:0px;
-                background: transparent;
-            }   
-            """
-        
-        scroll_area.setStyleSheet(scrollbar_style)
+        scroll_area.setStyleSheet(self.__chat_widget_qss.scrollbar_hidden_qss)
         scroll_area.setFrameShape(QFrame.Shape(0))
 
         return (scroll_area, layout)
