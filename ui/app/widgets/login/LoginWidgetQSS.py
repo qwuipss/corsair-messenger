@@ -1,39 +1,36 @@
-from ...SharedQSS import LoginWidgetSharedQSS
 from helpers.QSSHelper import QSSHelper
 from PyQt6.QtCore import QSize
 
 class LoginWidgetQSS:
 
+    LOGO_LABEL_TEXT = "CORSAIR"
+
+    LOGIN_LABEL_TEXT = "Login"
+    
+    PASSWORD_LABEL_TEXT = "Password"
+    
+    ENTER_BUTTON_LABEL_TEXT = "Enter"
+
+    LOGO_LABEL_COLOR = "f2f2f2"
+
+    FORM_LABEL_COLOR = "000000"
+
+    FORM_EDIT_BACKGROUND_COLOR = "cccccc"
+
+    ENTER_BUTTON_COLOR = "555555"
+
     def __init__(self, window_size: QSize) -> None:
         
-        self.__logo_label_text = "CORSAIR"
         self.__logo_label_qss = LoginWidgetQSS.__get_logo_label_qss(window_size)
-
-        self.__login_label_text = "Login"
-        self.__password_label_text = "Password"
         
         self.__line_edit_qss = LoginWidgetQSS.__get_line_edit_qss(window_size)
         self.__line_edit_label_qss = LoginWidgetQSS.__get_line_edit_label_qss(window_size)
-
-        self.__enter_button_text = "Enter"
         self.__enter_button_qss = LoginWidgetQSS.__get_enter_button_qss(window_size)
 
-    @property
-    def logo_label_text(self) -> str:
-        return self.__logo_label_text
-    
     @property
     def logo_label_qss(self) -> str:
         return self.__logo_label_qss
 
-    @property
-    def login_label_text(self) -> str:
-        return self.__login_label_text
-
-    @property
-    def password_label_text(self) -> str:
-        return self.__password_label_text
-    
     @property
     def line_edit_label_qss(self) -> str:
         return self.__line_edit_label_qss
@@ -41,10 +38,6 @@ class LoginWidgetQSS:
     @property
     def line_edit_qss(self) -> str:
         return self.__line_edit_qss
-    
-    @property
-    def enter_button_text(self) -> str:
-        return self.__enter_button_text
     
     @property
     def enter_button_qss(self) -> str:
@@ -91,8 +84,8 @@ class LoginWidgetQSS:
         width = window_size.width()
 
         qss = QSSHelper.concat(
-            QSSHelper.color(LoginWidgetSharedQSS.LINE_EDIT_COLOR),
-            QSSHelper.background_color(LoginWidgetSharedQSS.LINE_EDIT_BACKGROUND_COLOR),
+            QSSHelper.color(LoginWidgetQSS.FORM_LABEL_COLOR),
+            QSSHelper.background_color(LoginWidgetQSS.FORM_EDIT_BACKGROUND_COLOR),
             QSSHelper.font_size(width // 62),
             QSSHelper.font_weight(500),
             QSSHelper.border_radius(5),
@@ -110,7 +103,7 @@ class LoginWidgetQSS:
 
         qss = QSSHelper.concat(
             QSSHelper.font_size(width // 50),
-            QSSHelper.color(LoginWidgetSharedQSS.ENTER_BUTTON_TEXT_COLOR),
+            QSSHelper.color(LoginWidgetQSS.ENTER_BUTTON_COLOR),
             QSSHelper.letter_spacing(width // 200),
             QSSHelper.font_weight(550),
             QSSHelper.border_none(),

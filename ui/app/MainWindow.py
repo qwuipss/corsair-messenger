@@ -1,6 +1,5 @@
 from .widgets.login.LoginWidget import LoginWidget
 from .widgets.chat.ChatWidget import ChatWidget
-from .SharedQSS import MainWindowSharedQSS
 from helpers.QSSHelper import QSSHelper
 from PyQt6 import QtGui
 from os.path import (
@@ -13,6 +12,10 @@ from PyQt6.QtWidgets import (
 #self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
 class MainWindow(QMainWindow):
+
+    BACKGROUND_COLOR = "0c0c0c"
+
+    COLOR = "f2f2f2"
 
     def __init__(self) -> None:
         
@@ -32,8 +35,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         self.setStyleSheet(QSSHelper.concat(
-            QSSHelper.background_color(MainWindowSharedQSS.BACKGROUND_COLOR),
-            QSSHelper.color(MainWindowSharedQSS.COLOR),
+            QSSHelper.background_color(MainWindow.BACKGROUND_COLOR),
+            QSSHelper.color(MainWindow.COLOR),
         ))
 
     @staticmethod

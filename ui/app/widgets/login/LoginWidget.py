@@ -1,7 +1,6 @@
-from ...SharedQSS import Regex
+from managers.RegexManager import RegexManager
 from .LoginWidgetQSS import LoginWidgetQSS
 from PyQt6 import QtGui
-from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem,
@@ -45,6 +44,21 @@ class LoginWidget(QWidget):
         self, 
         label_layout: QVBoxLayout, login_layout: QVBoxLayout, password_layout: QVBoxLayout, enter_layout: QVBoxLayout, 
         screen_height: int) -> QVBoxLayout:
+        
+        if not isinstance(label_layout, QVBoxLayout):
+            raise TypeError(type(label_layout))
+        
+        if not isinstance(login_layout, QVBoxLayout):
+            raise TypeError(type(login_layout))
+        
+        if not isinstance(password_layout, QVBoxLayout):
+            raise TypeError(type(password_layout))
+        
+        if not isinstance(enter_layout, QVBoxLayout):
+            raise TypeError(type(enter_layout))
+        
+        if not isinstance(screen_height, int):
+            raise TypeError(type(screen_height))
         
         vertical_spacer = -screen_height // 15
         
@@ -113,20 +127,21 @@ class LoginWidget(QWidget):
         enter_button = self.__get_enter_button()
 
         enter_layout.addWidget(enter_button, alignment=Qt.AlignmentFlag.AlignCenter)
-
+        
         return enter_layout
     
     def __get_logo_label(self) -> QLabel:
 
-        logo_label = QLabel(self.__login_widget_qss.logo_label_text)
+        logo_label = QLabel(LoginWidgetQSS.LOGO_LABEL_TEXT)
 
+        logo_label.setFont(self.__font)
         logo_label.setStyleSheet(self.__login_widget_qss.logo_label_qss)
 
         return logo_label
 
     def __get_login_label(self) -> QLabel:
 
-        login_label = QLabel(self.__login_widget_qss.login_label_text)
+        login_label = QLabel(LoginWidgetQSS.LOGIN_LABEL_TEXT)
 
         login_label.setFont(self.__font)
         login_label.setStyleSheet(self.__login_widget_qss.line_edit_label_qss)
@@ -140,7 +155,7 @@ class LoginWidget(QWidget):
 
         login_line_edit = QLineEdit()
         
-        line_edit_validator = QtGui.QRegularExpressionValidator(QtCore.QRegularExpression(Regex.NICKNAME))
+        line_edit_validator = RegexManager.get_regex_nickname_validator()
 
         login_line_edit.setMaxLength(25)
         login_line_edit.setValidator(line_edit_validator)
@@ -153,7 +168,7 @@ class LoginWidget(QWidget):
 
     def __get_password_label(self) -> QLabel:
         
-        password_label = QLabel(self.__login_widget_qss.password_label_text)        
+        password_label = QLabel(LoginWidgetQSS.PASSWORD_LABEL_TEXT)        
         password_label.setFont(self.__font)
         password_label.setStyleSheet(self.__login_widget_qss.line_edit_label_qss)
 
@@ -176,7 +191,7 @@ class LoginWidget(QWidget):
     
     def __get_enter_button(self) -> QPushButton:
 
-        enter_button = QPushButton(self.__login_widget_qss.enter_button_text)
+        enter_button = QPushButton(LoginWidgetQSS.ENTER_BUTTON_LABEL_TEXT)
 
         enter_button.setFont(self.__font)
         enter_button.setCursor(Qt.CursorShape.PointingHandCursor)
