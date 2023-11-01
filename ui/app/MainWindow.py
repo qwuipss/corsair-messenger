@@ -13,10 +13,6 @@ from PyQt6.QtWidgets import (
 
 class MainWindow(QMainWindow):
 
-    BACKGROUND_COLOR = "0c0c0c"
-
-    COLOR = "f2f2f2"
-
     def __init__(self) -> None:
         
         super().__init__()
@@ -25,19 +21,13 @@ class MainWindow(QMainWindow):
 
         self.__set_window_geometry()
         
-        self.__font_id = self.__add_app_font()
+        self.__font_id = MainWindow.__add_app_font()
 
-        central_widget = ChatWidget(self, self.__font_id)
-        #central_widget = LoginWidget(self, self.__font_id)
-
-        central_widget.setContentsMargins(0, 0, 0, 0)
+        #central_widget = ChatWidget(self, self.__font_id)
+        central_widget = LoginWidget(self, self.__font_id)
 
         self.setCentralWidget(central_widget)
 
-        self.setStyleSheet(QSSHelper.concat(
-            QSSHelper.background_color(MainWindow.BACKGROUND_COLOR),
-            QSSHelper.color(MainWindow.COLOR),
-        ))
 
     @staticmethod
     def __add_app_font() -> int:

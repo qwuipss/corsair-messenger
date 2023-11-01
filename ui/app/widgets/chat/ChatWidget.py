@@ -30,6 +30,7 @@ class ChatWidget(QWidget):
         layout = self.__get_main_layout(contacts_layout, messages_layout)
 
         self.setLayout(layout)
+        self.setContentsMargins(0, 0, 0, 0)
 
     def __get_main_layout(self, contacts_layout: QVBoxLayout, messages_layout: QVBoxLayout) -> QHBoxLayout:
 

@@ -1,5 +1,6 @@
 from managers.RegexManager import RegexManager
 from .LoginWidgetQSS import LoginWidgetQSS
+from helpers.QSSHelper import QSSHelper
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
@@ -31,14 +32,17 @@ class LoginWidget(QWidget):
         line_edit_width = int(parent_size.width() / 3.4)
         vertical_spacer = -screen_height // 7
 
-        label_layout = self.__get_logo_label_layout()
+        logo_label_layout = self.__get_logo_label_layout()
         login_layout = self.__get_login_layout(line_edit_width, vertical_spacer)
         password_layout = self.__get_password_layout(line_edit_width, vertical_spacer)
         enter_layout = self.__get_enter_layout()
 
-        layout = self.__get_main_layout(label_layout, login_layout, password_layout, enter_layout, screen_height)
+        layout = self.__get_main_layout(logo_label_layout, login_layout, password_layout, enter_layout, screen_height)
 
         self.setLayout(layout)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        parent.setStyleSheet(QSSHelper.concat(QSSHelper.background_color(LoginWidgetQSS.MAIN_BACKGROUND_COLOR)))
 
     def __get_main_layout(
         self, 

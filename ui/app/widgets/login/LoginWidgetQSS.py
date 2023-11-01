@@ -11,9 +11,13 @@ class LoginWidgetQSS:
     
     ENTER_BUTTON_LABEL_TEXT = "Enter"
 
+    MAIN_BACKGROUND_COLOR = "0c0c0c"
+
     LOGO_LABEL_COLOR = "f2f2f2"
 
-    FORM_LABEL_COLOR = "000000"
+    FORM_LABEL_COLOR = "f2f2f2"
+
+    FORM_EDIT_COLOR = "000000"
 
     FORM_EDIT_BACKGROUND_COLOR = "cccccc"
 
@@ -55,6 +59,7 @@ class LoginWidgetQSS:
             QSSHelper.letter_spacing(width // 35),
             QSSHelper.font_size(width // 18),
             QSSHelper.font_weight(900),
+            QSSHelper.color(LoginWidgetQSS.LOGO_LABEL_COLOR),
         )
 
         return qss
@@ -71,6 +76,7 @@ class LoginWidgetQSS:
             QSSHelper.letter_spacing(width // 260),
             QSSHelper.font_size(width // 50),
             QSSHelper.font_weight(550),
+            QSSHelper.color(LoginWidgetQSS.FORM_LABEL_COLOR),
         )
 
         return qss
@@ -84,7 +90,7 @@ class LoginWidgetQSS:
         width = window_size.width()
 
         qss = QSSHelper.concat(
-            QSSHelper.color(LoginWidgetQSS.FORM_LABEL_COLOR),
+            QSSHelper.color(LoginWidgetQSS.FORM_EDIT_COLOR),
             QSSHelper.background_color(LoginWidgetQSS.FORM_EDIT_BACKGROUND_COLOR),
             QSSHelper.font_size(width // 62),
             QSSHelper.font_weight(500),
