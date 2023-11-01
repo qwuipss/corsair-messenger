@@ -10,17 +10,12 @@ from PyQt6.QtWidgets import (
 
 class ChatWidget(QWidget):
 
-    def __init__(self, parent: QWidget, font_id: int) -> None:
+    def __init__(self, parent: QWidget) -> None:
 
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
-
-        if not isinstance(font_id, int):
-            raise TypeError(type(font_id))
         
         super().__init__()
-
-        self.__font = QtGui.QFont(QtGui.QFontDatabase.applicationFontFamilies(font_id)[0])
 
         self.__chat_widget_qss = ChatWidgetQSS(parent.size())
 
@@ -31,6 +26,8 @@ class ChatWidget(QWidget):
 
         self.setLayout(layout)
         self.setContentsMargins(0, 0, 0, 0)
+
+        self.setStyleSheet(self.__chat_widget_qss.qss)
 
     def __get_main_layout(self, contacts_layout: QVBoxLayout, messages_layout: QVBoxLayout) -> QHBoxLayout:
 
@@ -59,7 +56,7 @@ class ChatWidget(QWidget):
         contacts_search = self.__get_contacts_search(parent)
 
         for i in range(500):
-            contacts_layout.addWidget(QLabel(f"contact{i}"))
+            contacts_layout.addWidget(QLabel(f"gg contact{i}"))
 
         contacts_extended_layout = QVBoxLayout()
         
@@ -79,7 +76,7 @@ class ChatWidget(QWidget):
 
         for i in range(550):
             al = QLabel()
-            al.setText("mes")
+            al.setText("mes gg g")
             messages_layout.addWidget(al)
             al.setAlignment(Qt.AlignmentFlag.AlignRight)
 
@@ -88,16 +85,12 @@ class ChatWidget(QWidget):
         message_edit = self.__get_message_edit(parent)
 
         current_contact_name = QLabel("Anonymous")
-        current_contact_name.setStyleSheet("border: 1px solid red;")
+
+        current_contact_name.setObjectName("currentContactName")
 
         messages_extended_layout.addWidget(current_contact_name)
         messages_extended_layout.addWidget(messages_scroll_area)
         messages_extended_layout.addWidget(message_edit)
-
-        height = parent.size().height()
-
-        current_contact_name.setFont(self.__font)
-        current_contact_name.setFixedHeight(height // 13)
 
         return messages_extended_layout
 
@@ -108,11 +101,11 @@ class ChatWidget(QWidget):
 
         layout = QVBoxLayout()
 
-        widget = QWidget()
+        widget = QWidget(self)
 
         widget.setLayout(layout)
 
-        scroll_area = QScrollArea()
+        scroll_area = QScrollArea(self)
         scroll_area.setWidgetResizable(True)
 
         scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -133,16 +126,15 @@ class ChatWidget(QWidget):
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
         
-        message_edit = QTextEdit()
+        message_edit = QTextEdit(self)
         
         message_edit_max_height = parent.size().height() // 3
 
         message_edit.textChanged.connect(lambda: self.__resize_message_edit(message_edit, message_edit_max_height))
-        message_edit.setFont(self.__font)
         message_edit.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         message_edit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         message_edit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        message_edit.setStyleSheet(self.__chat_widget_qss.message_edit_qss)
+        message_edit.setObjectName("messageEdit")
 
         self.__resize_message_edit(message_edit, message_edit_max_height)
 
@@ -167,19 +159,15 @@ class ChatWidget(QWidget):
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
 
-        contacts_search = QLineEdit()
+        contacts_search = QLineEdit(self)
 
         line_edit_validator = RegexManager.get_regex_nickname_validator()
 
-        palette = contacts_search.palette()
+        contacts_search.palette().setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor("аа00аа"))
 
-        palette.setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor(ChatWidgetQSS.SEARCH_PLACEHOLDER_COLOR))
-
-        contacts_search.setFont(self.__font)
         contacts_search.setValidator(line_edit_validator)
-        contacts_search.setFixedHeight(parent.size().height() // 13)
-        contacts_search.setPlaceholderText(ChatWidgetQSS.CONTACTS_SEARCH_PLACEHOLDER_TEXT)
-        contacts_search.setStyleSheet(self.__chat_widget_qss.contacts_search_qss)
+        contacts_search.setPlaceholderText("Search")
+        contacts_search.setObjectName("contactsSearch")
 
         return contacts_search
     

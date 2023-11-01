@@ -1,4 +1,6 @@
 from .widgets.login.LoginWidget import LoginWidget
+from .MainWindowQSS import MainWindowQSS
+from .widgets.login.LoginWidgetQSS import LoginWidgetQSS
 from .widgets.chat.ChatWidget import ChatWidget
 from helpers.QSSHelper import QSSHelper
 from PyQt6 import QtGui
@@ -23,11 +25,12 @@ class MainWindow(QMainWindow):
         
         self.__font_id = MainWindow.__add_app_font()
 
-        #central_widget = ChatWidget(self, self.__font_id)
-        central_widget = LoginWidget(self, self.__font_id)
+        central_widget = ChatWidget(self)
+        #central_widget = LoginWidget(self)
 
         self.setCentralWidget(central_widget)
-
+        
+        self.setStyleSheet(MainWindowQSS().qss)
 
     @staticmethod
     def __add_app_font() -> int:

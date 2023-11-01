@@ -20,13 +20,37 @@ class QSSHelper:
         return "border: none;"
 
     @staticmethod
+    def width(width: int) -> str:
+
+        if not isinstance(width, int):
+            raise TypeError(type(width))
+        
+        return f"width: {width}px;"
+    
+    @staticmethod
+    def height(height: int) -> str:
+
+        if not isinstance(height, int):
+            raise TypeError(type(height))
+        
+        return f"height: {height}px;"
+    
+    @staticmethod
     def font_size(font_size: int) -> str:
 
         if not isinstance(font_size, int):
             raise TypeError(type(font_size))
         
         return f"font-size: {font_size}px;"
+    
+    @staticmethod
+    def font_family(font_family: str) -> str:
 
+        if not isinstance(font_family, str):
+            raise TypeError(type(font_family))
+
+        return f"font-family: {font_family};"
+    
     @staticmethod
     def border_radius(border_radius: int) -> str:
 
