@@ -8,52 +8,62 @@ class ChatWidgetQSS:
         width = window_size.width()
         height = window_size.height()
 
-        scrollbar_width = str(width // 300)
-
         self.__scrollbar_common_qss = """
             QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical{
-                background: hidden;
+                """ + QSSHelper.background_color("0c0c0c") + """
             }
             QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical{
-                background: #""" + "0c0c0c" + """;
+                """ + QSSHelper.background_color("0c0c0c") + """
             }
             QScrollBar::handle:vertical {
-                background: transparent;
+                """ + QSSHelper.background("transparent") + """
             }   
-            """
+        """
 
         self.__scrollbar_showed_qss = self.__scrollbar_common_qss + """
             QScrollBar::vertical {
-                width: """ + scrollbar_width + """px;
-                background: #""" + "555555" + """;
-            }
-            """
+                """ + QSSHelper.concat(
+                        QSSHelper.width(width // 300),
+                        QSSHelper.background_color("555555"),
+                    ) + \
+            """}
+        """
         
         self.__scrollbar_hidden_qss = self.__scrollbar_common_qss + """
-            QScrollBar::vertical {
-                width: """ + scrollbar_width + """px;
-                background: #""" + "0c0c0c" + """;
-            }
-            """
+            QScrollBar::vertical {                
+                """ + QSSHelper.concat(
+                        QSSHelper.width(width // 300),
+                        QSSHelper.background_color("0c0c0c"),
+                    ) + \
+            """}
+        """
 
         self.__qss = """
             #messageEdit{
                 """ + QSSHelper.concat(
                         QSSHelper.font_size(width // 70),
-                        QSSHelper.background_color("151515"),
+                        QSSHelper.background_color("0e0e0e"),
                         QSSHelper.border_none(),
                     ) + \
             """}
             #contactsSearch{
                 """ + QSSHelper.concat(
                         QSSHelper.font_size(width // 62),
-                        QSSHelper.height(height // 13),
+                        QSSHelper.min_height(height // 11),
+                        QSSHelper.border_none(),
+                        QSSHelper.background_color("0e0e0e"),
+                        QSSHelper.border_side("right", f"{width // 250}px solid #0c0c0c"),
+                        QSSHelper.padding(0, 0, 0, width // 150),
+                        QSSHelper.font_weight(550),
                     ) + \
             """}
             #currentContactName{
                 """ + QSSHelper.concat(
-                        QSSHelper.height(height // 13),
-                        QSSHelper.color("ffff00"),
+                        QSSHelper.font_size(width // 62),
+                        QSSHelper.min_height(height // 11),
+                        QSSHelper.background_color("0e0e0e"),
+                        QSSHelper.font_weight(550),
+                        QSSHelper.padding(0, 0, 0, width // 150)
                     ) + \
             """}
         """
@@ -69,3 +79,4 @@ class ChatWidgetQSS:
     @property
     def scrollbar_showed_qss(self) -> str:
         return self.__scrollbar_showed_qss
+    

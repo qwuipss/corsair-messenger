@@ -28,12 +28,12 @@ class QSSHelper:
         return f"width: {width}px;"
     
     @staticmethod
-    def height(height: int) -> str:
+    def min_height(height: int) -> str:
 
         if not isinstance(height, int):
             raise TypeError(type(height))
         
-        return f"height: {height}px;"
+        return f"min-height: {height}px;"
     
     @staticmethod
     def font_size(font_size: int) -> str:
@@ -66,6 +66,42 @@ class QSSHelper:
             raise TypeError(type(hex_color))
 
         return f"background-color: #{hex_color};"
+
+    @staticmethod
+    def border_side(side: str, style: str) -> str:
+
+        if not isinstance(side, str):
+            raise TypeError(type(side))
+
+        if not isinstance(style, str):
+            raise TypeError(type(style))
+
+        return f"border-{side}: {style};"
+
+    @staticmethod
+    def background(style: str) -> str:
+
+        if not isinstance(style, str):
+            raise TypeError(type(style))
+
+        return f"background: {style};"
+    
+    @staticmethod
+    def padding(top: int, right: int, bottom: int, left: int) -> str:
+
+        if not isinstance(top, int):
+            raise TypeError(type(top))
+        
+        if not isinstance(right, int):
+            raise TypeError(type(right))
+        
+        if not isinstance(bottom, int):
+            raise TypeError(type(bottom))
+        
+        if not isinstance(left, int):
+            raise TypeError(type(left))
+
+        return f"padding: {top}px {right}px {bottom}px {left}px;"
 
     @staticmethod
     def color(hex_color: str) -> str:

@@ -19,8 +19,8 @@ class ChatWidget(QWidget):
 
         self.__chat_widget_qss = ChatWidgetQSS(parent.size())
 
-        messages_layout = self.__get_messages_layout(parent)
         contacts_layout = self.__get_contacts_layout(parent)
+        messages_layout = self.__get_messages_layout(parent)
 
         layout = self.__get_main_layout(contacts_layout, messages_layout)
 
@@ -130,7 +130,8 @@ class ChatWidget(QWidget):
         
         message_edit_max_height = parent.size().height() // 3
 
-        message_edit.textChanged.connect(lambda: self.__resize_message_edit(message_edit, message_edit_max_height))
+        # message_edit.textChanged.connect(lambda: self.__resize_message_edit(message_edit, message_edit_max_height))
+        message_edit.resizeEvent = lambda _: self.__resize_message_edit(message_edit, message_edit_max_height)
         message_edit.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         message_edit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         message_edit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -163,7 +164,8 @@ class ChatWidget(QWidget):
 
         line_edit_validator = RegexManager.get_regex_nickname_validator()
 
-        contacts_search.palette().setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor("аа00аа"))
+        #!!!!!!!!!
+        contacts_search.palette().setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor("ff0000"))
 
         contacts_search.setValidator(line_edit_validator)
         contacts_search.setPlaceholderText("Search")
