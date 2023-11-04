@@ -41,9 +41,11 @@ class ChatWidgetQSS:
         self.__qss = """
             #messageEdit{
                 """ + QSSHelper.concat(
-                        QSSHelper.font_size(width // 70),
+                        QSSHelper.font_size(width // 65),
                         QSSHelper.background_color("0e0e0e"),
                         QSSHelper.border_none(),
+                        QSSHelper.font_weight(100),
+                        QSSHelper.color("f2f2f2"),
                     ) + \
             """}
             #contactsSearch{

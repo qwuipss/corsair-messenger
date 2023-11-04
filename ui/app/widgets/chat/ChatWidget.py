@@ -1,11 +1,12 @@
 from managers.RegexManager import RegexManager
+from ...gui.MessageEdit import MessageEdit
 from .ChatWidgetQSS import ChatWidgetQSS
 from PyQt6.QtCore import Qt
 from PyQt6 import (
     QtGui, QtCore, 
 )
 from PyQt6.QtWidgets import (
-    QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QScrollArea, QFrame, QPlainTextEdit, QTextEdit,
+    QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QScrollArea, QFrame, QPlainTextEdit, QTextEdit, 
 )
 
 class ChatWidget(QWidget):
@@ -126,18 +127,14 @@ class ChatWidget(QWidget):
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
         
-        message_edit = QTextEdit(self)
-        
         message_edit_max_height = parent.size().height() // 3
+        
+        message_edit = MessageEdit(self, message_edit_max_height)
 
-        # message_edit.textChanged.connect(lambda: self.__resize_message_edit(message_edit, message_edit_max_height))
-        message_edit.resizeEvent = lambda _: self.__resize_message_edit(message_edit, message_edit_max_height)
         message_edit.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         message_edit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         message_edit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         message_edit.setObjectName("messageEdit")
-
-        self.__resize_message_edit(message_edit, message_edit_max_height)
 
         return message_edit
 
@@ -164,24 +161,13 @@ class ChatWidget(QWidget):
 
         line_edit_validator = RegexManager.get_regex_nickname_validator()
 
-        #!!!!!!!!!
-        contacts_search.palette().setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor("ff0000"))
+        placeholder_palette = contacts_search.palette()
+        placeholder_palette.setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor("#555555"))  
 
+        contacts_search.setPalette(placeholder_palette)
         contacts_search.setValidator(line_edit_validator)
         contacts_search.setPlaceholderText("Search")
         contacts_search.setObjectName("contactsSearch")
 
         return contacts_search
     
-    def __resize_message_edit(self, message_edit: QTextEdit, max_height: int) -> None:
-
-        if not isinstance(message_edit, QTextEdit):
-            raise TypeError(type(message_edit))
-        
-        if not isinstance(max_height, int):
-            raise TypeError(type(max_height))
-
-        document_height = int(message_edit.document().size().height())
-
-        if message_edit.size().height() != document_height:
-            message_edit.setFixedHeight(min(document_height, max_height))
