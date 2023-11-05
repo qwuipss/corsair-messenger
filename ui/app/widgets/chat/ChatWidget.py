@@ -62,7 +62,6 @@ class ChatWidget(QWidget):
             
             contact_label.setAlignment(Qt.AlignmentFlag.AlignTop)
             contact_label.setCursor(Qt.CursorShape.PointingHandCursor)
-
             contact_label.setObjectName("contact")
             
             contacts_layout.addWidget(contact_label)
@@ -72,7 +71,6 @@ class ChatWidget(QWidget):
         contacts_extended_layout.addWidget(contacts_search)
         contacts_extended_layout.addWidget(contacts_scroll_area)
 
-        #!!!!!!!!!!!
         contacts_layout.setSpacing(0)
         contacts_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -85,11 +83,25 @@ class ChatWidget(QWidget):
         
         (messages_scroll_area, messages_layout) = self.__get_scroll_area_and_layout(parent)
 
-        for i in range(550):
-            al = QLabel()
-            al.setText("mes gg g")
-            messages_layout.addWidget(al)
-            al.setAlignment(Qt.AlignmentFlag.AlignRight)
+        for i in range(150):
+
+            message = QLabel(f"w{i}" * 25)
+
+            message_layout = QVBoxLayout()
+
+            messages_layout.addWidget(message)
+
+            if i % 2:
+                message.setAlignment(Qt.AlignmentFlag.AlignRight)
+                # s = message.styleSheet()
+                # message.setStyleSheet("padding: 0 0 0 0;")
+            else:
+                message.setAlignment(Qt.AlignmentFlag.AlignLeft)
+
+            # message.setFixedWidth(300)
+            message.setObjectName("message")
+            
+            messages_layout.addLayout(message_layout)
 
         messages_extended_layout = QVBoxLayout()
 
@@ -127,7 +139,7 @@ class ChatWidget(QWidget):
         scroll_area.enterEvent = lambda _: self.__show_scrollbar(scroll_area)
         scroll_area.leaveEvent = lambda _: self.__hide_scrollbar(scroll_area)
 
-        scroll_area.setStyleSheet(self.__chat_widget_qss.scrollbar_hidden_qss)
+        scroll_area.setStyleSheet(self.__chat_widget_qss.contacts_scrollbar_hidden_qss)
         scroll_area.setFrameShape(QFrame.Shape(0))
 
         return (scroll_area, layout)
@@ -153,14 +165,14 @@ class ChatWidget(QWidget):
         if not isinstance(scroll_area, QScrollArea):
             raise TypeError(type(scroll_area))
         
-        scroll_area.setStyleSheet(self.__chat_widget_qss.scrollbar_showed_qss)
+        scroll_area.setStyleSheet(self.__chat_widget_qss.contacts_scrollbar_showed_qss)
 
     def __hide_scrollbar(self, scroll_area: QScrollArea) -> None:
 
         if not isinstance(scroll_area, QScrollArea):
             raise TypeError(type(scroll_area))
 
-        scroll_area.setStyleSheet(self.__chat_widget_qss.scrollbar_hidden_qss)
+        scroll_area.setStyleSheet(self.__chat_widget_qss.contacts_scrollbar_hidden_qss)
 
     def __get_contacts_search(self, parent: QWidget) -> QLineEdit:
                 
