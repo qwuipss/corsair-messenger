@@ -22,7 +22,6 @@ class MessageEdit(QTextEdit):
 
         if event.type() == QtCore.QEvent.Type.KeyPress and object is self and event.key() == QtCore.Qt.Key.Key_Return and self.hasFocus():
             print('Enter pressed')
-            return True
             
         return False
     

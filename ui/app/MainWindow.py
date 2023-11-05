@@ -33,13 +33,12 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(MainWindowQSS().qss)
 
     @staticmethod
-    def __add_app_font() -> int:
+    def __add_app_font() -> None:
 
-        font_path = rf"{dirname(realpath(__file__))}\appFont.ttf"
-        font_id = QtGui.QFontDatabase.addApplicationFont(font_path)
-
-        return font_id
-
+        font_path = f"{dirname(realpath(__file__))}\\appFont.ttf"
+        
+        QtGui.QFontDatabase.addApplicationFont(font_path)
+        
     def __set_window_geometry(self) -> None:
 
         self.setFixedWidth(int(self.__screen_size.width() / 1.5))

@@ -57,14 +57,24 @@ class ChatWidget(QWidget):
         contacts_search = self.__get_contacts_search(parent)
 
         for i in range(500):
-            contacts_layout.addWidget(QLabel(f"gg contact{i}"))
+
+            contact_label = QLabel(f"w" * 25)
+            
+            contact_label.setAlignment(Qt.AlignmentFlag.AlignTop)
+            contact_label.setCursor(Qt.CursorShape.PointingHandCursor)
+
+            contact_label.setObjectName("contact")
+            
+            contacts_layout.addWidget(contact_label)
 
         contacts_extended_layout = QVBoxLayout()
         
         contacts_extended_layout.addWidget(contacts_search)
         contacts_extended_layout.addWidget(contacts_scroll_area)
 
-        contacts_extended_layout.setContentsMargins(0,0,0,0)
+        #!!!!!!!!!!!
+        contacts_layout.setSpacing(0)
+        contacts_layout.setContentsMargins(0, 0, 0, 0)
 
         return contacts_extended_layout
 

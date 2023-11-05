@@ -28,6 +28,14 @@ class QSSHelper:
         return f"width: {width}px;"
     
     @staticmethod
+    def selection_background_color(color: str) -> str:
+
+        if not isinstance(color, str):
+            raise TypeError(type(color))
+        
+        return f"selection-background-color: #{color};"
+
+    @staticmethod
     def min_height(height: int) -> str:
 
         if not isinstance(height, int):

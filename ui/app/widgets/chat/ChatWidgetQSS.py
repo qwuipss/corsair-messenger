@@ -46,6 +46,19 @@ class ChatWidgetQSS:
                         QSSHelper.border_none(),
                         QSSHelper.font_weight(100),
                         QSSHelper.color("f2f2f2"),
+                        QSSHelper.selection_background_color("555555"),
+                    ) + \
+            """}
+            #contact{
+                """ + QSSHelper.concat(
+                        QSSHelper.font_size(width // 65),
+                        QSSHelper.min_height(width // 23),
+                        QSSHelper.padding(0, 0, 0, 5),
+                    ) + \
+            """}
+            #contact::hover{
+                """ + QSSHelper.concat(
+                        QSSHelper.background_color("111111"),
                     ) + \
             """}
             #contactsSearch{
