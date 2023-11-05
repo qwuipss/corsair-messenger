@@ -1,37 +1,35 @@
 from managers.RegexManager import RegexManager
 from .LoginWidgetQSS import LoginWidgetQSS
-from helpers.QSSHelper import QSSHelper
-from PyQt6 import QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
-    QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem,
+    QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QMainWindow
 )
 
 class LoginWidget(QWidget):
 
-    def __init__(self, parent: QWidget) -> None:
+    def __init__(self, main_window: QMainWindow) -> None:
 
-        if not isinstance(parent, QWidget):
-            raise TypeError(type(parent))
+        if not isinstance(main_window, QMainWindow):
+            raise TypeError(type(main_window))
 
         super().__init__()
 
         layout = QVBoxLayout()
 
-        parent_size = parent.size()
+        window_size = main_window.size()
 
-        self.__login_widget_qss = LoginWidgetQSS(parent_size)
+        self.__login_widget_qss = LoginWidgetQSS(window_size)
 
-        screen_height = parent_size.height()
+        window_height = window_size.height()
 
-        vertical_spacer = -screen_height // 7
+        vertical_spacer = -window_height // 7
 
         logo_label_layout = self.__get_logo_label_layout()
         login_layout = self.__get_login_layout(vertical_spacer)
         password_layout = self.__get_password_layout(vertical_spacer)
         enter_layout = self.__get_enter_layout()
 
-        layout = self.__get_main_layout(logo_label_layout, login_layout, password_layout, enter_layout, screen_height)
+        layout = self.__get_main_layout(logo_label_layout, login_layout, password_layout, enter_layout, window_height)
 
         self.setLayout(layout)
         self.setContentsMargins(0, 0, 0, 0)
@@ -41,7 +39,7 @@ class LoginWidget(QWidget):
     def __get_main_layout(
         self, 
         label_layout: QVBoxLayout, login_layout: QVBoxLayout, password_layout: QVBoxLayout, enter_layout: QVBoxLayout, 
-        screen_height: int) -> QVBoxLayout:
+        window_height: int) -> QVBoxLayout:
         
         if not isinstance(label_layout, QVBoxLayout):
             raise TypeError(type(label_layout))
@@ -55,10 +53,10 @@ class LoginWidget(QWidget):
         if not isinstance(enter_layout, QVBoxLayout):
             raise TypeError(type(enter_layout))
         
-        if not isinstance(screen_height, int):
-            raise TypeError(type(screen_height))
+        if not isinstance(window_height, int):
+            raise TypeError(type(window_height))
         
-        vertical_spacer = -screen_height // 15
+        vertical_spacer = -window_height // 15
         
         layout = QVBoxLayout()
 

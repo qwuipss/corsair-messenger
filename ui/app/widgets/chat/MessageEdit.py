@@ -18,14 +18,14 @@ class MessageEdit(QTextEdit):
         self.textChanged.connect(self.__adjust_height)
         self.installEventFilter(self)
 
-    def eventFilter(self, object: QtCore.QObject, event: QtCore.QEvent) -> bool:
+    def eventFilter(self, object: QtCore.QObject | None, event: QtCore.QEvent | None) -> bool:
 
         if event.type() == QtCore.QEvent.Type.KeyPress and object is self and event.key() == QtCore.Qt.Key.Key_Return and self.hasFocus():
             print('Enter pressed')
             
         return False
     
-    def resizeEvent(self, event: QtCore.QEvent) -> None:
+    def resizeEvent(self, event: QtCore.QEvent | None) -> None:
 
         super().resizeEvent(event)
 

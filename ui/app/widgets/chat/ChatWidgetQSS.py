@@ -8,67 +8,25 @@ class ChatWidgetQSS:
         width = window_size.width()
         height = window_size.height()
 
-        self.__contacts_scrollbar_common_qss = """
-            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical{
-                """ + QSSHelper.background_color("101010") + """
-            }
-            QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical{
-                """ + QSSHelper.background_color("101010") + """
-            }
-            QScrollBar::handle:vertical {
-                """ + QSSHelper.background("transparent") + """
-            }   
-        """
-
-        self.__contacts_scrollbar_showed_qss = self.__contacts_scrollbar_common_qss + """
-            QScrollBar::vertical {
-                """ + QSSHelper.concat(
-                        QSSHelper.width(width // 300),
-                        QSSHelper.background_color("555555"),
-                    ) + \
-            """}
-        """
-        
-        self.__contacts_scrollbar_hidden_qss = self.__contacts_scrollbar_common_qss + """
-            QScrollBar::vertical {                
-                """ + QSSHelper.concat(
-                        QSSHelper.width(width // 300),
-                        QSSHelper.background_color("101010"),
-                    ) + \
-            """}
-        """
-
-        self.__messages_scrollbar_common_qss = """
-            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical{
-                """ + QSSHelper.background_color("0c0c0c") + """
-            }
-            QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical{
-                """ + QSSHelper.background_color("0c0c0c") + """
-            }
-            QScrollBar::handle:vertical {
-                """ + QSSHelper.background("transparent") + """
-            }   
-        """
-
-        self.__messages_scrollbar_showed_qss = self.__contacts_scrollbar_common_qss + """
-            QScrollBar::vertical {
-                """ + QSSHelper.concat(
-                        QSSHelper.width(width // 300),
-                        QSSHelper.background_color("555555"),
-                    ) + \
-            """}
-        """
-        
-        self.__messages_scrollbar_hidden_qss = self.__contacts_scrollbar_common_qss + """
-            QScrollBar::vertical {                
-                """ + QSSHelper.concat(
-                        QSSHelper.width(width // 300),
-                        QSSHelper.background_color("0c0c0c"),
-                    ) + \
-            """}
-        """
-
         self.__qss = """
+            QScrollBar::vertical{
+                """ + QSSHelper.concat(
+                        QSSHelper.width(width // 50),
+                        # QSSHelper.width(width // 300),
+                        QSSHelper.background_color("555555"),
+                    ) + \
+            """}            
+            #contactsScrollbarShowed::sub-page::vertical, #contactsScrollbarShowed::add-page::vertical{
+                """ + QSSHelper.background_color("101010") + """
+            }
+            #messagesScrollbar::sub-page::vertical, #messagesScrollbar::add-page::vertical{
+                """ + QSSHelper.background_color("0c0c0c") + """
+            }
+            QScrollBar::handle::vertical,
+            QScrollBar::up-arrow::vertical, QScrollBar::down-arrow::vertical,
+            QScrollBar::add-line::vertical, QScrollBar::sub-line::vertical{
+                """ + QSSHelper.background("transparent") +  """
+            }
             #messageEdit{
                 """ + QSSHelper.concat(
                         QSSHelper.font_size(width // 65),
@@ -127,20 +85,4 @@ class ChatWidgetQSS:
     @property
     def qss(self) -> str:
         return self.__qss
-    
-    @property
-    def contacts_scrollbar_hidden_qss(self) -> str:
-        return self.__contacts_scrollbar_hidden_qss
-    
-    @property
-    def contacts_scrollbar_showed_qss(self) -> str:
-        return self.__contacts_scrollbar_showed_qss
-    
-    @property
-    def messages_scrollbar_hidden_qss(self) -> str:
-        return self.__messages_scrollbar_hidden_qss
-    
-    @property
-    def messages_scrollbar_showed_qss(self) -> str:
-        return self.__messages_scrollbar_showed_qss
     
