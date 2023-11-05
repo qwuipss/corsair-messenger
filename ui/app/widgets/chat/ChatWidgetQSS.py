@@ -9,19 +9,22 @@ class ChatWidgetQSS:
         height = window_size.height()
 
         self.__qss = """
+            #contactsScrollbarShowed::vertical{
+                """ + QSSHelper.background_color("555555") + """
+            }
+            #contactsScrollbarHidden::vertical, #contactsScrollbarHidden::vertical{
+                """ + QSSHelper.background_color("101010") + """
+            }
+            #messagesScrollbar::sub-page::vertical, #messagesScrollbar::add-page::vertical{
+                """ + QSSHelper.background_color("0c0c0c") + """
+            }
             QScrollBar::vertical{
                 """ + QSSHelper.concat(
                         QSSHelper.width(width // 50),
                         # QSSHelper.width(width // 300),
                         QSSHelper.background_color("555555"),
                     ) + \
-            """}            
-            #contactsScrollbarShowed::sub-page::vertical, #contactsScrollbarShowed::add-page::vertical{
-                """ + QSSHelper.background_color("101010") + """
-            }
-            #messagesScrollbar::sub-page::vertical, #messagesScrollbar::add-page::vertical{
-                """ + QSSHelper.background_color("0c0c0c") + """
-            }
+            """}  
             QScrollBar::handle::vertical,
             QScrollBar::up-arrow::vertical, QScrollBar::down-arrow::vertical,
             QScrollBar::add-line::vertical, QScrollBar::sub-line::vertical{

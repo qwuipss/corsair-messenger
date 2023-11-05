@@ -1,9 +1,10 @@
+from helpers.QSSHelper import QSSHelper
 from managers.RegexManager import RegexManager
 from .Scrollarea import Scrollarea
 from PyQt6 import QtGui
-from PyQt6.QtWidgets import QVBoxLayout, QLineEdit, QWidget, QMainWindow
+from PyQt6.QtWidgets import QLineEdit, QWidget
 
-class ContactsLayout(QVBoxLayout):
+class ContactsWidget(QWidget):
 
     def __init__(self, parent: QWidget) -> None:
         
@@ -16,12 +17,6 @@ class ContactsLayout(QVBoxLayout):
         self.__contacts_scrollarea = Scrollarea(parent, self.__contacts_scrollarea_enter_event, self.__contacts_scrollarea_leave_event)
         
         self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarHidden")
-
-        # self.addWidget(self.__contacts_search)
-        # self.addWidget(self.__contacts_scrollarea)
-
-        self.setSpacing(0)
-        self.setContentsMargins(0, 0, 0, 0)
 
     @property
     def contacts_search(self) -> QLineEdit:
@@ -59,8 +54,10 @@ class ContactsLayout(QVBoxLayout):
     
     def __contacts_scrollarea_enter_event(self) -> None:
 
-        self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarShowed")
+        # self.__contacts_scrollarea.verticalScrollBar().
+        pass
 
     def __contacts_scrollarea_leave_event(self) -> None:
 
-        self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarHidden")
+        # self.__contacts_scrollarea.verticalScrollBar().
+        pass

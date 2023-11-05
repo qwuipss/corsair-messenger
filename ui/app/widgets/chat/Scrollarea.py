@@ -23,7 +23,7 @@ class Scrollarea(QScrollArea):
         self.__layout = self.__get_layout(parent) 
         
     @property
-    def layout(self) -> QScrollArea:
+    def layout(self) -> QVBoxLayout:
         return self.__layout
     
     def add_widget(self, widget: QWidget) -> None:
@@ -49,7 +49,6 @@ class Scrollarea(QScrollArea):
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setFrameShape(QFrame.Shape(0))
         self.setWidget(widget)
-        self.verticalScrollBar().hide()
 
         return layout
     
