@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from PyQt6 import QtGui, QtCore
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame, QMainWindow
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame, QLayout
 
 class Scrollarea(QScrollArea):
 
@@ -33,12 +33,19 @@ class Scrollarea(QScrollArea):
 
         self.__layout.addWidget(widget)
 
+    def add_layout(self, layout: QLayout) -> None:
+
+        if not isinstance(layout, QLayout):
+            raise TypeError(type(layout))        
+
+        self.__layout.addLayout(layout)
+
     def __get_layout(self, parent: QWidget) -> QVBoxLayout:
 
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
 
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
 
         widget = QWidget(parent)
 

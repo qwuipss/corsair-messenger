@@ -12,15 +12,13 @@ class LoginWidget(QWidget):
         if not isinstance(main_window, QMainWindow):
             raise TypeError(type(main_window))
 
-        super().__init__()
+        super().__init__(main_window)
 
         layout = QVBoxLayout()
 
-        window_size = main_window.size()
+        self.__login_widget_qss = LoginWidgetQSS(main_window)
 
-        self.__login_widget_qss = LoginWidgetQSS(window_size)
-
-        window_height = window_size.height()
+        window_height = main_window.size().height()
 
         vertical_spacer = -window_height // 7
 

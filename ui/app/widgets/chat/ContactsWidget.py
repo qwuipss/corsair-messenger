@@ -1,4 +1,3 @@
-from helpers.QSSHelper import QSSHelper
 from managers.RegexManager import RegexManager
 from .Scrollarea import Scrollarea
 from PyQt6 import QtGui
@@ -13,8 +12,8 @@ class ContactsWidget(QWidget):
         
         super().__init__(parent)
 
-        self.__contacts_search = self.__get_contacts_search(parent)
-        self.__contacts_scrollarea = Scrollarea(parent, self.__contacts_scrollarea_enter_event, self.__contacts_scrollarea_leave_event)
+        self.__contacts_search = self.__get_contacts_search()
+        self.__contacts_scrollarea = Scrollarea(self, self.__contacts_scrollarea_enter_event, self.__contacts_scrollarea_leave_event)
         
         self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarHidden")
 
@@ -33,12 +32,9 @@ class ContactsWidget(QWidget):
 
         self.__contacts_scrollarea.add_widget(contact)
 
-    def __get_contacts_search(self, parent: QWidget) -> QLineEdit:
+    def __get_contacts_search(self) -> QLineEdit:
                 
-        if not isinstance(parent, QWidget):
-            raise TypeError(type(parent))
-
-        contacts_search = QLineEdit(parent)
+        contacts_search = QLineEdit(self)
 
         line_edit_validator = RegexManager.get_regex_nickname_validator()
 
@@ -54,10 +50,10 @@ class ContactsWidget(QWidget):
     
     def __contacts_scrollarea_enter_event(self) -> None:
 
-        # self.__contacts_scrollarea.verticalScrollBar().
-        pass
+        self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarShowed")
+        self.__contacts_scrollarea.setStyleSheet(self.__contacts_scrollarea.styleSheet())
 
     def __contacts_scrollarea_leave_event(self) -> None:
 
-        # self.__contacts_scrollarea.verticalScrollBar().
-        pass
+        self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarHidden")
+        self.__contacts_scrollarea.setStyleSheet(self.__contacts_scrollarea.styleSheet())

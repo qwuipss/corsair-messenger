@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
 
         self.__set_window_geometry()
         
-        self.__font_id = MainWindow.__add_app_font()
+        self.__add_app_font()
 
         central_widget = ChatWidget(self)
         #central_widget = LoginWidget(self)

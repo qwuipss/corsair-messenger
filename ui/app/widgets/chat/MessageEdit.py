@@ -20,6 +20,8 @@ class MessageEdit(QTextEdit):
 
     def eventFilter(self, object: QtCore.QObject | None, event: QtCore.QEvent | None) -> bool:
 
+        super().eventFilter(object, event)
+
         if event.type() == QtCore.QEvent.Type.KeyPress and object is self and event.key() == QtCore.Qt.Key.Key_Return and self.hasFocus():
             print('Enter pressed')
             

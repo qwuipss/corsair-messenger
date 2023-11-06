@@ -1,6 +1,7 @@
 from .ContactsWidget import ContactsWidget
 from .MessagesWidget import MessagesWidget
 from .ChatWidgetQSS import ChatWidgetQSS
+from .Message import Message
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QWidget, QMainWindow
 
@@ -11,9 +12,9 @@ class ChatWidget(QWidget):
         if not isinstance(main_window, QWidget):
             raise TypeError(type(main_window))
         
-        super().__init__()
+        super().__init__(main_window)
 
-        self.__chat_widget_qss = ChatWidgetQSS(main_window.size())
+        self.__chat_widget_qss = ChatWidgetQSS(main_window)
 
         self.__contacts_widget = ContactsWidget(self)
         self.__messages_widget = MessagesWidget(main_window, self)
@@ -29,18 +30,13 @@ class ChatWidget(QWidget):
 
             self.__contacts_widget.add_contact(contact_label)
 
-        for i in range(200):
+        for i in range(150):
 
-            message = QLabel(f"w{i}" * 25)
-
-            self.__messages_widget.add_message(message)
-
-            if i % 2:
-                message.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-            else:
-                message.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-
-            message.setObjectName("message")
+            # message = Message("11111111111111122222222222222222222222333333333333333333333333444444444444444444555555555555555566666666666666667777777777777777777777777777777777777777777777777777777777777777777777777777777777777777788888888888888888888888", self)
+            message = Message("123213123", self)
+            # message = QLabel("1111111111111112222222222222222222222233333333333333333333333344444444444444444455555555555555556666666666666666", self)
+            
+            self.__messages_widget.add_message(message, i % 2)
         # -------------
 
         layout = self.__get_main_layout()

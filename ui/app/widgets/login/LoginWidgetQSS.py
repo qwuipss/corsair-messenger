@@ -1,14 +1,16 @@
 from helpers.QSSHelper import QSSHelper
-from PyQt6.QtCore import QSize
+from PyQt6.QtWidgets import QMainWindow
 
 class LoginWidgetQSS:
 
-    def __init__(self, window_size: QSize) -> None:
+    def __init__(self, main_window: QMainWindow) -> None:
 
-        if not isinstance(window_size, QSize):
-            raise TypeError(type(window_size))
-        
-        width = window_size.width()
+        if not isinstance(main_window, QMainWindow):
+            raise TypeError(type(main_window))
+
+        main_window_size = main_window.size()
+
+        width = main_window_size.width()
         
         line_edit_width = int(width / 3.4)
 

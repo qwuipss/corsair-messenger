@@ -1,27 +1,37 @@
 from helpers.QSSHelper import QSSHelper
-from PyQt6.QtCore import QSize
+from PyQt6.QtWidgets import QMainWindow
 
 class ChatWidgetQSS:
 
-    def __init__(self, window_size: QSize) -> None:
+    def __init__(self, main_window: QMainWindow) -> None:
 
-        width = window_size.width()
-        height = window_size.height()
+        if not isinstance(main_window, QMainWindow):
+            raise TypeError(type(main_window))
+
+        main_window_size = main_window.size()
+
+        width = main_window_size.width()
+        height = main_window_size.height()
 
         self.__qss = """
             #contactsScrollbarShowed::vertical{
                 """ + QSSHelper.background_color("555555") + """
             }
-            #contactsScrollbarHidden::vertical, #contactsScrollbarHidden::vertical{
-                """ + QSSHelper.background_color("101010") + """
+            #contactsScrollbarShowed::sub-page::vertical, #contactsScrollbarShowed::add-page::vertical{
+                """ + QSSHelper.background_color("0c0c0c") + """
+            }
+            #contactsScrollbarHidden::vertical{
+                """ + QSSHelper.background_color("0c0c0c") + """
+            }
+            #contactsScrollbarHidden::sub-page::vertical, #contactsScrollbarHidden::add-page::vertical{
+                """ + QSSHelper.background_color("0c0c0c") + """
             }
             #messagesScrollbar::sub-page::vertical, #messagesScrollbar::add-page::vertical{
                 """ + QSSHelper.background_color("0c0c0c") + """
             }
             QScrollBar::vertical{
                 """ + QSSHelper.concat(
-                        QSSHelper.width(width // 50),
-                        # QSSHelper.width(width // 300),
+                        QSSHelper.width(width // 300),
                         QSSHelper.background_color("555555"),
                     ) + \
             """}  
@@ -70,7 +80,7 @@ class ChatWidgetQSS:
                         QSSHelper.background_color("101010"),
                         QSSHelper.padding(0, 0, 0, width // 150),
                         QSSHelper.font_weight(550),
-                        # QSSHelper.border_side("right", f"{width // 350}px solid #0c0c0c"),
+                        QSSHelper.border_side("right", f"{width // 300}px solid #0c0c0c"),
                     ) + \
             """}
             #currentContactName{

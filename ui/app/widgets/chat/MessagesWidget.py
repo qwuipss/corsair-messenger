@@ -1,7 +1,8 @@
 from .MessageEdit import MessageEdit
 from .Scrollarea import Scrollarea
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QTextEdit, QLabel, QMainWindow
+from .Message import Message
+from PyQt6 import QtCore
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QTextEdit, QLabel, QMainWindow, QLayout
 
 class MessagesWidget(QWidget):
 
@@ -16,8 +17,8 @@ class MessagesWidget(QWidget):
         super().__init__(parent)
 
         self.__current_contact_name = QLabel("clynqz")
-        self.__messages_scrollarea = Scrollarea(main_window, self.__messages_scrollarea_enter_event, self.__messages_scrollarea_leave_event)
-        self.__message_edit = self.__get_message_edit(main_window, parent)
+        self.__messages_scrollarea = Scrollarea(self, self.__messages_scrollarea_enter_event, self.__messages_scrollarea_leave_event)
+        self.__message_edit = self.__get_message_edit(main_window)
 
         self.messages_scrollarea.verticalScrollBar().hide()
 
@@ -36,28 +37,35 @@ class MessagesWidget(QWidget):
     def message_edit(self) -> QTextEdit:
         return self.__message_edit
 
-    def add_message(self, message: QWidget) -> None:
+    def add_message(self, message: Message, self_author: bool) -> None:
 
-        if not isinstance(message, QWidget):
+        if not isinstance(message, Message):
             raise TypeError(type(message)) 
 
-        self.__messages_scrollarea.add_widget(message)
+        message_layout = QVBoxLayout()
 
-    def __get_message_edit(self, main_window: QMainWindow, parent: QWidget) -> QTextEdit:
+        message.setMaximumWidth(550) # !!!!!!!!!!!!!!!!!
+        # message.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight if self_author else QtCore.Qt.AlignmentFlag.AlignLeft)
+
+        message_layout.addWidget(message)
+        message_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight if self_author else QtCore.Qt.AlignmentFlag.AlignLeft)
+
+        self.__messages_scrollarea.add_layout(message_layout)
+
+        message_layout.update()
+
+    def __get_message_edit(self, main_window: QMainWindow) -> QTextEdit:
 
         if not isinstance(main_window, QMainWindow):
             raise TypeError(type(main_window))
         
-        if not isinstance(parent, QWidget):
-            raise TypeError(type(parent))
-        
         message_edit_max_height = main_window.size().height() // 3
         
-        message_edit = MessageEdit(parent, message_edit_max_height)
+        message_edit = MessageEdit(self, message_edit_max_height)
 
         message_edit.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
-        message_edit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        message_edit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        message_edit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        message_edit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         message_edit.setObjectName("messageEdit")
 
         return message_edit
