@@ -16,6 +16,7 @@ class MessageEdit(QTextEdit):
         self.__max_height = max_height
 
         self.textChanged.connect(self.__adjust_height)
+        
         self.installEventFilter(self)
 
     def eventFilter(self, object: QtCore.QObject | None, event: QtCore.QEvent | None) -> bool:
@@ -33,7 +34,7 @@ class MessageEdit(QTextEdit):
 
         self.__adjust_height()
 
-    def __adjust_height(self):
+    def __adjust_height(self) -> None:
 
         document_height = int(self.document().size().height())
 

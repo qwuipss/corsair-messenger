@@ -12,7 +12,6 @@ from PyQt6.QtWidgets import (
 )
 
 #self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
-
 class MainWindow(QMainWindow):
 
     def __init__(self) -> None:
