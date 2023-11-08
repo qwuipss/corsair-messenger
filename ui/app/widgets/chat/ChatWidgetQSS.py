@@ -1,4 +1,5 @@
 from helpers.QSSHelper import QSSHelper
+from ...SharedQSS import SharedQSS
 from PyQt6.QtWidgets import QMainWindow
 
 class ChatWidgetQSS:
@@ -13,26 +14,38 @@ class ChatWidgetQSS:
         width = main_window_size.width()
         height = main_window_size.height()
 
+        width_div_65 = width // 65
+        width_div_62 = width // 62
+        width_div_150 = width // 150
+        width_div_300 = width // 300
+
+        height_div_11 = height // 11
+
+        font_weight_550 = 550
+
+        color_101010 = "101010" 
+        color_141414 = "141414"
+
         self.__qss = """
             #contactsScrollbarShowed::vertical{
-                """ + QSSHelper.background_color("555555") + """
+                """ + QSSHelper.background_color(SharedQSS.COLOR_555555) + """
             }
             #contactsScrollbarShowed::sub-page::vertical, #contactsScrollbarShowed::add-page::vertical{
-                """ + QSSHelper.background_color("0c0c0c") + """
+                """ + QSSHelper.background_color(SharedQSS.COLOR_0c0c0c) + """
             }
             #contactsScrollbarHidden::vertical{
-                """ + QSSHelper.background_color("0c0c0c") + """
+                """ + QSSHelper.background_color(SharedQSS.COLOR_0c0c0c) + """
             }
             #contactsScrollbarHidden::sub-page::vertical, #contactsScrollbarHidden::add-page::vertical{
-                """ + QSSHelper.background_color("0c0c0c") + """
+                """ + QSSHelper.background_color(SharedQSS.COLOR_0c0c0c) + """
             }
             #messagesScrollbar::sub-page::vertical, #messagesScrollbar::add-page::vertical{
-                """ + QSSHelper.background_color("0c0c0c") + """
+                """ + QSSHelper.background_color(SharedQSS.COLOR_0c0c0c) + """
             }
             QScrollBar::vertical{
                 """ + QSSHelper.concat(
-                        QSSHelper.width(width // 300),
-                        QSSHelper.background_color("555555"),
+                        QSSHelper.width(width_div_300),
+                        QSSHelper.background_color(SharedQSS.COLOR_555555),
                     ) + \
             """}  
             QScrollBar::handle::vertical,
@@ -42,55 +55,55 @@ class ChatWidgetQSS:
             }
             #messageEdit{
                 """ + QSSHelper.concat(
-                        QSSHelper.font_size(width // 65),
-                        QSSHelper.background_color("101010"),
+                        QSSHelper.font_size(width_div_65),
+                        QSSHelper.background_color(color_101010),
                         QSSHelper.border_none(),
                         QSSHelper.font_weight(100),
-                        QSSHelper.color("f2f2f2"),
-                        QSSHelper.selection_background_color("555555"),
+                        QSSHelper.color(SharedQSS.COLOR_f2f2f2),
+                        QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
                     ) + \
             """}
             #contact{
                 """ + QSSHelper.concat(
-                        QSSHelper.background_color("101010"),
-                        QSSHelper.font_size(width // 65),
+                        QSSHelper.background_color(color_101010),
+                        QSSHelper.font_size(width_div_65),
                         QSSHelper.min_height(width // 23),
                         QSSHelper.padding(0, 0, 0, 5),
                     ) + \
             """}
             #contact::hover{
                 """ + QSSHelper.concat(
-                        QSSHelper.background_color("141414"),
+                        QSSHelper.background_color(color_141414),
                     ) + \
             """}
             #message{
                 """ + QSSHelper.concat(
-                        "border: 1px solid yellow;",
+                        QSSHelper.background_color(color_141414),
+                        QSSHelper.border_radius(7),
                         QSSHelper.font_size(width // 75),
-                        #f"max-width: {width // 3}px;",
-                        # QSSHelper.min_height(width // 23),
-                        # QSSHelper.padding(0, 0, 0, 5),
+                        QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
+                        QSSHelper.max_width(width // 2),
                     ) + \
             """}
             #contactsSearch{
                 """ + QSSHelper.concat(
-                        QSSHelper.font_size(width // 62),
-                        QSSHelper.min_height(height // 11),
+                        QSSHelper.font_size(width_div_62),
+                        QSSHelper.min_height(height_div_11),
                         QSSHelper.border_none(),
-                        QSSHelper.background_color("101010"),
-                        QSSHelper.padding(0, 0, 0, width // 150),
-                        QSSHelper.font_weight(550),
-                        QSSHelper.border_side("right", f"{width // 300}px solid #0c0c0c"),
+                        QSSHelper.background_color(color_101010),
+                        QSSHelper.padding(0, 0, 0, width_div_150),
+                        QSSHelper.font_weight(font_weight_550),
+                        QSSHelper.border_side("right", f"{width_div_300}px solid #{SharedQSS.COLOR_0c0c0c}"),
+                        QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
                     ) + \
             """}
             #currentContactName{
                 """ + QSSHelper.concat(
-                        QSSHelper.font_size(width // 62),
-                        QSSHelper.min_height(height // 11),
-                        QSSHelper.background_color("101010"),
-                        QSSHelper.font_weight(550),
-                        QSSHelper.padding(0, 0, 0, width // 150),
-                        # QSSHelper.border_side("left", f"{width // 350}px solid #0c0c0c"),
+                        QSSHelper.font_size(width_div_62),
+                        QSSHelper.min_height(height_div_11),
+                        QSSHelper.background_color(color_101010),
+                        QSSHelper.font_weight(font_weight_550),
+                        QSSHelper.padding(0, 0, 0, width_div_150),
                     ) + \
             """}
         """

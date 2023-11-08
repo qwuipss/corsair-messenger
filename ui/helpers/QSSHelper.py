@@ -28,6 +28,14 @@ class QSSHelper:
         return f"width: {width}px;"
     
     @staticmethod
+    def max_width(width: int) -> str:
+
+        if not isinstance(width, int):
+            raise TypeError(type(width))
+        
+        return f"max-width: {width}px;"
+
+    @staticmethod
     def selection_background_color(color: str) -> str:
 
         if not isinstance(color, str):

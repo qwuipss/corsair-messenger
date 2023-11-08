@@ -1,7 +1,9 @@
 from managers.RegexManager import RegexManager
+from ...SharedQSS import SharedQSS
 from .Scrollarea import Scrollarea
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QLineEdit, QWidget
+from PyQt6 import QtCore
 
 class ContactsWidget(QWidget):
 
@@ -15,6 +17,9 @@ class ContactsWidget(QWidget):
         self.__contacts_search = self.__get_contacts_search()
         self.__contacts_scrollarea = Scrollarea(self, self.__contacts_scrollarea_enter_event, self.__contacts_scrollarea_leave_event)
         
+        self.contacts_scrollarea.layout.addStretch(1)
+
+        # self.__contacts_scrollarea.setFixedWidth(self.contacts_search.width())
         self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarHidden")
 
     @property
@@ -30,7 +35,7 @@ class ContactsWidget(QWidget):
         if not isinstance(contact, QWidget):
             raise TypeError(type(contact)) 
 
-        self.__contacts_scrollarea.add_widget(contact)
+        self.__contacts_scrollarea.layout.insertWidget(0, contact)
 
     def __get_contacts_search(self) -> QLineEdit:
                 
@@ -39,7 +44,7 @@ class ContactsWidget(QWidget):
         line_edit_validator = RegexManager.get_regex_nickname_validator()
 
         placeholder_palette = contacts_search.palette()
-        placeholder_palette.setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor("#555555"))  
+        placeholder_palette.setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor(f"#{SharedQSS.COLOR_555555}"))  
 
         contacts_search.setPalette(placeholder_palette)
         contacts_search.setValidator(line_edit_validator)

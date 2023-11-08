@@ -20,26 +20,12 @@ class Scrollarea(QScrollArea):
         self.__enter_event = enter_event
         self.__leave_event = leave_event
 
-        self.__layout = self.__get_layout(parent) 
-        
+        self.__layout = self.__get_layout(parent)
+
     @property
     def layout(self) -> QVBoxLayout:
         return self.__layout
     
-    def add_widget(self, widget: QWidget) -> None:
-
-        if not isinstance(widget, QWidget):
-            raise TypeError(type(widget))        
-
-        self.__layout.addWidget(widget)
-
-    def add_layout(self, layout: QLayout) -> None:
-
-        if not isinstance(layout, QLayout):
-            raise TypeError(type(layout))        
-
-        self.__layout.addLayout(layout)
-
     def __get_layout(self, parent: QWidget) -> QVBoxLayout:
 
         if not isinstance(parent, QWidget):

@@ -1,14 +1,10 @@
 from .widgets.login.LoginWidget import LoginWidget
 from .MainWindowQSS import MainWindowQSS
-from .widgets.login.LoginWidgetQSS import LoginWidgetQSS
 from .widgets.chat.ChatWidget import ChatWidget
-from helpers.QSSHelper import QSSHelper
+from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6 import QtGui
 from os.path import (
     dirname, realpath,
-)
-from PyQt6.QtWidgets import (
-    QWidget, QMainWindow, QApplication,
 )
 
 #self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
@@ -25,7 +21,7 @@ class MainWindow(QMainWindow):
         self.__add_app_font()
 
         central_widget = ChatWidget(self)
-        #central_widget = LoginWidget(self)
+        # central_widget = LoginWidget(self)
 
         self.setCentralWidget(central_widget)
         

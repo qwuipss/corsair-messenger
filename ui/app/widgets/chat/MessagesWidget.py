@@ -2,7 +2,7 @@ from .MessageEdit import MessageEdit
 from .Scrollarea import Scrollarea
 from .Message import Message
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QTextEdit, QLabel, QMainWindow, QLayout
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QTextEdit, QLabel, QMainWindow
 
 class MessagesWidget(QWidget):
 
@@ -19,6 +19,8 @@ class MessagesWidget(QWidget):
         self.__current_contact_name = QLabel("clynqz")
         self.__messages_scrollarea = Scrollarea(self, self.__messages_scrollarea_enter_event, self.__messages_scrollarea_leave_event)
         self.__message_edit = self.__get_message_edit(main_window)
+
+        self.__messages_scrollarea.layout.addStretch(1)
 
         self.messages_scrollarea.verticalScrollBar().hide()
 
@@ -41,16 +43,18 @@ class MessagesWidget(QWidget):
 
         if not isinstance(message, Message):
             raise TypeError(type(message)) 
+        
+        if not isinstance(self_author, bool):
+            raise TypeError(type(self_author)) 
 
         message_layout = QVBoxLayout()
 
-        message.setMaximumWidth(550) # !!!!!!!!!!!!!!!!!
-        # message.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight if self_author else QtCore.Qt.AlignmentFlag.AlignLeft)
+        alignment = (QtCore.Qt.AlignmentFlag.AlignRight if self_author else QtCore.Qt.AlignmentFlag.AlignLeft) | QtCore.Qt.AlignmentFlag.AlignBottom
 
         message_layout.addWidget(message)
-        message_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight if self_author else QtCore.Qt.AlignmentFlag.AlignLeft)
-
-        self.__messages_scrollarea.add_layout(message_layout)
+        message_layout.setAlignment(alignment)
+        
+        self.__messages_scrollarea.layout.addLayout(message_layout)   
 
         message_layout.update()
 
