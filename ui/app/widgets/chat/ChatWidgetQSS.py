@@ -27,31 +27,23 @@ class ChatWidgetQSS:
         color_141414 = "141414"
 
         self.__qss = """
-            #contactsScrollbarShowed::vertical{
-                """ + QSSHelper.background_color(SharedQSS.COLOR_555555) + """
+            QScrollBar:vertical {
+                width:4px;   
+                background: transparent;
+        
+                
             }
-            #contactsScrollbarShowed::sub-page::vertical, #contactsScrollbarShowed::add-page::vertical{
-                """ + QSSHelper.background_color(SharedQSS.COLOR_0c0c0c) + """
+            QScrollBar::handle:vertical{   
+                border-radius: 2px;
+                background-color: #555555;
+                min-height: 8px;
             }
-            #contactsScrollbarHidden::vertical{
-                """ + QSSHelper.background_color(SharedQSS.COLOR_0c0c0c) + """
+            QScrollBar::sub-page::vertical, QScrollBar::add-page::vertical{
+                background: none;
             }
-            #contactsScrollbarHidden::sub-page::vertical, #contactsScrollbarHidden::add-page::vertical{
-                """ + QSSHelper.background_color(SharedQSS.COLOR_0c0c0c) + """
-            }
-            #messagesScrollbar::sub-page::vertical, #messagesScrollbar::add-page::vertical{
-                """ + QSSHelper.background_color(SharedQSS.COLOR_0c0c0c) + """
-            }
-            QScrollBar::vertical{
-                """ + QSSHelper.concat(
-                        QSSHelper.width(width_div_300),
-                        QSSHelper.background_color(SharedQSS.COLOR_555555),
-                    ) + \
-            """}  
-            QScrollBar::handle::vertical,
             QScrollBar::up-arrow::vertical, QScrollBar::down-arrow::vertical,
             QScrollBar::add-line::vertical, QScrollBar::sub-line::vertical{
-                """ + QSSHelper.background("transparent") +  """
+                background:transparent;
             }
             #messageEdit{
                 """ + QSSHelper.concat(
@@ -93,8 +85,9 @@ class ChatWidgetQSS:
                         QSSHelper.background_color(color_101010),
                         QSSHelper.padding(0, 0, 0, width_div_150),
                         QSSHelper.font_weight(font_weight_550),
-                        QSSHelper.border_side("right", f"{width_div_300}px solid #{SharedQSS.COLOR_0c0c0c}"),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
+                        
+                        # "border-right: 4px solid #0c0c0c"
                     ) + \
             """}
             #currentContactName{
@@ -104,6 +97,7 @@ class ChatWidgetQSS:
                         QSSHelper.background_color(color_101010),
                         QSSHelper.font_weight(font_weight_550),
                         QSSHelper.padding(0, 0, 0, width_div_150),
+                        "border-left: 0px solid #0c0c0c"
                     ) + \
             """}
         """

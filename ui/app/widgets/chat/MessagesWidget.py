@@ -25,7 +25,7 @@ class MessagesWidget(QWidget):
         self.messages_scrollarea.verticalScrollBar().hide()
 
         self.__current_contact_name.setObjectName("currentContactName")
-        self.__messages_scrollarea.verticalScrollBar().setObjectName("messagesScrollbar")
+        # self.__messages_scrollarea.verticalScrollBar().setObjectName("messagesScrollbar")
 
     @property
     def current_contact_name(self) -> QLabel:
