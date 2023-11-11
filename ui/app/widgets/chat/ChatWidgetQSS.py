@@ -27,17 +27,15 @@ class ChatWidgetQSS:
         color_141414 = "141414"
 
         self.__qss = """
-            QScrollBar:vertical {
+            QScrollBar::vertical{
                 width:4px;   
                 background: transparent;
-        
-                
-            }
-            QScrollBar::handle:vertical{   
-                border-radius: 2px;
+            }            
+            QScrollBar::handle::vertical{
                 background-color: #555555;
+                border-radius: 2px;
                 min-height: 8px;
-            }
+            }     
             QScrollBar::sub-page::vertical, QScrollBar::add-page::vertical{
                 background: none;
             }
@@ -45,7 +43,7 @@ class ChatWidgetQSS:
             QScrollBar::add-line::vertical, QScrollBar::sub-line::vertical{
                 background:transparent;
             }
-            #messageEdit{
+            MessageEdit{
                 """ + QSSHelper.concat(
                         QSSHelper.font_size(width_div_65),
                         QSSHelper.background_color(color_101010),
@@ -53,9 +51,10 @@ class ChatWidgetQSS:
                         QSSHelper.font_weight(100),
                         QSSHelper.color(SharedQSS.COLOR_f2f2f2),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
+                        "padding: 5px 10px 5px 10px;",
                     ) + \
             """}
-            #contact{
+            QLabel#contact{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_101010),
                         QSSHelper.font_size(width_div_65),
@@ -63,12 +62,12 @@ class ChatWidgetQSS:
                         QSSHelper.padding(0, 0, 0, 5),
                     ) + \
             """}
-            #contact::hover{
+            QLabel#contact::hover{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_141414),
                     ) + \
             """}
-            #message{
+            Message{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_141414),
                         QSSHelper.border_radius(7),
@@ -77,7 +76,7 @@ class ChatWidgetQSS:
                         QSSHelper.max_width(width // 2),
                     ) + \
             """}
-            #contactsSearch{
+            QLineEdit#contactsSearch{
                 """ + QSSHelper.concat(
                         QSSHelper.font_size(width_div_62),
                         QSSHelper.min_height(height_div_11),
@@ -87,17 +86,16 @@ class ChatWidgetQSS:
                         QSSHelper.font_weight(font_weight_550),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
                         
-                        # "border-right: 4px solid #0c0c0c"
+                        "margin-right: 4px solid #0c0c0c"
                     ) + \
             """}
-            #currentContactName{
+            QLabel#currentContactName{
                 """ + QSSHelper.concat(
                         QSSHelper.font_size(width_div_62),
                         QSSHelper.min_height(height_div_11),
                         QSSHelper.background_color(color_101010),
                         QSSHelper.font_weight(font_weight_550),
                         QSSHelper.padding(0, 0, 0, width_div_150),
-                        "border-left: 0px solid #0c0c0c"
                     ) + \
             """}
         """

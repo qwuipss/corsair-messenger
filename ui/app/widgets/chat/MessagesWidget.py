@@ -22,10 +22,8 @@ class MessagesWidget(QWidget):
 
         self.__messages_scrollarea.layout.addStretch(1)
 
-        self.messages_scrollarea.verticalScrollBar().hide()
-
         self.__current_contact_name.setObjectName("currentContactName")
-        # self.__messages_scrollarea.verticalScrollBar().setObjectName("messagesScrollbar")
+        self.__messages_scrollarea.verticalScrollBar().setObjectName("showed")
 
     @property
     def current_contact_name(self) -> QLabel:
@@ -53,7 +51,7 @@ class MessagesWidget(QWidget):
 
         message_layout.addWidget(message)
         message_layout.setAlignment(alignment)
-        
+
         self.__messages_scrollarea.layout.addLayout(message_layout)   
 
         message_layout.update()
@@ -70,14 +68,21 @@ class MessagesWidget(QWidget):
         message_edit.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         message_edit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         message_edit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        message_edit.setObjectName("messageEdit")
 
         return message_edit
     
     def __messages_scrollarea_enter_event(self) -> None:
 
-        self.__messages_scrollarea.verticalScrollBar().show()
+        scrollarea = self.__messages_scrollarea
+        scrollbar = scrollarea.verticalScrollBar()
+
+        if scrollbar.maximum() != 0:
+            scrollbar.show()
 
     def __messages_scrollarea_leave_event(self) -> None:
 
-        self.__messages_scrollarea.verticalScrollBar().hide()
+        scrollarea = self.__messages_scrollarea
+        scrollbar = scrollarea.verticalScrollBar()
+
+        if not scrollbar.isHidden():
+            scrollbar.hide()

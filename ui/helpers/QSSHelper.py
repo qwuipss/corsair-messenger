@@ -84,17 +84,6 @@ class QSSHelper:
         return f"background-color: #{hex_color};"
 
     @staticmethod
-    def border_side(side: str, style: str) -> str:
-
-        if not isinstance(side, str):
-            raise TypeError(type(side))
-
-        if not isinstance(style, str):
-            raise TypeError(type(style))
-
-        return f"border-{side}: {style};"
-
-    @staticmethod
     def background(style: str) -> str:
 
         if not isinstance(style, str):

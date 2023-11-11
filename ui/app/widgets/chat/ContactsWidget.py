@@ -19,9 +19,6 @@ class ContactsWidget(QWidget):
         
         self.contacts_scrollarea.layout.addStretch(1)
 
-        # self.__contacts_scrollarea.setFixedWidth(self.contacts_search.width())
-        self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarHidden")
-
     @property
     def contacts_search(self) -> QLineEdit:
         return self.__contacts_search
@@ -35,6 +32,10 @@ class ContactsWidget(QWidget):
         if not isinstance(contact, QWidget):
             raise TypeError(type(contact)) 
 
+        contact.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
+        contact.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        contact.setObjectName("contact")
+
         self.__contacts_scrollarea.layout.insertWidget(0, contact)
 
     def __get_contacts_search(self) -> QLineEdit:
@@ -47,18 +48,24 @@ class ContactsWidget(QWidget):
         placeholder_palette.setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor(f"#{SharedQSS.COLOR_555555}"))  
 
         contacts_search.setPalette(placeholder_palette)
-        contacts_search.setValidator(line_edit_validator)
         contacts_search.setPlaceholderText("Search")
+        contacts_search.setValidator(line_edit_validator)
         contacts_search.setObjectName("contactsSearch")
 
         return contacts_search
     
     def __contacts_scrollarea_enter_event(self) -> None:
 
-        self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarShowed")
-        self.__contacts_scrollarea.setStyleSheet(self.__contacts_scrollarea.styleSheet())
+        scrollarea = self.__contacts_scrollarea
+        scrollbar = scrollarea.verticalScrollBar()
+
+        if scrollbar.maximum() != 0:
+            scrollbar.show()
 
     def __contacts_scrollarea_leave_event(self) -> None:
 
-        self.__contacts_scrollarea.verticalScrollBar().setObjectName("contactsScrollbarHidden")
-        self.__contacts_scrollarea.setStyleSheet(self.__contacts_scrollarea.styleSheet())
+        scrollarea = self.__contacts_scrollarea
+        scrollbar = scrollarea.verticalScrollBar()
+
+        if not scrollbar.isHidden():
+            scrollbar.hide()

@@ -20,29 +20,19 @@ class ChatWidget(QWidget):
         self.__messages_widget = MessagesWidget(main_window, self)
 
         # ---------------
-        for i in range(85):
+        for i in range(15):
 
             contact_label = QLabel(f"{i}")
-            
-            contact_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
-            contact_label.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
-            contact_label.setObjectName("contact")
-
             self.__contacts_widget.add_contact(contact_label)
 
-        # for i in range(150):
-
             message = Message("1111111111111112222222222222  33333333333333333333333333333333333333333333 4444444444 44444444444 11111111111111122222222222222222222222333333333333333333333333444444444444444444555555555555555566666666666666667777777777777777777777777777777777777777777777777777777777777777777777777777777777777777788888888888888888888888", self)
-            self.__messages_widget.add_message(message, False)
+            self.__messages_widget.add_message(message, True)
             message = Message("111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111112", self)
-            self.__messages_widget.add_message(message, bool(i % 2))
+            self.__messages_widget.add_message(message, False)
             message = Message("123213123", self)
-            self.__messages_widget.add_message(message, bool(i % 2))
-    
-        # message = Message("1111111111111112222222222222222222222233333333333333333333333344444444444444444455555555555555556666666666666666", self)
-        # self.__messages_widget.add_message(message, i % 2)
-        # message = Message("1                                                                                                            22222222222222222223333333333333333333333333333333333334444 55555555555555555555555555555556", self)
-        # self.__messages_widget.add_message(message, i % 2)
+            self.__messages_widget.add_message(message, True)
+            message = Message("123213123 21312312312", self)
+            self.__messages_widget.add_message(message, False)
             
         # -------------
 
