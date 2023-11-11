@@ -20,7 +20,7 @@ class LoginWidget(QWidget):
 
         window_height = main_window.size().height()
 
-        vertical_spacer = -window_height // 7
+        vertical_spacer = int(-window_height * .143)
 
         logo_label_layout = self.__get_logo_label_layout()
         login_layout = self.__get_login_layout(vertical_spacer)
@@ -30,8 +30,6 @@ class LoginWidget(QWidget):
         layout = self.__get_main_layout(logo_label_layout, login_layout, password_layout, enter_layout, window_height)
 
         self.setLayout(layout)
-        self.setContentsMargins(0, 0, 0, 0)
-
         self.setStyleSheet(self.__login_widget_qss.qss)
 
     def __get_main_layout(
@@ -54,7 +52,7 @@ class LoginWidget(QWidget):
         if not isinstance(window_height, int):
             raise TypeError(type(window_height))
         
-        vertical_spacer = -window_height // 15
+        vertical_spacer = int(-window_height * .0667)
         
         layout = QVBoxLayout()
 

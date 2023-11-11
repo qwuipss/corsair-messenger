@@ -4,21 +4,12 @@ from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame, QLayout
 
 class Scrollarea(QScrollArea):
 
-    def __init__(self, parent: QWidget, enter_event: Callable[[], None], leave_event: Callable[[], None]) -> None:
+    def __init__(self, parent: QWidget) -> None:
 
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
         
-        if not isinstance(enter_event, Callable):
-            raise TypeError(type(enter_event))
-        
-        if not isinstance(leave_event, Callable):
-            raise TypeError(type(leave_event))
-        
         super().__init__(parent)
-
-        self.__enter_event = enter_event
-        self.__leave_event = leave_event
 
         self.__layout = self.__get_layout(parent)
 
@@ -51,11 +42,16 @@ class Scrollarea(QScrollArea):
 
         super().enterEvent(event)
 
-        self.__enter_event()
+        scrollbar = self.verticalScrollBar()
+
+        if scrollbar.maximum() != 0:
+            scrollbar.show()
 
     def leaveEvent(self, event: QtCore.QEvent | None) -> None:
         
         super().leaveEvent(event)
 
-        self.__leave_event()
-    
+        scrollbar = self.verticalScrollBar()
+
+        if not scrollbar.isHidden():
+            scrollbar.hide()

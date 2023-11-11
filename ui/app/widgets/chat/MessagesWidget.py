@@ -17,7 +17,7 @@ class MessagesWidget(QWidget):
         super().__init__(parent)
 
         self.__current_contact_name = QLabel("clynqz")
-        self.__messages_scrollarea = Scrollarea(self, self.__messages_scrollarea_enter_event, self.__messages_scrollarea_leave_event)
+        self.__messages_scrollarea = Scrollarea(self)
         self.__message_edit = self.__get_message_edit(main_window)
 
         self.__messages_scrollarea.layout.addStretch(1)
@@ -61,9 +61,9 @@ class MessagesWidget(QWidget):
         if not isinstance(main_window, QMainWindow):
             raise TypeError(type(main_window))
         
-        message_edit_max_height = main_window.size().height() // 3
+        message_edit_max_height = int(main_window.size().height() * .3)
         
-        message_edit = MessageEdit(self, message_edit_max_height)
+        message_edit = MessageEdit(self, message_edit_max_height, lambda message: print(f"message sent: {message}"))
 
         message_edit.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         message_edit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -71,18 +71,3 @@ class MessagesWidget(QWidget):
 
         return message_edit
     
-    def __messages_scrollarea_enter_event(self) -> None:
-
-        scrollarea = self.__messages_scrollarea
-        scrollbar = scrollarea.verticalScrollBar()
-
-        if scrollbar.maximum() != 0:
-            scrollbar.show()
-
-    def __messages_scrollarea_leave_event(self) -> None:
-
-        scrollarea = self.__messages_scrollarea
-        scrollbar = scrollarea.verticalScrollBar()
-
-        if not scrollbar.isHidden():
-            scrollbar.hide()

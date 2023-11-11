@@ -1,7 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QTextEdit
 from PyQt6.QtGui import QTextOption, QResizeEvent
-from PyQt6.QtCore import QRect
-from math import ceil
 
 class Message(QTextEdit):
     
@@ -17,31 +15,27 @@ class Message(QTextEdit):
 
         self.setWordWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
         
-        self.textChanged.connect(self.__adjust_height)
+        self.textChanged.connect(self.__adjust_size)
 
         self.setText(text)
         self.setReadOnly(True)
 
     def resizeEvent(self, _: QResizeEvent) -> None:
 
-        self.__adjust_height()
+        self.__adjust_size()
         
-    def __adjust_height(self) -> None:
+    def __adjust_size(self) -> None:
         
         viewport_width = self.viewport().width()
+        margin = self.document().documentMargin()
+        paddings = self.contentsMargins()
+
         self.document().setTextWidth(viewport_width)
 
-        a = self.document().idealWidth() + self.document().documentMargin() * 2
+        width = int(self.document().idealWidth() + paddings.left() + paddings.right())
+        height = int(self.document().size().height() + margin + paddings.top() + paddings.bottom())
 
-        self.setFixedWidth(int(a))
-        self.setFixedHeight(ceil(self.document().size().height()))
+        self.setFixedWidth(width)
+        self.setFixedHeight(height)
+
         
-    # def __adjust_height(self) -> None:
-        
-    #     viewport_width = self.viewport().width()
-    #     self.document().setTextWidth(viewport_width)
-
-    #     a = self.document().idealWidth() + self.document().documentMargin() * 2
-
-    #     self.setFixedWidth(int(a))
-    #     self.setFixedHeight(ceil(self.document().size().height()))

@@ -16,8 +16,12 @@ class QSSHelper:
         return f"font-weight: {weight};"
 
     @staticmethod
-    def border_none() -> str:
-        return "border: none;"
+    def border(style: str) -> str:
+
+        if not isinstance(style, str):
+            raise TypeError(type(style))
+
+        return f"border: {style};"
 
     @staticmethod
     def width(width: int) -> str:
@@ -107,6 +111,17 @@ class QSSHelper:
             raise TypeError(type(left))
 
         return f"padding: {top}px {right}px {bottom}px {left}px;"
+
+    @staticmethod
+    def margin_side(side: str, style: str):
+
+        if not isinstance(side, str):
+            raise TypeError(type(side))
+        
+        if not isinstance(style, str):
+            raise TypeError(type(style))
+
+        return f"margin-{side}: {style};"        
 
     @staticmethod
     def color(hex_color: str) -> str:

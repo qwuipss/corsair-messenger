@@ -15,7 +15,7 @@ class ContactsWidget(QWidget):
         super().__init__(parent)
 
         self.__contacts_search = self.__get_contacts_search()
-        self.__contacts_scrollarea = Scrollarea(self, self.__contacts_scrollarea_enter_event, self.__contacts_scrollarea_leave_event)
+        self.__contacts_scrollarea = Scrollarea(self)
         
         self.contacts_scrollarea.layout.addStretch(1)
 
@@ -54,18 +54,3 @@ class ContactsWidget(QWidget):
 
         return contacts_search
     
-    def __contacts_scrollarea_enter_event(self) -> None:
-
-        scrollarea = self.__contacts_scrollarea
-        scrollbar = scrollarea.verticalScrollBar()
-
-        if scrollbar.maximum() != 0:
-            scrollbar.show()
-
-    def __contacts_scrollarea_leave_event(self) -> None:
-
-        scrollarea = self.__contacts_scrollarea
-        scrollbar = scrollarea.verticalScrollBar()
-
-        if not scrollbar.isHidden():
-            scrollbar.hide()

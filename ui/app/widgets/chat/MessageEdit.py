@@ -1,11 +1,12 @@
+from typing import Callable 
+from ...SharedQSS import SharedQSS
 from PyQt6.QtWidgets import QTextEdit, QWidget
 from PyQt6 import QtCore
-from ...SharedQSS import SharedQSS
 from PyQt6 import QtGui
 
 class MessageEdit(QTextEdit):
 
-    def __init__(self, parent: QWidget, max_height: int):
+    def __init__(self, parent: QWidget, max_height: int, message_sent_callback: Callable[[], str]):
 
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
@@ -13,9 +14,13 @@ class MessageEdit(QTextEdit):
         if not isinstance(max_height, int):
             raise TypeError(type(max_height))
 
+        if not isinstance(message_sent_callback, Callable):
+            raise TypeError(type(message_sent_callback))
+
         super().__init__(parent)
 
         self.__max_height = max_height
+        self.__message_sent_callback = message_sent_callback
 
         placeholder_palette = self.palette()
         placeholder_palette.setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor(f"#{SharedQSS.COLOR_555555}"))  
@@ -29,8 +34,22 @@ class MessageEdit(QTextEdit):
 
         super().eventFilter(object, event)
 
-        if event.type() == QtCore.QEvent.Type.KeyPress and object is self and event.key() == QtCore.Qt.Key.Key_Return and self.hasFocus():
-            print('Enter pressed')
+        if object is self:
+            
+            if self.hasFocus():
+                
+                if event.type() == QtCore.QEvent.Type.KeyPress:
+                    
+                    if event.key() == QtCore.Qt.Key.Key_Return and event.modifiers() != QtCore.Qt.KeyboardModifier.ShiftModifier:
+                        
+                        text = self.toPlainText()
+                        
+                        if not str.isspace(text) and text != "":
+                            self.__message_sent_callback(text)
+                        
+                        self.setPlainText("")
+                        
+                        return True
             
         return False
     

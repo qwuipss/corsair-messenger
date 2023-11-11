@@ -16,8 +16,7 @@ class MainWindow(QMainWindow):
 
         self.__screen_size = QApplication.primaryScreen().size()
 
-        self.__set_window_geometry()
-        
+        self.__set_window_size()
         self.__add_app_font()
 
         central_widget = ChatWidget(self)
@@ -34,7 +33,7 @@ class MainWindow(QMainWindow):
         
         QtGui.QFontDatabase.addApplicationFont(font_path)
         
-    def __set_window_geometry(self) -> None:
+    def __set_window_size(self) -> None:
 
-        self.setFixedWidth(int(self.__screen_size.width() / 1.5))
-        self.setFixedHeight(int(self.__screen_size.height() / 1.5))
+        self.setFixedWidth(int(self.__screen_size.width() * .7))
+        self.setFixedHeight(int(self.__screen_size.height() * .7))

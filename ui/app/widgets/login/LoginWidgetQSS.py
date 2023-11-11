@@ -13,43 +13,43 @@ class LoginWidgetQSS:
 
         width = main_window_size.width()
         
-        line_edit_width = int(width / 3.4)
+        width_3 = int(width * .3)
+        width_02 = int(width * .02)
 
         font_weight_550 = 550
-        width_div_50 = width // 50
 
         self.__qss = """
-            #logoLabel{
+            QLabel#logoLabel{
                 """ + QSSHelper.concat(
-                        QSSHelper.letter_spacing(width // 35),
-                        QSSHelper.font_size(width // 18),
+                        QSSHelper.letter_spacing(int(width * .028)),
+                        QSSHelper.font_size(int(width * .056)),
                         QSSHelper.font_weight(900),
                     ) + \
             """}
-            #loginLabel, #passwordLabel{
+            QLabel#loginLabel, QLabel#passwordLabel{
                 """ + QSSHelper.concat(
-                        QSSHelper.letter_spacing(width // 260),
-                        QSSHelper.font_size(width_div_50),
+                        QSSHelper.letter_spacing(int(width * .0038)),
+                        QSSHelper.font_size(width_02),
                         QSSHelper.font_weight(font_weight_550),
                     ) + \
             """}
-            #loginEdit, #passwordEdit{
+            QLineEdit#loginEdit, QLineEdit#passwordEdit{
                 """ + QSSHelper.concat(
                         QSSHelper.color(SharedQSS.COLOR_000000),
                         QSSHelper.background_color(SharedQSS.COLOR_cccccc),
-                        QSSHelper.font_size(width // 62),
+                        QSSHelper.font_size(int(width * .016)),
                         QSSHelper.font_weight(500),
-                        QSSHelper.border_radius(5),
-                        QSSHelper.width(line_edit_width),
+                        QSSHelper.border_radius(int(width * .0088)),
+                        QSSHelper.width(width_3),
                     ) + \
             """}
-            #enterButton{
+            QPushButton#enterButton{
             """ + QSSHelper.concat(
-                        QSSHelper.font_size(width_div_50),
+                        QSSHelper.font_size(width_02),
                         QSSHelper.color(SharedQSS.COLOR_555555),
-                        QSSHelper.letter_spacing(width // 200),
+                        QSSHelper.letter_spacing(int(width * .005)),
                         QSSHelper.font_weight(font_weight_550),
-                        QSSHelper.border_none(),
+                        QSSHelper.border("none"),
                     ) + \
             """}
         """

@@ -1,5 +1,5 @@
-from helpers.QSSHelper import QSSHelper
 from ...SharedQSS import SharedQSS
+from helpers.QSSHelper import QSSHelper
 from PyQt6.QtWidgets import QMainWindow
 
 class ChatWidgetQSS:
@@ -14,12 +14,16 @@ class ChatWidgetQSS:
         width = main_window_size.width()
         height = main_window_size.height()
 
-        width_div_65 = width // 65
-        width_div_62 = width // 62
-        width_div_150 = width // 150
-        width_div_300 = width // 300
+        width_015 = int(width * .015)
+        width_016 = int(width * .016)
+        width_0067 = int(width * .0067)
+        width_004 = int(width * .004)
+        width_005 = int(width * .005)
+        width_01 = int(width * .01)
+        width_002 = int(width * .002)
 
-        height_div_11 = height // 11
+        height_1 = int(height * .1)
+        height_008 = int(height * .008)
 
         font_weight_550 = 550
 
@@ -28,38 +32,46 @@ class ChatWidgetQSS:
 
         self.__qss = """
             QScrollBar::vertical{
-                width:4px;   
-                background: transparent;
-            }            
+                """ + QSSHelper.concat(
+                        QSSHelper.background("transparent"),
+                        QSSHelper.width(width_004),
+                    ) + \
+            """}
             QScrollBar::handle::vertical{
-                background-color: #555555;
-                border-radius: 2px;
-                min-height: 8px;
-            }     
+                """ + QSSHelper.concat(
+                        QSSHelper.background_color(SharedQSS.COLOR_555555),
+                        QSSHelper.min_height(height_008),
+                        QSSHelper.border_radius(width_002),
+                    ) + \
+            """}
             QScrollBar::sub-page::vertical, QScrollBar::add-page::vertical{
-                background: none;
-            }
+                """ + QSSHelper.concat(
+                        QSSHelper.background("none"),
+                    ) + \
+            """}
             QScrollBar::up-arrow::vertical, QScrollBar::down-arrow::vertical,
             QScrollBar::add-line::vertical, QScrollBar::sub-line::vertical{
-                background:transparent;
-            }
+                """ + QSSHelper.concat(
+                        QSSHelper.background("transparent"),
+                    ) + \
+            """}
             MessageEdit{
                 """ + QSSHelper.concat(
-                        QSSHelper.font_size(width_div_65),
+                        QSSHelper.font_size(width_015),
                         QSSHelper.background_color(color_101010),
-                        QSSHelper.border_none(),
+                        QSSHelper.border("none"),
                         QSSHelper.font_weight(100),
                         QSSHelper.color(SharedQSS.COLOR_f2f2f2),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
-                        "padding: 5px 10px 5px 10px;",
+                        QSSHelper.padding(width_005, width_01, width_005, width_01),
                     ) + \
             """}
             QLabel#contact{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_101010),
-                        QSSHelper.font_size(width_div_65),
-                        QSSHelper.min_height(width // 23),
-                        QSSHelper.padding(0, 0, 0, 5),
+                        QSSHelper.font_size(width_015),
+                        QSSHelper.min_height(int(width * .043)),
+                        QSSHelper.padding(0, 0, 0, width_005),
                     ) + \
             """}
             QLabel#contact::hover{
@@ -70,32 +82,32 @@ class ChatWidgetQSS:
             Message{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_141414),
-                        QSSHelper.border_radius(7),
-                        QSSHelper.font_size(width // 75),
+                        QSSHelper.border_radius(int(width * .0088)),
+                        QSSHelper.font_size(int(width * .013)),
+                        QSSHelper.max_width(int(width * .5)),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
-                        QSSHelper.max_width(width // 2),
+                        QSSHelper.padding(0, width_005, 0, width_005),
                     ) + \
             """}
             QLineEdit#contactsSearch{
                 """ + QSSHelper.concat(
-                        QSSHelper.font_size(width_div_62),
-                        QSSHelper.min_height(height_div_11),
-                        QSSHelper.border_none(),
+                        QSSHelper.font_size(width_016),
+                        QSSHelper.min_height(height_1),
+                        QSSHelper.border("none"),
                         QSSHelper.background_color(color_101010),
-                        QSSHelper.padding(0, 0, 0, width_div_150),
+                        QSSHelper.padding(0, 0, 0, width_0067),
                         QSSHelper.font_weight(font_weight_550),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
-                        
-                        "margin-right: 4px solid #0c0c0c"
+                        QSSHelper.margin_side("right", f"{width_004}px solid #{SharedQSS.COLOR_0c0c0c}"),
                     ) + \
             """}
             QLabel#currentContactName{
                 """ + QSSHelper.concat(
-                        QSSHelper.font_size(width_div_62),
-                        QSSHelper.min_height(height_div_11),
+                        QSSHelper.font_size(width_016),
+                        QSSHelper.min_height(height_1),
                         QSSHelper.background_color(color_101010),
                         QSSHelper.font_weight(font_weight_550),
-                        QSSHelper.padding(0, 0, 0, width_div_150),
+                        QSSHelper.padding(0, 0, 0, width_0067),
                     ) + \
             """}
         """
