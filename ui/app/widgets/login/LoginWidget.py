@@ -19,10 +19,7 @@ class LoginWidget(QWidget):
 
         layout = QVBoxLayout()
 
-        self.__login_widget_qss = LoginWidgetQSS(main_window)
-
         window_height = main_window.size().height()
-
         vertical_spacer = int(-window_height * .143)
 
         logo_label_layout = self.__get_logo_label_layout()
@@ -33,7 +30,7 @@ class LoginWidget(QWidget):
         layout = self.__get_main_layout(logo_label_layout, login_layout, password_layout, enter_layout, window_height)
 
         self.setLayout(layout)
-        self.setStyleSheet(self.__login_widget_qss.qss)
+        self.setStyleSheet(LoginWidgetQSS(main_window).qss)
         
     def keyPressEvent(self, event: QtGui.QKeyEvent | None) -> None:
         

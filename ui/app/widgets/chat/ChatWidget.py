@@ -5,7 +5,7 @@ from .ChatWidgetQSS import ChatWidgetQSS
 from .Message import Message
 from client.Client import Client
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QWidget, QMainWindow
-from threading import Thread
+from events import Events
 
 class ChatWidget(QWidget):
 
@@ -20,9 +20,7 @@ class ChatWidget(QWidget):
         super().__init__(main_window)
 
         self.__client = client
-
-        self.__chat_widget_qss = ChatWidgetQSS(main_window)
-
+        
         self.__contacts_widget = ContactsWidget(self)
         self.__messages_widget = MessagesWidget(main_window, self, self.__client.send_message)
 
@@ -45,7 +43,7 @@ class ChatWidget(QWidget):
         layout = self.__get_main_layout()
 
         self.setLayout(layout)
-        self.setStyleSheet(self.__chat_widget_qss.qss)
+        self.setStyleSheet(ChatWidgetQSS(main_window).qss)
 
         client.start_receiving()
 
