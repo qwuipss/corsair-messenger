@@ -1,11 +1,12 @@
 from .widgets.login.LoginWidget import LoginWidget
+from client.Client import Client
 from .MainWindowQSS import MainWindowQSS
 from .widgets.chat.ChatWidget import ChatWidget
 from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6 import QtGui
-from os.path import (
-    dirname, realpath,
-)
+from os.path import dirname, realpath
+from threading import Thread
+import asyncio
 
 #self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 class MainWindow(QMainWindow):
@@ -19,7 +20,13 @@ class MainWindow(QMainWindow):
         self.__set_window_size()
         self.__add_app_font()
 
-        central_widget = ChatWidget(self)
+        client = Client()
+
+        client_thread = Thread(target=lambda: asyncio.run(client.start_receiving()))
+        client_thread.setDaemon(True)
+        client_thread.start()
+        
+        central_widget = ChatWidget(self, client)
         # central_widget = LoginWidget(self)
 
         self.setCentralWidget(central_widget)
@@ -29,7 +36,7 @@ class MainWindow(QMainWindow):
     @staticmethod
     def __add_app_font() -> None:
 
-        font_path = f"{dirname(realpath(__file__))}\\appFont.ttf"
+        font_path = f"{dirname(realpath(__file__))}/appFont.ttf"
         
         QtGui.QFontDatabase.addApplicationFont(font_path)
         

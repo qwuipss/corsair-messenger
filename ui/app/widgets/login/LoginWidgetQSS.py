@@ -1,5 +1,5 @@
-from helpers.QSSHelper import QSSHelper
 from ...SharedQSS import SharedQSS
+from helpers.QSSHelper import QSSHelper
 from PyQt6.QtWidgets import QMainWindow
 
 class LoginWidgetQSS:

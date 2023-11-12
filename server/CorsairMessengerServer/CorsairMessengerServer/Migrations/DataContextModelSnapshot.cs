@@ -22,7 +22,7 @@ namespace CorsairMessengerServer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CorsairMessengerServer.Data.Entities.Message.Message", b =>
+            modelBuilder.Entity("CorsairMessengerServer.Data.Entities.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,8 +30,9 @@ namespace CorsairMessengerServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("RecieverId")
-                        .HasColumnType("integer");
+                    b.Property<int>("ReceiverId")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Relational:JsonPropertyName", "receiver_id");
 
                     b.Property<DateTime>("SendTime")
                         .HasColumnType("timestamp with time zone");
@@ -41,11 +42,12 @@ namespace CorsairMessengerServer.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("CorsairMessengerServer.Data.Entities.User", b =>
@@ -62,7 +64,8 @@ namespace CorsairMessengerServer.Migrations
 
                     b.Property<string>("Nickname")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(25)");
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -74,7 +77,7 @@ namespace CorsairMessengerServer.Migrations
 
                     b.HasAlternateKey("Nickname");
 
-                    b.ToTable("Users", null, t =>
+                    b.ToTable("Users", t =>
                         {
                             t.HasCheckConstraint("Nickname", "LENGTH(\"Nickname\") >= 5");
                         });

@@ -1,9 +1,7 @@
 from managers.RegexManager import RegexManager
 from .LoginWidgetQSS import LoginWidgetQSS
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QMainWindow
-)
+from PyQt6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QMainWindow
 
 class LoginWidget(QWidget):
 

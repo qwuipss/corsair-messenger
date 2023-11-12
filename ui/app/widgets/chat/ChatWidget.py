@@ -1,23 +1,30 @@
+import asyncio
 from .ContactsWidget import ContactsWidget
 from .MessagesWidget import MessagesWidget
 from .ChatWidgetQSS import ChatWidgetQSS
 from .Message import Message
-from PyQt6 import QtCore
+from client.Client import Client
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QWidget, QMainWindow
+from threading import Thread
 
 class ChatWidget(QWidget):
 
-    def __init__(self, main_window: QMainWindow) -> None:
+    def __init__(self, main_window: QMainWindow, client: Client) -> None:
 
         if not isinstance(main_window, QWidget):
             raise TypeError(type(main_window))
         
+        if not isinstance(client, Client):
+            raise TypeError(type(client))
+
         super().__init__(main_window)
+
+        self.__client = client
 
         self.__chat_widget_qss = ChatWidgetQSS(main_window)
 
         self.__contacts_widget = ContactsWidget(self)
-        self.__messages_widget = MessagesWidget(main_window, self)
+        self.__messages_widget = MessagesWidget(main_window, self, self.__send_message)
 
         # ---------------
         for i in range(15):
@@ -77,3 +84,6 @@ class ChatWidget(QWidget):
 
         return messages_layout
     
+    def __send_message(self, **kwargs) -> None:
+        
+        Thread(target=lambda: self.__client.send_message(**kwargs)).start()

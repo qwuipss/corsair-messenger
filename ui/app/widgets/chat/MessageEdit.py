@@ -6,7 +6,7 @@ from PyQt6 import QtGui
 
 class MessageEdit(QTextEdit):
 
-    def __init__(self, parent: QWidget, max_height: int, message_sent_callback: Callable[[], str]):
+    def __init__(self, parent: QWidget, max_height: int, message_sent_callback: Callable[[str], None]):
 
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))

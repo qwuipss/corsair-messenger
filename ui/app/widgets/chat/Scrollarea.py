@@ -1,6 +1,5 @@
-from collections.abc import Callable
 from PyQt6 import QtGui, QtCore
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame, QLayout
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame
 
 class Scrollarea(QScrollArea):
 

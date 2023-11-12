@@ -9,8 +9,10 @@ namespace CorsairMessengerServer.Data.Entities
         [JsonIgnore]
         public int SenderId { get; set; }
 
-        public required int RecieverId { get; set; }
+        [JsonPropertyName("receiver_id")]
+        public int ReceiverId { get; set; }
 
+        [JsonPropertyName("text")]
         public required string Text { get; set; }
 
         [JsonIgnore]

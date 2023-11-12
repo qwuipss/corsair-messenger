@@ -28,6 +28,12 @@ namespace CorsairMessengerServer.Controllers
             _userRepository = userRepository;
         }
 
+        [HttpGet("validate")]
+        public ActionResult Validate()
+        {
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> LoginAsync([FromBody] AuthRequest request, [FromServices] IPasswordHasher hasher)

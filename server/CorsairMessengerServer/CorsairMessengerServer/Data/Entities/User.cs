@@ -1,6 +1,6 @@
-﻿using static CorsairMessengerServer.Data.Constraints.UserEntityConstraints;
+﻿using CorsairMessengerServer.Helpers;
 using System.ComponentModel.DataAnnotations;
-using CorsairMessengerServer.Helpers;
+using static CorsairMessengerServer.Data.Constraints.UserEntityConstraints;
 
 namespace CorsairMessengerServer.Data.Entities
 {

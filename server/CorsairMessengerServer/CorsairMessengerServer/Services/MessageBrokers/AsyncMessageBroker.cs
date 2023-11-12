@@ -44,7 +44,7 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 
         private async Task SendMessageIfPossibleAsync(Message message)
         {
-            if (_webSocketsRepository.TryGetWebSocket(message.RecieverId, out var receiverSocket))
+            if (_webSocketsRepository.TryGetWebSocket(message.ReceiverId, out var receiverSocket))
             {
                 var buffer = GetSerializedMessage(message);
                 await SendMessageIfPossibleAsync(buffer, receiverSocket);

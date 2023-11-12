@@ -86,7 +86,7 @@ class ChatWidgetQSS:
                         QSSHelper.font_size(int(width * .013)),
                         QSSHelper.max_width(int(width * .5)),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
-                        QSSHelper.padding(0, width_005, 0, width_005),
+                        QSSHelper.padding(0, width_002, 0, width_002),
                     ) + \
             """}
             QLineEdit#contactsSearch{

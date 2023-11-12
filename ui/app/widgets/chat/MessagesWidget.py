@@ -1,3 +1,4 @@
+from typing import Callable
 from .MessageEdit import MessageEdit
 from .Scrollarea import Scrollarea
 from .Message import Message
@@ -6,7 +7,7 @@ from PyQt6.QtWidgets import QVBoxLayout, QWidget, QTextEdit, QLabel, QMainWindow
 
 class MessagesWidget(QWidget):
 
-    def __init__(self, main_window: QMainWindow, parent: QWidget) -> None:
+    def __init__(self, main_window: QMainWindow, parent: QWidget, message_sent_callback: Callable[[int, str], None]) -> None:
 
         if not isinstance(main_window, QMainWindow):
             raise TypeError(type(main_window))
@@ -14,11 +15,14 @@ class MessagesWidget(QWidget):
         if not isinstance(parent, QWidget):
             raise TypeError(type(parent))
         
+        if not isinstance(message_sent_callback, Callable):
+            raise TypeError(type(message_sent_callback))
+
         super().__init__(parent)
 
         self.__current_contact_name = QLabel("clynqz")
         self.__messages_scrollarea = Scrollarea(self)
-        self.__message_edit = self.__get_message_edit(main_window)
+        self.__message_edit = self.__get_message_edit(main_window, lambda text: message_sent_callback(receiver_id=3, text=text))
 
         self.__messages_scrollarea.layout.addStretch(1)
 
@@ -56,14 +60,17 @@ class MessagesWidget(QWidget):
 
         message_layout.update()
 
-    def __get_message_edit(self, main_window: QMainWindow) -> QTextEdit:
+    def __get_message_edit(self, main_window: QMainWindow, message_sent_callback: Callable[[str], None]) -> QTextEdit:
 
         if not isinstance(main_window, QMainWindow):
             raise TypeError(type(main_window))
         
+        if not isinstance(message_sent_callback, Callable):
+            raise TypeError(type(message_sent_callback))
+
         message_edit_max_height = int(main_window.size().height() * .3)
         
-        message_edit = MessageEdit(self, message_edit_max_height, lambda message: print(f"message sent: {message}"))
+        message_edit = MessageEdit(self, message_edit_max_height, message_sent_callback)
 
         message_edit.setLineWrapMode(QTextEdit.LineWrapMode.WidgetWidth)
         message_edit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
