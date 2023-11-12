@@ -22,15 +22,12 @@ class MainWindow(QMainWindow):
 
         client = Client()
 
-        client_thread = Thread(target=lambda: asyncio.run(client.start_receiving()))
-        client_thread.setDaemon(True)
-        client_thread.start()
-        
-        central_widget = ChatWidget(self, client)
-        # central_widget = LoginWidget(self)
+        if client.is_authorized:
+            central_widget = ChatWidget(self, client)
+        else:
+            central_widget = LoginWidget(self, client)
 
-        self.setCentralWidget(central_widget)
-        
+        self.setCentralWidget(central_widget)        
         self.setStyleSheet(MainWindowQSS().qss)
 
     @staticmethod

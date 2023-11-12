@@ -1,14 +1,19 @@
 from managers.RegexManager import RegexManager
 from .LoginWidgetQSS import LoginWidgetQSS
+from client.Client import Client
 from PyQt6.QtCore import Qt
+from PyQt6 import QtGui
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QMainWindow
 
 class LoginWidget(QWidget):
 
-    def __init__(self, main_window: QMainWindow) -> None:
+    def __init__(self, main_window: QMainWindow, client: Client) -> None:
 
         if not isinstance(main_window, QMainWindow):
             raise TypeError(type(main_window))
+
+        if not isinstance(client, Client):
+            raise TypeError(type(client))
 
         super().__init__(main_window)
 
@@ -29,6 +34,13 @@ class LoginWidget(QWidget):
 
         self.setLayout(layout)
         self.setStyleSheet(self.__login_widget_qss.qss)
+        
+    def keyPressEvent(self, event: QtGui.QKeyEvent | None) -> None:
+        
+        super().keyPressEvent(event)
+
+        if event.key() == Qt.Key.Key_Return:
+            print("authed")
 
     def __get_main_layout(
         self, 

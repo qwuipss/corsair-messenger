@@ -24,7 +24,7 @@ class ChatWidget(QWidget):
         self.__chat_widget_qss = ChatWidgetQSS(main_window)
 
         self.__contacts_widget = ContactsWidget(self)
-        self.__messages_widget = MessagesWidget(main_window, self, self.__send_message)
+        self.__messages_widget = MessagesWidget(main_window, self, self.__client.send_message)
 
         # ---------------
         for i in range(15):
@@ -46,6 +46,8 @@ class ChatWidget(QWidget):
 
         self.setLayout(layout)
         self.setStyleSheet(self.__chat_widget_qss.qss)
+
+        client.start_receiving()
 
     def __get_main_layout(self) -> QHBoxLayout:
 
@@ -84,6 +86,3 @@ class ChatWidget(QWidget):
 
         return messages_layout
     
-    def __send_message(self, **kwargs) -> None:
-        
-        Thread(target=lambda: self.__client.send_message(**kwargs)).start()
