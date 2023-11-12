@@ -5,8 +5,6 @@ from .widgets.chat.ChatWidget import ChatWidget
 from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6 import QtGui
 from os.path import dirname, realpath
-from threading import Thread
-import asyncio
 
 #self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 class MainWindow(QMainWindow):
@@ -20,12 +18,12 @@ class MainWindow(QMainWindow):
         self.__set_window_size()
         self.__add_app_font()
 
-        client = Client()
+        self.__client = Client()
 
-        if client.is_authorized:
-            central_widget = ChatWidget(self, client)
+        if self.__client.is_authorized:
+            central_widget = ChatWidget(self, self.__client)
         else:
-            central_widget = LoginWidget(self, client)
+            central_widget = LoginWidget(self, self.__client, self.__switch_login_to_chat)
 
         self.setCentralWidget(central_widget)        
         self.setStyleSheet(MainWindowQSS().qss)
@@ -41,3 +39,7 @@ class MainWindow(QMainWindow):
 
         self.setFixedWidth(int(self.__screen_size.width() * .7))
         self.setFixedHeight(int(self.__screen_size.height() * .7))
+
+    def __switch_login_to_chat(self) -> None:
+
+        self.setCentralWidget(ChatWidget(self, self.__client))

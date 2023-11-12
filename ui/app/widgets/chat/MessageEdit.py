@@ -44,7 +44,7 @@ class MessageEdit(QTextEdit):
                         
                         text = self.toPlainText()
                         
-                        if not str.isspace(text) and text != "":
+                        if not str.isspace(text) and text:
                             self.__message_sent_callback(text)
                         
                         self.setPlainText("")

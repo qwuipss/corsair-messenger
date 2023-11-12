@@ -1,6 +1,4 @@
-import asyncio
 import ssl
-import websockets
 import json
 import requests
 import urllib3
@@ -25,13 +23,12 @@ class Client:
         self.__unverified_ssl_context = ssl._create_unverified_context()
 
         load_info = Client.__try_load_auth_token()
-        
+
         self.__is_authorized = load_info[0]
         auth_token = load_info[1]
 
         if self.__is_authorized and Client.__check_auth_token_validity(auth_token):
-            headers = { "Authorization" : auth_token }
-            self.__websocket = connect(Client.SERVER_WEBSOCKET_CONNECT_URI, ssl_context=self.__unverified_ssl_context, additional_headers=headers)
+            self.__connect_websocket(auth_token)
         else:
             self.__websocket = None
             self.__is_authorized = False
@@ -47,11 +44,25 @@ class Client:
             return (False, "")
 
         with open(Client.AUTH_TOKEN_LOAD_FILENAME, "r") as file:
-            loaded_file = json.load(file)
+            try:
+                loaded_file = json.load(file)
+            except:
+                pass
 
-        auth_token = loaded_file.get("auth_token") or ""
+        auth_token = loaded_file.get("token") or ""
 
         return (bool(auth_token), auth_token)
+
+    @staticmethod
+    def __save_auth_token(auth_token: str) -> None:
+
+        if not isinstance(auth_token, str):
+            raise ValueError(auth_token)
+        
+        data = { "token" : auth_token }
+
+        with open(Client.AUTH_TOKEN_LOAD_FILENAME, "w") as file:
+            file.write(json.dumps(data))
 
     @staticmethod
     def __check_auth_token_validity(auth_token: str) -> bool:
@@ -87,9 +98,37 @@ class Client:
 
         self.__websocket.send(serialized_message)
 
-    def auth(self, login: str, password: str) -> None:
-        pass
+    def auth(self, login: str, password: str) -> bool:
+        
+        if not isinstance(login, str):
+            raise ValueError(login)
+        
+        if not isinstance(password, str):
+            raise ValueError(password)
 
+        auth_response = requests.post(f"{Client.SERVER_URI}/account/login", json={ "login" : login, "password" : password }, verify=False)
+
+        if auth_response.status_code == 200:
+
+            auth_token = "Bearer " + auth_response.json()["token"]
+
+            self.__connect_websocket(auth_token)
+            self.__save_auth_token(auth_token)
+
+            return True
+        
+        return False
+
+    def __connect_websocket(self, auth_token: str) -> None:
+
+        if not isinstance(auth_token, str):
+            raise ValueError(auth_token)
+
+        headers = { "Authorization" : auth_token }
+
+        self.__websocket = connect(Client.SERVER_WEBSOCKET_CONNECT_URI, ssl_context=self.__unverified_ssl_context, additional_headers=headers)
+
+        self.__is_authorized = True
 
 # # id = 3
 # headers_1 = { "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJleHAiOjE3MjgwNDkwOTksImlzcyI6IkNvcnNhaXJNZXNzZW5nZXJTZXJ2ZXIiLCJhdWQiOiJDb3JzYWlyTWVzc2VuZ2VyQ2xpZW50In0.OqR47IoaYXffyZGgHwuIvWL78HM3ovxktfHflt7heZA" }

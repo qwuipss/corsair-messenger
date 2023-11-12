@@ -27,10 +27,6 @@ namespace CorsairMessengerServer.Middlewares
 
             if (userId is null || !int.TryParse(userId, out var socketId))
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-
-                await context.Response.WriteAsJsonAsync(new { ErrorInfo = "invalid auth token" });
-
                 return;
             }
 

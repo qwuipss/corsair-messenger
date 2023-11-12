@@ -1,13 +1,14 @@
 from managers.RegexManager import RegexManager
 from .LoginWidgetQSS import LoginWidgetQSS
 from client.Client import Client
+from typing import Callable
 from PyQt6.QtCore import Qt
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QPushButton, QWidget, QSpacerItem, QMainWindow
 
 class LoginWidget(QWidget):
 
-    def __init__(self, main_window: QMainWindow, client: Client) -> None:
+    def __init__(self, main_window: QMainWindow, client: Client, authorized_callback: Callable[[], None]) -> None:
 
         if not isinstance(main_window, QMainWindow):
             raise TypeError(type(main_window))
@@ -15,12 +16,21 @@ class LoginWidget(QWidget):
         if not isinstance(client, Client):
             raise TypeError(type(client))
 
+        if not isinstance(authorized_callback, Callable):
+            raise TypeError(authorized_callback)
+
         super().__init__(main_window)
+
+        self.__client = client
+        self.__authorized_callback = authorized_callback
 
         layout = QVBoxLayout()
 
         window_height = main_window.size().height()
         vertical_spacer = int(-window_height * .143)
+
+        self.__login_line_edit = self.__get_login_line_edit()
+        self.__password_line_edit = self.__get_password_line_edit()
 
         logo_label_layout = self.__get_logo_label_layout()
         login_layout = self.__get_login_layout(vertical_spacer)
@@ -37,7 +47,7 @@ class LoginWidget(QWidget):
         super().keyPressEvent(event)
 
         if event.key() == Qt.Key.Key_Return:
-            print("authed")
+            self.__auth()
 
     def __get_main_layout(
         self, 
@@ -89,11 +99,10 @@ class LoginWidget(QWidget):
         login_layout = QVBoxLayout()
 
         login_label = self.__get_login_label()
-        login_line_edit = self.__get_login_line_edit()
 
         login_layout.addWidget(login_label, alignment=Qt.AlignmentFlag.AlignCenter)
         login_layout.addSpacerItem(QSpacerItem(0, vertical_spacer))
-        login_layout.addWidget(login_line_edit, alignment=Qt.AlignmentFlag.AlignCenter)
+        login_layout.addWidget(self.__login_line_edit, alignment=Qt.AlignmentFlag.AlignCenter)
 
         return login_layout
 
@@ -105,11 +114,10 @@ class LoginWidget(QWidget):
         password_layout = QVBoxLayout()
 
         password_label = self.__get_password_label()
-        password_line_edit = self.__get_password_line_edit()
         
         password_layout.addWidget(password_label, alignment=Qt.AlignmentFlag.AlignCenter)
         password_layout.addSpacerItem(QSpacerItem(0, vertical_spacer))
-        password_layout.addWidget(password_line_edit, alignment=Qt.AlignmentFlag.AlignCenter)
+        password_layout.addWidget(self.__password_line_edit, alignment=Qt.AlignmentFlag.AlignCenter)
 
         return password_layout
 
@@ -141,16 +149,16 @@ class LoginWidget(QWidget):
 
     def __get_login_line_edit(self) -> QLineEdit:
         
-        login_line_edit = QLineEdit(self)
+        self.__login_line_edit = QLineEdit(self)
 
         line_edit_validator = RegexManager.get_regex_nickname_validator()
 
-        login_line_edit.setObjectName("loginEdit")
-        login_line_edit.setMaxLength(25)
-        login_line_edit.setValidator(line_edit_validator)
-        login_line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.__login_line_edit.setObjectName("loginEdit")
+        self.__login_line_edit.setMaxLength(25)
+        self.__login_line_edit.setValidator(line_edit_validator)
+        self.__login_line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        return login_line_edit
+        return self.__login_line_edit
 
     def __get_password_label(self) -> QLabel:
         
@@ -178,4 +186,23 @@ class LoginWidget(QWidget):
         enter_button.setObjectName("enterButton")
         enter_button.setCursor(Qt.CursorShape.PointingHandCursor)
 
+        enter_button.pressed.connect(self.__auth)
+
         return enter_button
+    
+    def __auth(self) -> None:
+
+        login = self.__login_line_edit.text()
+
+        if str.isspace(login):
+            return
+        
+        password = self.__password_line_edit.text()
+        
+        if str.isspace(password):
+            return
+
+        is_authorized = self.__client.auth(login, password)
+
+        if is_authorized:
+            self.__authorized_callback()

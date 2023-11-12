@@ -1,6 +1,7 @@
 from managers.RegexManager import RegexManager
 from ...SharedQSS import SharedQSS
 from .Scrollarea import Scrollarea
+from .Contact import Contact
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QLineEdit, QWidget
 from PyQt6 import QtCore
@@ -27,7 +28,7 @@ class ContactsWidget(QWidget):
     def contacts_scrollarea(self) -> Scrollarea:
         return self.__contacts_scrollarea
     
-    def add_contact(self, contact: QWidget) -> None:
+    def add_contact(self, contact: Contact) -> None:
 
         if not isinstance(contact, QWidget):
             raise TypeError(type(contact)) 

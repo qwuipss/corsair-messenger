@@ -1,11 +1,10 @@
-import asyncio
 from .ContactsWidget import ContactsWidget
 from .MessagesWidget import MessagesWidget
 from .ChatWidgetQSS import ChatWidgetQSS
 from .Message import Message
+from .Contact import Contact
 from client.Client import Client
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QWidget, QMainWindow
-from events import Events
 
 class ChatWidget(QWidget):
 
@@ -27,8 +26,8 @@ class ChatWidget(QWidget):
         # ---------------
         for i in range(15):
 
-            contact_label = QLabel(f"contact{i}")
-            self.__contacts_widget.add_contact(contact_label)
+            contact = Contact(self, i, f"contact{i}")
+            self.__contacts_widget.add_contact(contact)
 
             message = Message("hello world", self)
             self.__messages_widget.add_message(message, i % 2 == 0)
