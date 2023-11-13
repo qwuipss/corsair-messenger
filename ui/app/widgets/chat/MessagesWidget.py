@@ -22,7 +22,7 @@ class MessagesWidget(QWidget):
 
         self.__current_contact_name = QLabel("clynqz")
         self.__messages_scrollarea = Scrollarea(self)
-        self.__message_edit = self.__get_message_edit(main_window, lambda text: message_sent_callback(receiver_id=3, text=text))
+        self.__message_edit = self.__get_message_edit(main_window, lambda text: message_sent_callback(receiver_id=2, text=text))
 
         self.__messages_scrollarea.layout.addStretch(1)
 

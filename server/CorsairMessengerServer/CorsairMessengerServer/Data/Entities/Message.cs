@@ -12,8 +12,11 @@ namespace CorsairMessengerServer.Data.Entities
         [JsonPropertyName("receiver_id")]
         public int ReceiverId { get; set; }
 
+        [JsonIgnore]
+        public User? Receiver { get; set; }
+
         [JsonPropertyName("text")]
-        public required string Text { get; set; }
+        public string? Text { get; set; }
 
         [JsonIgnore]
         public DateTime SendTime { get; set; }

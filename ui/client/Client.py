@@ -33,6 +33,11 @@ class Client:
             self.__websocket = None
             self.__is_authorized = False
 
+        # headers = { "Authorization" : auth_token }
+        # s = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 10 }, verify=False)
+        # contacts = s.json()
+        # 2
+
     @property
     def is_authorized(self) -> bool:
         return self.__is_authorized

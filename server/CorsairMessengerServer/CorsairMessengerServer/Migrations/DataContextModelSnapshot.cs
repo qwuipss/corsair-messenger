@@ -41,11 +41,12 @@ namespace CorsairMessengerServer.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Text")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasAnnotation("Relational:JsonPropertyName", "text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
 
                     b.ToTable("Messages");
                 });
@@ -68,7 +69,6 @@ namespace CorsairMessengerServer.Migrations
                         .HasColumnType("character varying(25)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -81,6 +81,17 @@ namespace CorsairMessengerServer.Migrations
                         {
                             t.HasCheckConstraint("Nickname", "LENGTH(\"Nickname\") >= 5");
                         });
+                });
+
+            modelBuilder.Entity("CorsairMessengerServer.Data.Entities.Message", b =>
+                {
+                    b.HasOne("CorsairMessengerServer.Data.Entities.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
                 });
 #pragma warning restore 612, 618
         }

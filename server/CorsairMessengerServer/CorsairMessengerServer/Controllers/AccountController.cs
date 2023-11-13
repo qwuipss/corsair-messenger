@@ -2,11 +2,13 @@
 using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Helpers;
+using CorsairMessengerServer.Managers;
 using CorsairMessengerServer.Models.Auth;
 using CorsairMessengerServer.Models.Register;
 using CorsairMessengerServer.Services.PasswordHasher;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -23,13 +25,22 @@ namespace CorsairMessengerServer.Controllers
 
         private readonly UsersRepository _userRepository;
 
-        public AccountController(UsersRepository userRepository)
+        private readonly IDistributedCache _cache;
+
+        public AccountController(UsersRepository userRepository, IDistributedCache cache)
         {
             _userRepository = userRepository;
+            _cache = cache;
         }
 
         [HttpGet("validate")]
         public ActionResult Validate()
+        {
+            return Ok();
+        }
+
+        [HttpPost("change-password")]
+        public async Task<ActionResult<AuthResponse>> ChangePasswordAsync([FromBody] AuthRequest request, [FromServices] IPasswordHasher hasher)
         {
             return Ok();
         }
@@ -45,14 +56,14 @@ namespace CorsairMessengerServer.Controllers
                 return BadRequest(new { Field = "login" });
             }
 
-            var verified = hasher.Verify(request.Password, user.Password);
+            var verified = hasher.Verify(request.Password, user.Password!);
 
             if (!verified)
             {
                 return BadRequest(new { Field = "password" });
             }
 
-            var token = GetAuthToken(user);
+            var token = await GetAuthTokenAsync(user);
 
             var response = new AuthResponse(token);
 
@@ -102,7 +113,7 @@ namespace CorsairMessengerServer.Controllers
 
             await _userRepository.AddUserAsync(user);
 
-            var token = GetAuthToken(user);
+            var token = await GetAuthTokenAsync(user);
 
             var response = new AuthResponse(token);
 
@@ -116,20 +127,36 @@ namespace CorsairMessengerServer.Controllers
             return new User { Nickname = nickname, Email = email, Password = hashedPassword };
         }
 
-        private static string GetAuthToken(User user)
+        private async Task<string> GetAuthTokenAsync(User user)
         {
-            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };
+            var userId = user.Id.ToString();
+            var sessionId = Guid.NewGuid().ToString();
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Sid, sessionId),
+            };
 
             var jwt = new JwtSecurityToken(
-                    issuer: AuthOptions.ISSUER,
-                    audience: AuthOptions.AUDIENCE,
                     claims: claims,
-                    expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(AUTH_TOKEN_LIFETIME_MINUTES)),
                     signingCredentials: new SigningCredentials(AuthOptions.SymmetricSecurityKey, SecurityAlgorithms.HmacSha256));
 
             var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
+            await RegisterSession(userId, sessionId);
+
             return token;
+        }
+
+        private async Task RegisterSession(string userId, string sessionId)
+        {
+            var sessionString = SessionManager.GetSessionString(userId, sessionId);
+
+            await _cache.SetStringAsync(sessionString, "0", new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(AUTH_TOKEN_LIFETIME_MINUTES),
+            });
         }
     }
 }

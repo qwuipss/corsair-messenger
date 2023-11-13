@@ -1,5 +1,6 @@
 ﻿using CorsairMessengerServer.Helpers;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using static CorsairMessengerServer.Data.Constraints.UserEntityConstraints;
 
 namespace CorsairMessengerServer.Data.Entities
@@ -11,11 +12,12 @@ namespace CorsairMessengerServer.Data.Entities
         [MinLength(NICKNAME_MIN_LENGTH)]
         [MaxLength(NICKNAME_MAX_LENGTH)]
         [RegularExpression(RegexHelper.NicknameValidationRegex)]
-        public required string Nickname { get; set; }
+        public string? Nickname { get; set; }
 
         [RegularExpression(RegexHelper.EmailValidationRegex)]
-        public required string Email { get; set; }
+        public string? Email { get; set; }
 
-        public required string Password { get; set; }
+        [JsonIgnore]
+        public string? Password { get; set; }
     }
 }

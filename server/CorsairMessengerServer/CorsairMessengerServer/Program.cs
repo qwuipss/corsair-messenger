@@ -25,15 +25,13 @@ namespace CorsairMessengerServer
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters()
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidIssuer = AuthOptions.ISSUER,
-                        ValidateIssuer = true,
-                        ValidAudience = AuthOptions.AUDIENCE,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        IssuerSigningKey = AuthOptions.SymmetricSecurityKey,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = false,
                         ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = AuthOptions.SymmetricSecurityKey,
                     };
                 });
 
@@ -44,7 +42,14 @@ namespace CorsairMessengerServer
                 options.UseNpgsql(connectionString);
             });
 
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "localhost";
+                options.InstanceName = "local";
+            });
+
             builder.Services.AddTransient<WebSocketsManager>();
+
             builder.Services.AddTransient<UsersRepository>();
             builder.Services.AddTransient<MessagesRepository>();
             builder.Services.AddTransient<WebSocketsRepository>();
@@ -63,7 +68,9 @@ namespace CorsairMessengerServer
             app.MapControllers();
 
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSessionValidityCheck();
             app.UseWebSockets();
             app.UseWebSocketsConnections();
 
