@@ -3,14 +3,11 @@ from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame
 
 class Scrollarea(QScrollArea):
 
-    def __init__(self, parent: QWidget) -> None:
+    def __init__(self) -> None:
 
-        if not isinstance(parent, QWidget):
-            raise TypeError(type(parent))
-        
-        super().__init__(parent)
+        super().__init__()
 
-        self.__layout = self.__get_layout(parent)
+        self.__layout = self.__get_layout()
 
         self.verticalScrollBar().hide()
 
@@ -18,14 +15,11 @@ class Scrollarea(QScrollArea):
     def layout(self) -> QVBoxLayout:
         return self.__layout
     
-    def __get_layout(self, parent: QWidget) -> QVBoxLayout:
-
-        if not isinstance(parent, QWidget):
-            raise TypeError(type(parent))
+    def __get_layout(self) -> QVBoxLayout:
 
         layout = QVBoxLayout(self)
 
-        widget = QWidget(parent)
+        widget = QWidget()
 
         widget.setLayout(layout)
 

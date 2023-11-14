@@ -4,21 +4,19 @@ from .Scrollarea import Scrollarea
 from .Contact import Contact
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QLineEdit, QWidget
-from PyQt6 import QtCore
 
 class ContactsWidget(QWidget):
 
-    def __init__(self, parent: QWidget) -> None:
+    def __init__(self) -> None:
         
-        if not isinstance(parent, QWidget):
-            raise TypeError(type(parent))
-        
-        super().__init__(parent)
+        super().__init__()
 
         self.__contacts_search = self.__get_contacts_search()
-        self.__contacts_scrollarea = Scrollarea(self)
+        self.__contacts_scrollarea = Scrollarea()
         
-        self.contacts_scrollarea.layout.addStretch(1)
+        self.__contacts_scrollarea.layout.addStretch(1)
+        self.__contacts_scrollarea.layout.setSpacing(0)
+        self.__contacts_scrollarea.layout.setContentsMargins(0, 0, 0, 0)
 
     @property
     def contacts_search(self) -> QLineEdit:

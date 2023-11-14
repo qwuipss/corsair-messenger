@@ -1,17 +1,14 @@
-from PyQt6.QtWidgets import QWidget, QTextEdit
+from PyQt6.QtWidgets import QTextEdit
 from PyQt6.QtGui import QTextOption, QResizeEvent
 
 class Message(QTextEdit):
     
-    def __init__(self, text: str, parent: QWidget):
+    def __init__(self, text: str):
 
         if not isinstance(text, str):
             raise TypeError(type(text))
-        
-        if not isinstance(parent, QWidget):
-            raise TypeError(type(parent))
 
-        super().__init__(parent)
+        super().__init__()
 
         self.setWordWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
         

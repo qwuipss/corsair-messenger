@@ -55,23 +55,21 @@ class ChatWidgetQSS:
                         QSSHelper.background("transparent"),
                     ) + \
             """}
-            MessageEdit{
-                """ + QSSHelper.concat(
-                        QSSHelper.font_size(width_015),
-                        QSSHelper.background_color(color_101010),
-                        QSSHelper.border("none"),
-                        QSSHelper.font_weight(100),
-                        QSSHelper.color(SharedQSS.COLOR_f2f2f2),
-                        QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
-                        QSSHelper.padding(width_005, width_01, width_005, width_01),
-                    ) + \
-            """}
             Contact{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_101010),
                         QSSHelper.font_size(width_015),
                         QSSHelper.min_height(int(width * .043)),
                         QSSHelper.padding(0, 0, 0, width_005),
+                    ) + \
+            """}
+            QLabel#currentContactName{
+                """ + QSSHelper.concat(
+                        QSSHelper.font_size(width_016),
+                        QSSHelper.min_height(height_1),
+                        QSSHelper.background_color(color_101010),
+                        QSSHelper.font_weight(font_weight_550),
+                        QSSHelper.padding(0, 0, 0, width_0067),
                     ) + \
             """}
             Contact::hover{
@@ -106,13 +104,15 @@ class ChatWidgetQSS:
                         QSSHelper.margin_side("right", f"{width_004}px solid #{SharedQSS.COLOR_0c0c0c}"),
                     ) + \
             """}
-            Contact#currentContact{
+            MessageEdit{
                 """ + QSSHelper.concat(
-                        QSSHelper.font_size(width_016),
-                        QSSHelper.min_height(height_1),
+                        QSSHelper.font_size(width_015),
                         QSSHelper.background_color(color_101010),
-                        QSSHelper.font_weight(font_weight_550),
-                        QSSHelper.padding(0, 0, 0, width_0067),
+                        QSSHelper.border("none"),
+                        QSSHelper.font_weight(100),
+                        QSSHelper.color(SharedQSS.COLOR_f2f2f2),
+                        QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
+                        QSSHelper.padding(width_005, width_01, width_005, width_01),
                     ) + \
             """}
         """

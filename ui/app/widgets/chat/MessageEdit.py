@@ -1,23 +1,20 @@
 from typing import Callable 
 from ...SharedQSS import SharedQSS
-from PyQt6.QtWidgets import QTextEdit, QWidget
+from PyQt6.QtWidgets import QTextEdit
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 
 class MessageEdit(QTextEdit):
 
-    def __init__(self, parent: QWidget, max_height: int, message_sent_callback: Callable[[str], None]):
+    def __init__(self, max_height: int, message_sent_callback: Callable[[str], None]):
 
-        if not isinstance(parent, QWidget):
-            raise TypeError(type(parent))
-        
         if not isinstance(max_height, int):
             raise TypeError(type(max_height))
 
         if not isinstance(message_sent_callback, Callable):
             raise TypeError(type(message_sent_callback))
 
-        super().__init__(parent)
+        super().__init__()
 
         self.__max_height = max_height
         self.__message_sent_callback = message_sent_callback
