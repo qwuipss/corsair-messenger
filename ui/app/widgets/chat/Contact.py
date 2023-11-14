@@ -46,6 +46,9 @@ class Contact(QLabel):
 
         self.__messages_scrollarea.layout.addStretch(1)
 
+        scrollbar =  self.__messages_scrollarea.verticalScrollBar()       
+        scrollbar.rangeChanged.connect(lambda: scrollbar.setValue(scrollbar.maximum()))
+
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
 
@@ -90,8 +93,6 @@ class Contact(QLabel):
         message_layout.setAlignment(alignment)
 
         self.__messages_scrollarea.layout.insertLayout(0, message_layout)   
-
-        message_layout.update()
 
     def __get_message_edit(self, main_window: QMainWindow, message_sent_callback: Callable[[str], None]) -> QTextEdit:
 

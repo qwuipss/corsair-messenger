@@ -45,7 +45,9 @@ namespace CorsairMessengerServer.Data.Repositories
         public object[] GetMessages(int userId, MessagesPullRequest request)
         {
             return _context.Messages
-                .Where(message => message.SenderId == userId && message.ReceiverId == request.UserId)
+                .Where(message => 
+                   message.SenderId == userId && message.ReceiverId == request.UserId
+                || message.SenderId == request.UserId && message.ReceiverId == userId)
                 .Where(message => message.Id > request.MessageId)
                 .Select(message => new { message.Id, sender_id = message.SenderId, message.Text, send_time = message.SendTime })
                 .OrderByDescending(message => message.Id)
