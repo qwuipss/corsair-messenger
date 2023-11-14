@@ -25,18 +25,13 @@ class Client:
         load_info = Client.__try_load_auth_token()
 
         self.__is_authorized = load_info[0]
-        auth_token = load_info[1]
+        self.__auth_token = load_info[1]
 
-        if self.__is_authorized and Client.__check_auth_token_validity(auth_token):
-            self.__connect_websocket(auth_token)
+        if self.__is_authorized and self.__check_auth_token_validity():
+            self.__connect_websocket()
         else:
             self.__websocket = None
             self.__is_authorized = False
-
-        headers = { "Authorization" : auth_token }
-        s = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 10 }, verify=False)
-        contacts = s.json()
-        2
 
     @property
     def is_authorized(self) -> bool:
@@ -68,18 +63,6 @@ class Client:
 
         with open(Client.AUTH_TOKEN_LOAD_FILENAME, "w") as file:
             file.write(json.dumps(data))
-
-    @staticmethod
-    def __check_auth_token_validity(auth_token: str) -> bool:
-
-        if not isinstance(auth_token, str):
-            raise ValueError(auth_token)
-
-        headers = { "Authorization" : auth_token }
-
-        validate_response = requests.get(f"{Client.SERVER_URI}/account/validate", headers=headers, verify=False)
-
-        return validate_response.status_code == 200
     
     def start_receiving(self) -> None:
 
@@ -124,18 +107,32 @@ class Client:
         
         return False
 
-    def __connect_websocket(self, auth_token: str) -> None:
+    def get_contacts(self) -> list[tuple[int, str]]:
+        
+        headers = { "Authorization" : self.__auth_token }
 
-        if not isinstance(auth_token, str):
-            raise ValueError(auth_token)
+        response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 10 }, verify=False)
 
-        headers = { "Authorization" : auth_token }
+        contacts = []
+
+        for contact in response.json():
+
+            contacts.append((contact["id"], contact["nickname"]))
+
+        return contacts
+
+    def __check_auth_token_validity(self) -> bool:
+
+        headers = { "Authorization" : self.__auth_token }
+
+        validate_response = requests.get(f"{Client.SERVER_URI}/account/validate", headers=headers, verify=False)
+
+        return validate_response.status_code == 200
+    
+    def __connect_websocket(self) -> None:
+
+        headers = { "Authorization" : self.__auth_token }
 
         self.__websocket = connect(Client.SERVER_WEBSOCKET_CONNECT_URI, ssl_context=self.__unverified_ssl_context, additional_headers=headers)
 
         self.__is_authorized = True
-
-# # id = 3
-# headers_1 = { "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJleHAiOjE3MjgwNDkwOTksImlzcyI6IkNvcnNhaXJNZXNzZW5nZXJTZXJ2ZXIiLCJhdWQiOiJDb3JzYWlyTWVzc2VuZ2VyQ2xpZW50In0.OqR47IoaYXffyZGgHwuIvWL78HM3ovxktfHflt7heZA" }
-# # id = 4
-# headers_2 = { "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjQiLCJleHAiOjE3MjgzNzY3NDQsImlzcyI6IkNvcnNhaXJNZXNzZW5nZXJTZXJ2ZXIiLCJhdWQiOiJDb3JzYWlyTWVzc2VuZ2VyQ2xpZW50In0.FZyVN2eUXKR05NJmv0dsbfkFaIH7UUA3lxmANqhj-cE" }

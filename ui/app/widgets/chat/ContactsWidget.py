@@ -33,10 +33,6 @@ class ContactsWidget(QWidget):
         if not isinstance(contact, QWidget):
             raise TypeError(type(contact)) 
 
-        contact.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
-        contact.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
-        contact.setObjectName("contact")
-
         self.__contacts_scrollarea.layout.insertWidget(0, contact)
 
     def __get_contacts_search(self) -> QLineEdit:

@@ -2,6 +2,7 @@ from typing import Callable
 from .MessageEdit import MessageEdit
 from .Scrollarea import Scrollarea
 from .Message import Message
+from .Contact import Contact
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QVBoxLayout, QWidget, QTextEdit, QLabel, QMainWindow
 
@@ -20,19 +21,26 @@ class MessagesWidget(QWidget):
 
         super().__init__(parent)
 
-        self.__current_contact_name = QLabel("clynqz")
+        self.__current_contact = None
         self.__messages_scrollarea = Scrollarea(self)
-        self.__message_edit = self.__get_message_edit(main_window, lambda text: message_sent_callback(receiver_id=2, text=text))
+        self.__message_edit = self.__get_message_edit(main_window, lambda text: message_sent_callback(receiver_id=self.__current_contact.id, text=text))
 
         self.__messages_scrollarea.layout.addStretch(1)
 
-        self.__current_contact_name.setObjectName("currentContactName")
         self.__messages_scrollarea.verticalScrollBar().setObjectName("showed")
 
     @property
-    def current_contact_name(self) -> QLabel:
-        return self.__current_contact_name
+    def current_contact(self) -> Contact:
+        return self.__current_contact
     
+    @current_contact.setter
+    def current_contact(self, contact: Contact) -> None:
+
+        if not isinstance(contact, Contact):
+            raise TypeError(type(contact)) 
+    
+        self.__current_contact = contact
+
     @property
     def messages_scrollarea(self) -> Scrollarea:
         return self.__messages_scrollarea

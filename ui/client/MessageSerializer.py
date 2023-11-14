@@ -15,8 +15,6 @@ class MessageSerializer(JSONEncoder):
         
         if not text:
             raise KeyError(text)
-
-        message = object
         
-        return { "receiver_id" : message.receiver_id, "text" : message.text }
+        return { "receiver_id" : receiver_id, "text" : text }
     

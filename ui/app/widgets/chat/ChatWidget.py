@@ -4,7 +4,7 @@ from .ChatWidgetQSS import ChatWidgetQSS
 from .Message import Message
 from .Contact import Contact
 from client.Client import Client
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QWidget, QMainWindow
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QMainWindow
 
 class ChatWidget(QWidget):
 
@@ -23,12 +23,10 @@ class ChatWidget(QWidget):
         self.__contacts_widget = ContactsWidget(self)
         self.__messages_widget = MessagesWidget(main_window, self, self.__client.send_message)
 
+        self.__load_contacts()
+
         # ---------------
         for i in range(15):
-
-            contact = Contact(self, i, f"contact{i}")
-            self.__contacts_widget.add_contact(contact)
-
             message = Message("hello world", self)
             self.__messages_widget.add_message(message, i % 2 == 0)
             message = Message("how are you", self)
@@ -77,9 +75,34 @@ class ChatWidget(QWidget):
 
         messages_layout = QVBoxLayout()
         
-        messages_layout.addWidget(self.__messages_widget.current_contact_name)
+        messages_layout.addWidget(self.__messages_widget.current_contact)
         messages_layout.addWidget(self.__messages_widget.messages_scrollarea)
         messages_layout.addWidget(self.__messages_widget.message_edit)
 
         return messages_layout
     
+    def __load_contacts(self) -> None:
+
+        contacts = self.__client.get_contacts()
+
+        for contact in contacts:
+
+            self.__contacts_widget.add_contact(Contact(self.__contacts_widget, contact[0], contact[1], self.__contact_selected_callback))
+
+    def __contact_selected_callback(self, new_contact: Contact) -> None:
+
+        if not isinstance(new_contact, Contact):
+            raise TypeError(type(new_contact))
+        
+        current_contact = self.__messages_widget.current_contact
+
+        self.__messages_widget.current_contact = new_contact
+
+        if current_contact is None:
+            return
+
+        # new_contact.setParent(self.__messages_widget.current_contact)
+
+        current_contact.setObjectName("") 
+        current_contact.setStyleSheet("") 
+

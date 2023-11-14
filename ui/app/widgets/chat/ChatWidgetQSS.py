@@ -39,7 +39,7 @@ class ChatWidgetQSS:
             """}
             QScrollBar::handle::vertical{
                 """ + QSSHelper.concat(
-                        QSSHelper.background_color(SharedQSS.COLOR_555555),
+                        QSSHelper.background_color("777777"),
                         QSSHelper.min_height(height_008),
                         QSSHelper.border_radius(width_002),
                     ) + \
@@ -66,7 +66,7 @@ class ChatWidgetQSS:
                         QSSHelper.padding(width_005, width_01, width_005, width_01),
                     ) + \
             """}
-            QLabel#contact{
+            Contact{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_101010),
                         QSSHelper.font_size(width_015),
@@ -74,9 +74,14 @@ class ChatWidgetQSS:
                         QSSHelper.padding(0, 0, 0, width_005),
                     ) + \
             """}
-            QLabel#contact::hover{
+            Contact::hover{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_141414),
+                    ) + \
+            """}
+            Contact#selected{
+                """ + QSSHelper.concat(
+                        QSSHelper.background_color(SharedQSS.COLOR_555555),
                     ) + \
             """}
             Message{
@@ -101,7 +106,7 @@ class ChatWidgetQSS:
                         QSSHelper.margin_side("right", f"{width_004}px solid #{SharedQSS.COLOR_0c0c0c}"),
                     ) + \
             """}
-            QLabel#currentContactName{
+            Contact#currentContact{
                 """ + QSSHelper.concat(
                         QSSHelper.font_size(width_016),
                         QSSHelper.min_height(height_1),
