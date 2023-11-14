@@ -2,6 +2,7 @@ from .ContactsWidget import ContactsWidget
 from .MessagesWidget import MessagesWidget
 from .ChatWidgetQSS import ChatWidgetQSS
 from .Contact import Contact
+from .Message import Message
 from client.Client import Client
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QMainWindow, QLabel
 
@@ -28,7 +29,7 @@ class ChatWidget(QWidget):
         self.setStyleSheet(ChatWidgetQSS(main_window).qss)
 
         self.__load_contacts(main_window)
-        client.start_receiving()
+        client.start_receiving(self.__message_received_callback)
 
     def __get_main_layout(self) -> QHBoxLayout:
 
@@ -65,7 +66,14 @@ class ChatWidget(QWidget):
 
         for raw_contact in contacts:
 
-            contact = Contact(int(raw_contact[0]), raw_contact[1], self.__contact_selected_callback, self.__message_sent_callback, main_window)
+            contact = Contact(
+                int(raw_contact["id"]), 
+                raw_contact["nickname"], 
+                self.__contact_selected_callback, 
+                self.__message_sent_callback, 
+                self.__client.pull_messages, 
+                main_window
+                )
 
             self.__contacts_widget.add_contact(contact)
 
@@ -113,3 +121,14 @@ class ChatWidget(QWidget):
         self.__messages_layout.addWidget(currentContactName)
         self.__messages_layout.addWidget(contact.messages_scrollarea)
         self.__messages_layout.addWidget(contact.message_edit)
+
+    def __message_received_callback(self, raw_message: dict) -> None:
+
+        message_id = raw_message["id"]
+        sender_id = int(raw_message["sender_id"])
+
+        receiver = self.__contacts_widget.contacts[sender_id]
+
+        message = Message(message_id, raw_message["text"])
+
+        receiver.add_message(message, sender_id != receiver.id)

@@ -1,5 +1,6 @@
 ﻿using CorsairMessengerServer.Data.Entities;
 using CorsairMessengerServer.Data.Repositories;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -26,7 +27,13 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 
         private static byte[] GetSerializedMessage(Message message)
         {
-            var serializedMessage = JsonSerializer.Serialize(new { message.SenderId, message.Text });
+            var serializedMessage = JsonSerializer.Serialize(new 
+            { 
+                id = message.Id, 
+                sender_id = message.SenderId, 
+                text = message.Text, 
+                send_time = message.SendTime,
+            });
 
             var buffer = Encoding.UTF8.GetBytes(serializedMessage);
 

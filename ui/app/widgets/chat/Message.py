@@ -3,19 +3,26 @@ from PyQt6.QtGui import QTextOption, QResizeEvent
 
 class Message(QTextEdit):
     
-    def __init__(self, text: str):
+    def __init__(self, id: int, text: str):
 
+        if not isinstance(id, int):
+            raise TypeError(type(id))
+        
         if not isinstance(text, str):
             raise TypeError(type(text))
 
         super().__init__()
 
-        self.setWordWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
-        
-        self.textChanged.connect(self.__adjust_size)
+        self.__id = id
 
+        self.setWordWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)        
+        self.textChanged.connect(self.__adjust_size)
         self.setText(text)
         self.setReadOnly(True)
+
+    @property
+    def id(self) -> int:
+        return self.__id
 
     def resizeEvent(self, _: QResizeEvent) -> None:
 

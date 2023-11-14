@@ -18,7 +18,8 @@ class Contact(QLabel):
             id: int, 
             name: str, 
             contact_selected_callback: Callable[['Contact'], None], 
-            message_sent_callback: Callable[[int, str], None], 
+            message_sent_callback: Callable[[int, str], None],
+            messages_pull_request_delegate: Callable[[int, int], tuple[bool, Message]],
             main_window: QMainWindow
             ) -> None:
         
@@ -33,8 +34,12 @@ class Contact(QLabel):
 
         super().__init__(name)
 
+        # self.__last_message_id = 0
+        # self.__is_requeriable = True
+
         self.__id = id
         self.__contact_selected_callback = contact_selected_callback
+        self.__messages_pull_request_delegate = messages_pull_request_delegate
 
         self.__messages_scrollarea = Scrollarea()
         self.__message_edit = self.__get_message_edit(main_window, lambda text: message_sent_callback(receiver_id=self.__id, text=text))
@@ -50,6 +55,10 @@ class Contact(QLabel):
 
     @property
     def messages_scrollarea(self) -> Scrollarea:
+
+        if self.__messages_scrollarea.layout.count() == 1:
+            self.__load_messages()
+
         return self.__messages_scrollarea
     
     @property
@@ -75,12 +84,12 @@ class Contact(QLabel):
 
         message_layout = QVBoxLayout()
 
-        alignment = (QtCore.Qt.AlignmentFlag.AlignRight if self_author else QtCore.Qt.AlignmentFlag.AlignLeft) | QtCore.Qt.AlignmentFlag.AlignBottom
+        alignment = QtCore.Qt.AlignmentFlag.AlignRight if self_author else QtCore.Qt.AlignmentFlag.AlignLeft
 
         message_layout.addWidget(message)
         message_layout.setAlignment(alignment)
 
-        self.__messages_scrollarea.layout.addLayout(message_layout)   
+        self.__messages_scrollarea.layout.insertLayout(0, message_layout)   
 
         message_layout.update()
 
@@ -102,3 +111,12 @@ class Contact(QLabel):
 
         return message_edit
     
+    def __load_messages(self) -> None:
+
+        messages = self.__messages_pull_request_delegate(self.__id, 0)
+
+        for raw_message in messages:
+
+            message = Message(raw_message["id"], raw_message["text"])
+
+            self.add_message(message, int(raw_message["sender_id"]) != self.__id)

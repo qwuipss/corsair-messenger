@@ -4,6 +4,7 @@ import requests
 import urllib3
 from .MessageSerializer import MessageSerializer
 from threading import Thread
+from typing import Callable
 from websockets.sync.client import connect
 from os.path import dirname, realpath, exists
 
@@ -64,13 +65,15 @@ class Client:
         with open(Client.AUTH_TOKEN_LOAD_FILENAME, "w") as file:
             file.write(json.dumps(data))
     
-    def start_receiving(self) -> None:
+    def start_receiving(self, message_received_callback: Callable[[dict], None]) -> None:
 
         def start_receiving() -> None:
 
             while True:
+                
                 message = self.__websocket.recv()
-                print(json.dumps(message))
+                
+                message_received_callback(json.loads(message))
 
         if not self.__is_authorized:
             raise ValueError(self.__is_authorized)
@@ -98,28 +101,31 @@ class Client:
 
         if auth_response.status_code == 200:
 
-            auth_token = "Bearer " + auth_response.json()["token"]
+            self.__auth_token = "Bearer " + auth_response.json()["token"]
 
-            self.__connect_websocket(auth_token)
-            self.__save_auth_token(auth_token)
+            self.__connect_websocket()
+            self.__save_auth_token(self.__auth_token)
 
             return True
         
         return False
 
-    def get_contacts(self) -> list[tuple[int, str]]:
+    def get_contacts(self) -> dict:
         
         headers = { "Authorization" : self.__auth_token }
 
-        response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 10 }, verify=False)
+        response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 50 }, verify=False)
 
-        contacts = []
+        return response.json()
 
-        for contact in response.json():
+    def pull_messages(self, contact_id: int, message_id: int) -> dict:
+        
+        headers = { "Authorization" : self.__auth_token }
 
-            contacts.append((contact["id"], contact["nickname"]))
+        response = requests.get(f"{Client.SERVER_URI}/messages/pull", headers=headers, 
+                                json={ "message_id" : message_id, "user_id" : contact_id, "offset" : 0, "count" : 50 }, verify=False)
 
-        return contacts
+        return response.json()
 
     def __check_auth_token_validity(self) -> bool:
 

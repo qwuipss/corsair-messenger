@@ -11,6 +11,8 @@ class ContactsWidget(QWidget):
         
         super().__init__()
 
+        self.__contacts = {}
+
         self.__contacts_search = self.__get_contacts_search()
         self.__contacts_scrollarea = Scrollarea()
         
@@ -26,12 +28,18 @@ class ContactsWidget(QWidget):
     def contacts_scrollarea(self) -> Scrollarea:
         return self.__contacts_scrollarea
     
+    @property
+    def contacts(self) -> dict:
+        return self.__contacts
+    
     def add_contact(self, contact: Contact) -> None:
 
         if not isinstance(contact, QWidget):
             raise TypeError(type(contact)) 
 
         self.__contacts_scrollarea.layout.insertWidget(0, contact)
+
+        self.__contacts.update({contact.id : contact})
 
     def __get_contacts_search(self) -> QLineEdit:
                 

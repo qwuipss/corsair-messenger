@@ -1,6 +1,9 @@
 ﻿using CorsairMessengerServer.Data.Entities;
 using CorsairMessengerServer.Models.Contacts;
+using CorsairMessengerServer.Models.Messages;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace CorsairMessengerServer.Data.Repositories
 {
@@ -31,6 +34,21 @@ namespace CorsairMessengerServer.Data.Repositories
                 .Select(message => new { message.Receiver!.Id, message.Receiver.Nickname })
                 .OrderBy(user => user.Id)
                 .Distinct()
+                .Skip(request.Offset)
+                .Take(request.Count)
+                .ToArray();
+        }
+
+        /// <returns>
+        ///     Array of anonymous objects { Id: int, Text: string, SendTime: DateTime }
+        /// </returns>
+        public object[] GetMessages(int userId, MessagesPullRequest request)
+        {
+            return _context.Messages
+                .Where(message => message.SenderId == userId && message.ReceiverId == request.UserId)
+                .Where(message => message.Id > request.MessageId)
+                .Select(message => new { message.Id, sender_id = message.SenderId, message.Text, send_time = message.SendTime })
+                .OrderByDescending(message => message.Id)
                 .Skip(request.Offset)
                 .Take(request.Count)
                 .ToArray();
