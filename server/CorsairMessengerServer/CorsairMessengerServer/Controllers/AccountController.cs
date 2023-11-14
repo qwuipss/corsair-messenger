@@ -151,9 +151,7 @@ namespace CorsairMessengerServer.Controllers
 
         private async Task RegisterSession(string userId, string sessionId)
         {
-            var sessionString = SessionManager.GetSessionString(userId, sessionId);
-
-            await _cache.SetStringAsync(sessionString, "0", new DistributedCacheEntryOptions
+            await _cache.SetStringAsync(userId, sessionId, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(AUTH_TOKEN_LIFETIME_MINUTES),
             });

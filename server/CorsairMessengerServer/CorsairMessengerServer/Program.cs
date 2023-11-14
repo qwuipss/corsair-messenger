@@ -35,17 +35,19 @@ namespace CorsairMessengerServer
                     };
                 });
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var dbConnectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
 
             builder.Services.AddDbContext<DataContext>(options =>
             {
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(dbConnectionString);
             });
+
+            var redisSection = builder.Configuration.GetSection("Redis");
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = "localhost";
-                options.InstanceName = "local";
+                options.Configuration = redisSection.GetValue<string>("Configuration");
+                options.InstanceName = redisSection.GetValue<string>("InstanceName");
             });
 
             builder.Services.AddTransient<WebSocketsManager>();

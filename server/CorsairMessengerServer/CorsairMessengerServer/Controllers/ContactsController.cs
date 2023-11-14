@@ -1,4 +1,5 @@
 ﻿using CorsairMessengerServer.Data;
+using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Models.Contacts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,11 @@ namespace CorsairMessengerServer.Controllers
     [ApiController]
     public class ContactsController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly MessagesRepository _messagesRepository;
 
-        public ContactsController(DataContext context)
+        public ContactsController(MessagesRepository messagesRepository)
         {
-            _context = context;
+            _messagesRepository = messagesRepository;
         }
 
         [HttpGet("get")]
@@ -26,17 +27,9 @@ namespace CorsairMessengerServer.Controllers
 
             var userId = int.Parse(userIdClaim);
 
-            var contactsIds = _context.Messages
-                .Where(message => message.SenderId == userId)
-                .Include(message => message.Receiver)
-                .Distinct()
-                .OrderBy(message => message.Id)
-                .Skip(request.Offset)
-                .Take(request.Count)
-                .Select(message => new { message.Receiver!.Id, message.Receiver.Nickname })
-                .ToArray();
+            var contacts = _messagesRepository.GetContacts(userId, request);
 
-            return Ok(contactsIds);
+            return Ok(contacts);
         }
     }
 }

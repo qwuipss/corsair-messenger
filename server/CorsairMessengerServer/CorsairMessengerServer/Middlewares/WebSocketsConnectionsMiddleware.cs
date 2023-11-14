@@ -23,9 +23,9 @@ namespace CorsairMessengerServer.Middlewares
 
             var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-            var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-            var socketId = int.Parse(userIdClaim);
+            var socketId = int.Parse(userId);
 
             var webSocketConnection = webSocketsManager.OnConnected(socketId, webSocket);
 

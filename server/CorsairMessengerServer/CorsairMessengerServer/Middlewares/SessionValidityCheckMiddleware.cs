@@ -23,9 +23,9 @@ namespace CorsairMessengerServer.Middlewares
                 return;
             }
 
-            var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (userIdClaim is null || !int.TryParse(userIdClaim, out _))
+            if (userId is null || !int.TryParse(userId, out _))
             {
                 context.Response.Clear();
 
@@ -34,9 +34,9 @@ namespace CorsairMessengerServer.Middlewares
                 return;
             }
 
-            var sessionIdClaim = context.User.FindFirstValue(ClaimTypes.Sid);
+            var sessionId = context.User.FindFirstValue(ClaimTypes.Sid);
 
-            if (sessionIdClaim is null)
+            if (sessionId is null)
             {
                 context.Response.Clear();
 
@@ -45,9 +45,9 @@ namespace CorsairMessengerServer.Middlewares
                 return;
             }
 
-            var sessionString = SessionManager.GetSessionString(userIdClaim, sessionIdClaim);
+            var cachedSessionId = await cache.GetStringAsync(userId);
 
-            if (await cache.GetStringAsync(sessionString) is null)
+            if (cachedSessionId != sessionId)
             {
                 context.Response.Clear();
 
