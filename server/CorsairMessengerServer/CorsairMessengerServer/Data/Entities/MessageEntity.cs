@@ -2,7 +2,7 @@
 
 namespace CorsairMessengerServer.Data.Entities
 {
-    public class Message
+    public class MessageEntity
     {
         public int Id { get; set; }
 
@@ -13,7 +13,7 @@ namespace CorsairMessengerServer.Data.Entities
         public int ReceiverId { get; set; }
 
         [JsonIgnore]
-        public User? Receiver { get; set; }
+        public UserEntity? Receiver { get; set; }
 
         [JsonPropertyName("text")]
         public string? Text { get; set; }

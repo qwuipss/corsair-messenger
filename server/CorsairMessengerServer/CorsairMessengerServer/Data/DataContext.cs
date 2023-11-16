@@ -6,9 +6,9 @@ namespace CorsairMessengerServer.Data
 {
     public class DataContext : DbContext
     {
-        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<UserEntity> Users { get; set; } = null!;
 
-        public DbSet<Message> Messages { get; set; } = null!;
+        public DbSet<MessageEntity> Messages { get; set; } = null!;
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -19,11 +19,11 @@ namespace CorsairMessengerServer.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>().ToTable(table =>
+            modelBuilder.Entity<UserEntity>().ToTable(table =>
                 table.HasCheckConstraint("Nickname", $"LENGTH(\"Nickname\") >= {NICKNAME_MIN_LENGTH}"));
 
-            modelBuilder.Entity<User>().HasAlternateKey(user => user.Nickname);
-            modelBuilder.Entity<User>().HasAlternateKey(user => user.Email);
+            modelBuilder.Entity<UserEntity>().HasAlternateKey(user => user.Nickname);
+            modelBuilder.Entity<UserEntity>().HasAlternateKey(user => user.Email);
         }
     }
 }

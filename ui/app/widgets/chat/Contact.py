@@ -46,9 +46,10 @@ class Contact(QLabel):
 
         self.__messages_scrollarea.layout.addStretch(1)
 
-        scrollbar =  self.__messages_scrollarea.verticalScrollBar()       
-        scrollbar.rangeChanged.connect(lambda: scrollbar.setValue(scrollbar.maximum()))
-
+        self.__autoscroll_delegate = lambda: scrollbar.setValue(scrollbar.maximum())
+        scrollbar =  self.__messages_scrollarea.verticalScrollBar()
+        scrollbar.rangeChanged.connect(self.__autoscroll_delegate)
+        
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
 
@@ -60,7 +61,7 @@ class Contact(QLabel):
     def messages_scrollarea(self) -> Scrollarea:
 
         if self.__messages_scrollarea.layout.count() == 1:
-            self.__load_messages()
+            self.__pull_messages()
 
         return self.__messages_scrollarea
     
@@ -92,7 +93,7 @@ class Contact(QLabel):
         message_layout.addWidget(message)
         message_layout.setAlignment(alignment)
 
-        self.__messages_scrollarea.layout.insertLayout(0, message_layout)   
+        self.__messages_scrollarea.layout.addLayout(message_layout)
 
     def __get_message_edit(self, main_window: QMainWindow, message_sent_callback: Callable[[str], None]) -> QTextEdit:
 
@@ -112,9 +113,9 @@ class Contact(QLabel):
 
         return message_edit
     
-    def __load_messages(self) -> None:
+    def __pull_messages(self) -> None:
 
-        messages = self.__messages_pull_request_delegate(self.__id, 0)
+        messages = self.__messages_pull_request_delegate(self.__id, 0) #todo
 
         for raw_message in messages:
 

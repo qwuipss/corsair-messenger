@@ -16,7 +16,7 @@ namespace CorsairMessengerServer.Data.Repositories
             _context = context;
         }
 
-        public async Task AddMessageAsync(Message message)
+        public async Task AddMessageAsync(MessageEntity message)
         {
             await _context.Messages.AddAsync(message);
 
@@ -50,7 +50,7 @@ namespace CorsairMessengerServer.Data.Repositories
                 || message.SenderId == request.UserId && message.ReceiverId == userId)
                 .Where(message => message.Id > request.MessageId)
                 .Select(message => new { message.Id, sender_id = message.SenderId, message.Text, send_time = message.SendTime })
-                .OrderByDescending(message => message.Id)
+                .OrderBy(message => message.Id)
                 .Skip(request.Offset)
                 .Take(request.Count)
                 .ToArray();

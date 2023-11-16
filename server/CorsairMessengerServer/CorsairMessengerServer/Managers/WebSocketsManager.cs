@@ -92,9 +92,9 @@ namespace CorsairMessengerServer.Managers
             return receiveResult.EndOfMessage;
         }
 
-        private static async Task<Message?> TryParseMessageAsync(byte[] buffer, int socketId)
+        private static async Task<MessageEntity?> TryParseMessageAsync(byte[] buffer, int socketId)
         {
-            Message? message = null;
+            MessageEntity? message = null;
 
             try
             {
@@ -105,7 +105,7 @@ namespace CorsairMessengerServer.Managers
 
                 var memoryStream = new MemoryStream(buffer);
 
-                message = (await JsonSerializer.DeserializeAsync<Message>(memoryStream, options))!;
+                message = (await JsonSerializer.DeserializeAsync<MessageEntity>(memoryStream, options))!;
             }
             catch
             {
@@ -126,7 +126,7 @@ namespace CorsairMessengerServer.Managers
             await Task.Delay(RECEIVING_PAUSE_DELAY_MS);
         }
 
-        private async Task SendMessageAsync(Message message)
+        private async Task SendMessageAsync(MessageEntity message)
         {
             await _messageBroker.SendMessageAsync(message);
         }

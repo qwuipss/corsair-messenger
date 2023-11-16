@@ -5,7 +5,7 @@ using static CorsairMessengerServer.Data.Constraints.UserEntityConstraints;
 
 namespace CorsairMessengerServer.Data.Entities
 {
-    public class User
+    public class UserEntity
     {
         public int Id { get; set; }
 

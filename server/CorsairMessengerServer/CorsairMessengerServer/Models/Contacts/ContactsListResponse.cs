@@ -2,5 +2,5 @@
 
 namespace CorsairMessengerServer.Models.Contacts
 {
-    public record ContactsListResponse(User[] Contacts);
+    public record ContactsListResponse(UserEntity[] Contacts);
 }

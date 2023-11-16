@@ -4,8 +4,8 @@ from .ChatWidgetQSS import ChatWidgetQSS
 from .Contact import Contact
 from .Message import Message
 from client.Client import Client
+from client.MessageReceiveThread import MessageReceiveThread
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QMainWindow, QLabel
-
 class ChatWidget(QWidget):
 
     def __init__(self, main_window: QMainWindow, client: Client) -> None:
@@ -21,15 +21,16 @@ class ChatWidget(QWidget):
         self.__client = client
         
         self.__contacts_widget = ContactsWidget()
-        self.__messages_widget = MessagesWidget()
-
-        self.__messages_layout = self.__get_messages_layout()
+        self.__messages_widget = MessagesWidget(self.__client)
 
         self.setLayout(self.__get_main_layout())
         self.setStyleSheet(ChatWidgetQSS(main_window).qss)
 
         self.__load_contacts(main_window)
-        client.start_receiving(self.__message_received_callback)
+        
+        self.__message_receive_thread = MessageReceiveThread(client)
+        self.__message_receive_thread.message_received.connect(self.__message_received_slot)
+        self.__message_receive_thread.start()
 
     def __get_main_layout(self) -> QHBoxLayout:
 
@@ -38,7 +39,7 @@ class ChatWidget(QWidget):
         contacts_layout = self.__get_contacts_layout()
 
         layout.addLayout(contacts_layout, 2)
-        layout.addLayout(self.__messages_layout, 5)
+        layout.addLayout(self.__messages_widget.layout, 5)
 
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -54,12 +55,6 @@ class ChatWidget(QWidget):
 
         return contacts_layout
     
-    def __get_messages_layout(self) -> QVBoxLayout:
-
-        messages_layout = QVBoxLayout()
-
-        return messages_layout
-    
     def __load_contacts(self, main_window: QMainWindow) -> None:
 
         contacts = self.__client.get_contacts()
@@ -70,7 +65,7 @@ class ChatWidget(QWidget):
                 int(raw_contact["id"]), 
                 raw_contact["nickname"], 
                 self.__contact_selected_callback, 
-                self.__message_sent_callback, 
+                self.__messages_widget.message_sent_callback, 
                 self.__client.pull_messages, 
                 main_window
                 )
@@ -82,8 +77,8 @@ class ChatWidget(QWidget):
         if not isinstance(contact, Contact):
             raise TypeError(type(contact))
         
-        self.__hide_contact_dialog()
-        self.__show_contact_dialog(contact)
+        self.__messages_widget.hide_contact_dialog()
+        self.__messages_widget.show_contact_dialog(contact)
 
         previous_contact = self.__messages_widget.contact
         self.__messages_widget.contact = contact
@@ -94,38 +89,13 @@ class ChatWidget(QWidget):
         previous_contact.setObjectName("") 
         previous_contact.setStyleSheet("") 
 
-    def __message_sent_callback(self, receiver_id: int, text: str) -> None:
-        
-        if not isinstance(receiver_id, int):
-            raise TypeError(type(receiver_id))
-        
-        if not isinstance(text, str):
-            raise TypeError(type(text))
-
-        self.__client.send_message(receiver_id=receiver_id, text=text)
-
-    def __hide_contact_dialog(self) -> None:
-
-        for i in range(self.__messages_layout.count()): 
-            self.__messages_layout.itemAt(0).widget().setParent(None)
-
-    def __show_contact_dialog(self, contact: Contact) -> None:
-
-        if not isinstance(contact, Contact):
-            raise TypeError(type(contact))
-
-        currentContactName = QLabel(contact.text())
-
-        currentContactName.setObjectName("currentContactName")
-
-        self.__messages_layout.addWidget(currentContactName)
-        self.__messages_layout.addWidget(contact.messages_scrollarea)
-        self.__messages_layout.addWidget(contact.message_edit)
-
-    def __message_received_callback(self, raw_message: dict) -> None:
+    def __message_received_slot(self, raw_message: dict) -> None:
 
         message_id = raw_message["id"]
         sender_id = int(raw_message["sender_id"])
+
+        if sender_id == 0:
+            pass
 
         receiver = self.__contacts_widget.contacts[sender_id]
 

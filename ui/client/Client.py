@@ -2,9 +2,8 @@ import ssl
 import json
 import requests
 import urllib3
+from SharedConstants import SECOND_WINDOW
 from .MessageSerializer import MessageSerializer
-from threading import Thread
-from typing import Callable
 from websockets.sync.client import connect
 from os.path import dirname, realpath, exists
 
@@ -17,6 +16,10 @@ class Client:
     SERVER_WEBSOCKET_CONNECT_URI = f"wss://{SERVER_IP_ADDRESS_PORT}"
 
     AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/auth.json"
+
+    if SECOND_WINDOW:
+        SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/authSecondWindow.json"
+        __first_auth = True
 
     def __init__(self) -> None:
         
@@ -34,21 +37,44 @@ class Client:
             self.__websocket = None
             self.__is_authorized = False
 
+    def __enter__(self) -> 'Client':
+        return self
+
+    def __exit__(self, *_) -> bool:
+
+        self.__websocket.close()
+
+        return True
+
     @property
     def is_authorized(self) -> bool:
         return self.__is_authorized
 
     @staticmethod
     def __try_load_auth_token() -> tuple[bool, str]:
-        
-        if not exists(Client.AUTH_TOKEN_LOAD_FILENAME):
-            return (False, "")
 
-        with open(Client.AUTH_TOKEN_LOAD_FILENAME, "r") as file:
-            try:
-                loaded_file = json.load(file)
-            except:
-                pass
+        if SECOND_WINDOW and not Client.__first_auth:
+
+            if not exists(Client.SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME):
+                return (False, "")
+            
+            with open(Client.SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME, "r") as file:
+                try:
+                    loaded_file = json.load(file)
+                except:
+                    pass
+
+        else:
+
+            if not exists(Client.AUTH_TOKEN_LOAD_FILENAME):
+                return (False, "")
+
+            with open(Client.AUTH_TOKEN_LOAD_FILENAME, "r") as file:
+                try:
+                    loaded_file = json.load(file)
+                    Client.__first_auth = False
+                except:
+                    pass
 
         auth_token = loaded_file.get("token") or ""
 
@@ -62,23 +88,21 @@ class Client:
         
         data = { "token" : auth_token }
 
-        with open(Client.AUTH_TOKEN_LOAD_FILENAME, "w") as file:
-            file.write(json.dumps(data))
-    
-    def start_receiving(self, message_received_callback: Callable[[dict], None]) -> None:
+        if SECOND_WINDOW and not Client.__first_auth:
+            with open(Client.SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME, "w") as file:
+                file.write(json.dumps(data))
+        else:
+            with open(Client.AUTH_TOKEN_LOAD_FILENAME, "w") as file:
+                file.write(json.dumps(data))
 
-        def start_receiving() -> None:
-
-            while True:
-                
-                message = self.__websocket.recv()
-                
-                message_received_callback(json.loads(message))
+    def receive_message(self) -> None:
 
         if not self.__is_authorized:
             raise ValueError(self.__is_authorized)
+
+        message = self.__websocket.recv()
         
-        Thread(target=start_receiving).start()
+        return message
 
     def send_message(self, **message) -> None:
 
@@ -106,6 +130,8 @@ class Client:
             self.__connect_websocket()
             self.__save_auth_token(self.__auth_token)
 
+            Client.__first_auth = False
+
             return True
         
         return False
@@ -123,7 +149,7 @@ class Client:
         headers = { "Authorization" : self.__auth_token }
 
         response = requests.get(f"{Client.SERVER_URI}/messages/pull", headers=headers, 
-                                json={ "message_id" : message_id, "user_id" : contact_id, "offset" : 0, "count" : 50 }, verify=False)
+                                json={ "message_id" : message_id, "user_id" : contact_id, "offset" : 0, "count" : 200 }, verify=False)
 
         return response.json()
 

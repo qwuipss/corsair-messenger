@@ -19,13 +19,16 @@ namespace CorsairMessengerServer.Services.MessageBrokers
             _messagesRepository = messagesRepository;
         }
 
-        public async Task SendMessageAsync(Message message)
+        public async Task SendMessageAsync(MessageEntity message)
         {
             await AddMessageToRepositoryAsync(message);
+
             await SendMessageIfPossibleAsync(message);
+
+            await SendMessageDeliveredToServerSignal(message);
         }
 
-        private static byte[] GetSerializedMessage(Message message)
+        private static byte[] GetSerializedMessage(MessageEntity message)
         {
             var serializedMessage = JsonSerializer.Serialize(new 
             { 
@@ -49,16 +52,29 @@ namespace CorsairMessengerServer.Services.MessageBrokers
             }
         }
 
-        private async Task SendMessageIfPossibleAsync(Message message)
+        private async Task SendMessageIfPossibleAsync(MessageEntity message)
         {
             if (_webSocketsRepository.TryGetWebSocket(message.ReceiverId, out var receiverSocket))
             {
                 var buffer = GetSerializedMessage(message);
+
                 await SendMessageIfPossibleAsync(buffer, receiverSocket);
             }
         }
 
-        private async Task AddMessageToRepositoryAsync(Message message)
+        private async Task SendMessageDeliveredToServerSignal(MessageEntity message)
+        {
+            var callbackMessage = new { message_id = message.Id };
+
+            if (_webSocketsRepository.TryGetWebSocket(message.SenderId, out var receiverSocket))
+            {
+                var buffer = GetSerializedMessage(message);
+
+                await SendMessageIfPossibleAsync(buffer, receiverSocket);
+            }
+        }
+
+        private async Task AddMessageToRepositoryAsync(MessageEntity message)
         {
             await _messagesRepository.AddMessageAsync(message);
         }

@@ -4,6 +4,6 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 {
     public interface IMessageBroker
     {
-        public Task SendMessageAsync(Message message);
+        public Task SendMessageAsync(MessageEntity message);
     }
 }

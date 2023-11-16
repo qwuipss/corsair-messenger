@@ -12,7 +12,7 @@ namespace CorsairMessengerServer.Data.Repositories
             _context = context;
         }
 
-        public async Task<User?> GetUserByLoginAsync(string login, bool asNoTracking = false)
+        public async Task<UserEntity?> GetUserByLoginAsync(string login, bool asNoTracking = false)
         {
             var query = _context.Users.Where(user => user.Email == login || user.Nickname == login);
 
@@ -26,7 +26,7 @@ namespace CorsairMessengerServer.Data.Repositories
             return user;
         }
 
-        public async Task AddUserAsync(User user)
+        public async Task AddUserAsync(UserEntity user)
         {
             await _context.AddAsync(user);
 

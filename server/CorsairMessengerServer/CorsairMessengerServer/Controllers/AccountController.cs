@@ -7,6 +7,7 @@ using CorsairMessengerServer.Models.Auth;
 using CorsairMessengerServer.Models.Register;
 using CorsairMessengerServer.Services.PasswordHasher;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
@@ -42,7 +43,7 @@ namespace CorsairMessengerServer.Controllers
         [HttpPost("change-password")]
         public async Task<ActionResult<AuthResponse>> ChangePasswordAsync([FromBody] AuthRequest request, [FromServices] IPasswordHasher hasher)
         {
-            return Ok();
+            return BadRequest();
         }
 
         [AllowAnonymous]
@@ -120,14 +121,14 @@ namespace CorsairMessengerServer.Controllers
             return Ok(response);
         }
 
-        private static User CreateUser(string nickname, string email, string password, IPasswordHasher hasher)
+        private static UserEntity CreateUser(string nickname, string email, string password, IPasswordHasher hasher)
         {
             var hashedPassword = hasher.Hash(password);
 
-            return new User { Nickname = nickname, Email = email, Password = hashedPassword };
+            return new UserEntity { Nickname = nickname, Email = email, Password = hashedPassword };
         }
 
-        private async Task<string> GetAuthTokenAsync(User user)
+        private async Task<string> GetAuthTokenAsync(UserEntity user)
         {
             var userId = user.Id.ToString();
             var sessionId = Guid.NewGuid().ToString();
