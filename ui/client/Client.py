@@ -10,7 +10,7 @@ from os.path import dirname, realpath, exists
 
 class Client:
 
-    SERVER_IP_ADDRESS_PORT = "127.0.0.1:8080"
+    SERVER_IP_ADDRESS_PORT = "192.168.0.106:8080"
 
     SERVER_URI = f"https://{SERVER_IP_ADDRESS_PORT}"
 
