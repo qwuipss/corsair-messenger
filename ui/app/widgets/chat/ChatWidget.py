@@ -5,7 +5,7 @@ from .Contact import Contact
 from .Message import Message
 from client.Client import Client
 from client.MessageReceiveThread import MessageReceiveThread
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QMainWindow, QLabel
+from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QMainWindow
 class ChatWidget(QWidget):
 
     def __init__(self, main_window: QMainWindow, client: Client) -> None:
@@ -19,7 +19,7 @@ class ChatWidget(QWidget):
         super().__init__()
 
         self.__client = client
-        
+
         self.__contacts_widget = ContactsWidget()
         self.__messages_widget = MessagesWidget(self.__client)
 
@@ -91,14 +91,20 @@ class ChatWidget(QWidget):
 
     def __message_received_slot(self, raw_message: dict) -> None:
 
-        message_id = raw_message["id"]
+        message_id = int(raw_message["message_id"])
         sender_id = int(raw_message["sender_id"])
+        text = raw_message["text"]
 
         if sender_id == 0:
-            pass
 
-        receiver = self.__contacts_widget.contacts[sender_id]
+            chat_id = int(raw_message["receiver_id"])
+            chat = self.__contacts_widget.contacts[chat_id]
 
-        message = Message(message_id, raw_message["text"])
+            chat.add_message(Message(message_id, text), True)
 
-        receiver.add_message(message, sender_id != receiver.id)
+            return
+
+        sender = self.__contacts_widget.contacts[sender_id]
+        message = Message(message_id, text)
+
+        sender.add_message(message, sender_id != sender.id)

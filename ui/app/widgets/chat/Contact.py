@@ -34,9 +34,6 @@ class Contact(QLabel):
 
         super().__init__(name)
 
-        # self.__last_message_id = 0
-        # self.__is_requeriable = True
-
         self.__id = id
         self.__contact_selected_callback = contact_selected_callback
         self.__messages_pull_request_delegate = messages_pull_request_delegate

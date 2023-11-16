@@ -149,7 +149,7 @@ class Client:
         headers = { "Authorization" : self.__auth_token }
 
         response = requests.get(f"{Client.SERVER_URI}/messages/pull", headers=headers, 
-                                json={ "message_id" : message_id, "user_id" : contact_id, "offset" : 0, "count" : 200 }, verify=False)
+                                json={ "message_id" : message_id, "user_id" : contact_id, "offset" : 0, "count" : 500 }, verify=False)
 
         return response.json()
 

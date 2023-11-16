@@ -32,8 +32,8 @@ namespace CorsairMessengerServer.Data.Repositories
                 .Where(message => message.SenderId == userId)
                 .Include(message => message.Receiver)
                 .Select(message => new { message.Receiver!.Id, message.Receiver.Nickname })
-                .OrderBy(user => user.Id)
                 .Distinct()
+                .OrderBy(user => user.Id)
                 .Skip(request.Offset)
                 .Take(request.Count)
                 .ToArray();
