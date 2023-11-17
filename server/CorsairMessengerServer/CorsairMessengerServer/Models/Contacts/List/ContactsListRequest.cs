@@ -12,7 +12,6 @@
             {
                 return _count;
             }
-
             set
             {
                 if (value < 0)

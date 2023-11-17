@@ -18,8 +18,8 @@ namespace CorsairMessengerServer.Controllers
             _messagesRepository = messagesRepository;
         }
 
-        [HttpGet("pull")]
-        public ActionResult<object[]> GetMessages([FromBody] MessagesPullRequest request)
+        [HttpGet("load")]
+        public ActionResult<MessagesListResponse> GetMessages([FromBody] MessagesLoadRequest request)
         {
             var userIdClaim = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 

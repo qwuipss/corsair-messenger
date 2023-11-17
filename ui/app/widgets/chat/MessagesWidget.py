@@ -4,15 +4,11 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 class MessagesWidget(QWidget):
 
-    def __init__(self, client: Client) -> None:
-
-        if not isinstance(client, Client):
-            raise TypeError(type(client))
+    def __init__(self) -> None:
 
         super().__init__()
 
         self.__contact = None
-        self.__client = client
 
         self.__layout = self.__get_messages_layout()
 
@@ -34,7 +30,7 @@ class MessagesWidget(QWidget):
 
     def hide_contact_dialog(self) -> None:
 
-        for i in range(self.__layout.count()): 
+        for _ in range(self.__layout.count()): 
             self.__layout.itemAt(0).widget().setParent(None)
 
     def show_contact_dialog(self, contact: Contact) -> None:

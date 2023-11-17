@@ -4,6 +4,9 @@ namespace CorsairMessengerServer.Data.Entities.Request.Message
 {
     public class MessageDeliveryResponseEntity : MessageDeliveryBaseEntity
     {
+        [JsonPropertyName("message_id")]
+        public int Id { get; set; }
+
         [JsonPropertyName("sender_id")]
         public int SenderId { get; set; }
 

@@ -2,9 +2,9 @@ import json
 import requests
 from SharedConstants import SECOND_WINDOW
 from .MessageSerializer import MessageSerializer
+from collections.abc import Iterable
 from websockets.sync.client import connect
 from os.path import dirname, realpath, exists
-
 
 class Client:
 
@@ -15,6 +15,10 @@ class Client:
     SERVER_WEBSOCKET_CONNECT_URI = f"wss://{SERVER_IP_ADDRESS_PORT}"
 
     AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/auth.json"
+
+    CONTACTS_LOAD_COUNT = 25
+
+    MESSAGES_LOAD_COUNT = 50
 
     LOCAL_STARTUP = True
 
@@ -147,27 +151,37 @@ class Client:
 
         self.__websocket.send(serialized_message)
 
-    def get_contacts(self) -> dict:
+    def get_contacts(self, offset: int) -> Iterable[dict]:
         
         if not self.__is_authorized:
             raise ValueError(self.__is_authorized)
+        
+        if not isinstance(offset, int):
+            raise TypeError(type(offset))
 
         headers = { "Authorization" : self.__auth_token }
 
-        response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 50 }, verify=not Client.LOCAL_STARTUP)
+        json = { "offset" : offset, "count" : Client.CONTACTS_LOAD_COUNT }
+
+        response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json=json, verify=not Client.LOCAL_STARTUP)
 
         return response.json()["contacts"]
 
-    def search_contacts(self, pattern: str) -> dict:
+    def search_contacts(self, pattern: str, offset: int) -> Iterable[dict]:
 
         if not isinstance(pattern, str):
             raise TypeError(type(pattern))
 
-        response = requests.post(f"{Client.SERVER_URI}/contacts/search", json={ "pattern" : pattern, "offset" : 0, "count" : 50 }, verify=not Client.LOCAL_STARTUP)
+        if not isinstance(offset, int):
+            raise TypeError(type(offset))
+
+        json = { "pattern" : pattern, "offset" : offset, "count" : Client.CONTACTS_LOAD_COUNT }
+
+        response = requests.post(f"{Client.SERVER_URI}/contacts/search", json=json, verify=not Client.LOCAL_STARTUP)
 
         return response.json()["contacts"]
 
-    def pull_messages(self, user_id: int, message_id: int) -> dict:
+    def load_messages(self, user_id: int, message_id: int) -> Iterable[dict]:
         
         if not isinstance(user_id, int):
             raise TypeError(type(user_id))
@@ -180,8 +194,9 @@ class Client:
 
         headers = { "Authorization" : self.__auth_token }
 
-        response = requests.get(f"{Client.SERVER_URI}/messages/pull", headers=headers, 
-                                json={ "message_id" : message_id, "user_id" : user_id, "offset" : 0, "count" : 500 }, verify=not Client.LOCAL_STARTUP)
+        json = { "message_id" : message_id, "user_id" : user_id, "count" : Client.MESSAGES_LOAD_COUNT }
+
+        response = requests.get(f"{Client.SERVER_URI}/messages/load", headers=headers, json=json, verify=not Client.LOCAL_STARTUP)
 
         return response.json()
 

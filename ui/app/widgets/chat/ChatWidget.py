@@ -23,7 +23,7 @@ class ChatWidget(QWidget):
         self.__main_window = main_window
 
         self.__contacts_widget = ContactsWidget(self.__search_contacts)
-        self.__messages_widget = MessagesWidget(self.__client)
+        self.__messages_widget = MessagesWidget()
 
         self.setLayout(self.__get_main_layout())
         self.setStyleSheet(ChatWidgetQSS(main_window).qss)
@@ -59,7 +59,7 @@ class ChatWidget(QWidget):
     
     def __load_contacts(self) -> None:
 
-        contacts = self.__client.get_contacts()
+        contacts = self.__client.get_contacts(0) #todo
 
         for raw_contact in contacts:
 
@@ -71,7 +71,7 @@ class ChatWidget(QWidget):
                 nickname,
                 self.__contact_selected_callback, 
                 self.__message_sent_callback, 
-                self.__client.pull_messages, 
+                self.__client.load_messages, 
                 self.__main_window
                 )
 
@@ -91,7 +91,7 @@ class ChatWidget(QWidget):
                 nickname, 
                 self.__contact_selected_callback, 
                 self.__message_sent_callback, 
-                self.__client.pull_messages, 
+                self.__client.load_messages, 
                 self.__main_window
                 )
 
@@ -137,20 +137,22 @@ class ChatWidget(QWidget):
 
     def __receive_delivery_callback_message(self, raw_message: dict) -> None:
 
+        message_id = int(raw_message["message_id"])
         user_id = int(raw_message["user_id"])
         text = raw_message["text"]
         send_time = raw_message["send_time"] # todo
 
-        message = Message(text)
+        message = Message(message_id, text)
 
         self.__contacts_widget.contacts[user_id].add_message(message, True)
 
     def __receive_new_message(self, raw_message: dict) -> None:
 
+        message_id = int(raw_message["message_id"])
         sender_id = int(raw_message["sender_id"])
         text = raw_message["text"]
         send_time = raw_message["send_time"] # todo        
 
-        message = Message(text)
+        message = Message(message_id, text)
 
         self.__contacts_widget.contacts[sender_id].add_message(message, False)

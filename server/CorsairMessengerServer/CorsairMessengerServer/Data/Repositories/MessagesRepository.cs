@@ -1,4 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities;
+using CorsairMessengerServer.Data.Entities.Request.Message;
 using CorsairMessengerServer.Models.Messages;
 
 namespace CorsairMessengerServer.Data.Repositories
@@ -19,19 +20,22 @@ namespace CorsairMessengerServer.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        /// <returns>
-        ///     Array of anonymous objects { Id: int, Text: string, SendTime: DateTime }
-        /// </returns>
-        public object[] GetMessages(int userId, MessagesPullRequest request)
+        public MessageHistoryResponseEntity[] GetMessages(int userId, MessagesLoadRequest request)
         {
             return _context.Messages
                 .Where(message =>
                    message.SenderId == userId && message.ReceiverId == request.UserId
                 || message.SenderId == request.UserId && message.ReceiverId == userId)
-                .Where(message => message.Id > request.MessageId)
-                .Select(message => new { message.Id, sender_id = message.SenderId, message.Text, send_time = message.SendTime })
-                .OrderBy(message => message.Id)
-                .Skip(request.Offset)
+                .Where(message => message.Id < request.MessageId)
+                .OrderByDescending(message => message.Id)
+                .Select(message => new MessageHistoryResponseEntity
+                {
+                    Id = message.Id,
+                    SenderId = message.SenderId,
+                    ReceiverId = message.ReceiverId,
+                    Text = message.Text,
+                    SendTime = message.SendTime,
+                })
                 .Take(request.Count)
                 .ToArray();
         }

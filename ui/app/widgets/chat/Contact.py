@@ -1,15 +1,10 @@
 from .Scrollarea import Scrollarea
 from .Message import Message
-from typing import Callable
-from PyQt6 import QtCore, QtGui
-from PyQt6.QtWidgets import QLabel
-from PyQt6.QtGui import QMouseEvent
-from typing import Callable
 from .MessageEdit import MessageEdit
-from .Scrollarea import Scrollarea
-from .Message import Message
+from typing import Callable
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import QVBoxLayout, QTextEdit, QLabel, QMainWindow
+from PyQt6.QtGui import QMouseEvent, QCursor
+from PyQt6.QtWidgets import QVBoxLayout, QTextEdit, QLabel, QMainWindow, QLabel
 
 class Contact(QLabel):
     
@@ -19,7 +14,7 @@ class Contact(QLabel):
             name: str, 
             contact_selected_callback: Callable[['Contact'], None], 
             message_sent_callback: Callable[[int, str], None],
-            messages_pull_request_delegate: Callable[[int, int], tuple[bool, Message]],
+            messages_load_delegate: Callable[[int, int, int], tuple[bool, Message]],
             main_window: QMainWindow
             ) -> None:
         
@@ -36,7 +31,7 @@ class Contact(QLabel):
 
         self.__id = id
         self.__contact_selected_callback = contact_selected_callback
-        self.__messages_pull_request_delegate = messages_pull_request_delegate
+        self.__messages_load_delegate = messages_load_delegate
 
         self.__messages_scrollarea = Scrollarea()
         self.__message_edit = self.__get_message_edit(main_window, lambda text: message_sent_callback(receiver_id=self.__id, text=text))
@@ -44,8 +39,9 @@ class Contact(QLabel):
         self.__messages_scrollarea.layout.addStretch(1)
 
         self.__autoscroll_delegate = lambda: scrollbar.setValue(scrollbar.maximum())
-        scrollbar =  self.__messages_scrollarea.verticalScrollBar()
-        scrollbar.rangeChanged.connect(self.__autoscroll_delegate)
+        scrollbar = self.__messages_scrollarea.verticalScrollBar()
+        # scrollbar.rangeChanged.connect(self.__autoscroll_delegate)
+        scrollbar.valueChanged.connect(self.__load_messages_on_scrollbar_top)
         
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
@@ -58,7 +54,7 @@ class Contact(QLabel):
     def messages_scrollarea(self) -> Scrollarea:
 
         if self.__messages_scrollarea.layout.count() == 1:
-            self.__pull_messages()
+            self.__load_messages()
 
         return self.__messages_scrollarea
     
@@ -112,12 +108,49 @@ class Contact(QLabel):
 
         return message_edit
     
-    def __pull_messages(self) -> None:
+    def __load_messages(self) -> None:
 
-        messages = self.__messages_pull_request_delegate(self.__id, 0) #todo
+        messages_layout = self.__messages_scrollarea.layout
+        
+        if messages_layout.count() == 1:
+            first_message_id = -1
+        else:
+            first_message_id = messages_layout.itemAt(1).layout().itemAt(0).widget().id
+
+        messages = self.__messages_load_delegate(self.__id, first_message_id)
 
         for raw_message in messages:
 
-            message = Message(raw_message["text"])
+            message_id = raw_message["message_id"]
+            text = raw_message["text"]
+
+            message = Message(message_id, text)
+
+            message.wheelEvent = lambda event: self.__messages_scrollarea.wheelEvent(event)
+
+            message_layout = QVBoxLayout()
+
+            alignment = QtCore.Qt.AlignmentFlag.AlignRight if raw_message["sender_id"] != self.__id else QtCore.Qt.AlignmentFlag.AlignLeft
+
+            message_layout.addWidget(message)
+            message_layout.setAlignment(alignment)
+
+            self.__messages_scrollarea.layout.insertLayout(0, message_layout)
+
+        return
+
+        messages = self.__messages_load_delegate(self.__id, first_message_id)
+
+        for raw_message in messages:
+
+            message_id = raw_message["message_id"]
+            text = raw_message["text"]
+
+            message = Message(message_id, text)
 
             self.add_message(message, int(raw_message["sender_id"]) != self.__id)
+
+    def __load_messages_on_scrollbar_top(self):
+        
+        if self.__messages_scrollarea.verticalScrollBar().value() == 0:
+            self.__load_messages()
