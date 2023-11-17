@@ -20,7 +20,7 @@ class ChatWidget(QWidget):
 
         self.__client = client
 
-        self.__contacts_widget = ContactsWidget()
+        self.__contacts_widget = ContactsWidget(lambda text: self.__search_contacts(main_window, text))
         self.__messages_widget = MessagesWidget(self.__client)
 
         self.setLayout(self.__get_main_layout())
@@ -58,6 +58,23 @@ class ChatWidget(QWidget):
     def __load_contacts(self, main_window: QMainWindow) -> None:
 
         contacts = self.__client.get_contacts()
+
+        for raw_contact in contacts:
+
+            contact = Contact(
+                int(raw_contact["id"]), 
+                raw_contact["nickname"], 
+                self.__contact_selected_callback, 
+                self.__messages_widget.message_sent_callback, 
+                self.__client.pull_messages, 
+                main_window
+                )
+
+            self.__contacts_widget.add_contact(contact)
+
+    def __search_contacts(self, main_window: QMainWindow, text) -> None:
+
+        contacts = self.__client.search_contacts(text)
 
         for raw_contact in contacts:
 

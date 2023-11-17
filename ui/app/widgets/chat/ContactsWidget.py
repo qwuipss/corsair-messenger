@@ -1,21 +1,37 @@
+import typing
 from managers.RegexManager import RegexManager
 from ...SharedQSS import SharedQSS
 from .Scrollarea import Scrollarea
 from .Contact import Contact
-from PyQt6 import QtGui
+from PyQt6 import QtGui, QtCore
 from PyQt6.QtWidgets import QLineEdit, QWidget
+
+class ContactsSearch(QLineEdit):
+
+    def __init__(self, t) -> None:
+        
+        super().__init__()
+
+        self.__contacts_search_ = t 
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent | None) -> None:
+        
+        super().keyPressEvent(event)
+
+        if event.key() == QtCore.Qt.Key.Key_Return:
+            self.__contacts_search_(self.text())
 
 class ContactsWidget(QWidget):
 
-    def __init__(self) -> None:
+    def __init__(self, t) -> None:
         
         super().__init__()
 
         self.__contacts = {}
 
-        self.__contacts_search = self.__get_contacts_search()
+        self.__contacts_search = self.__get_contacts_search(t)
         self.__contacts_scrollarea = Scrollarea()
-        
+
         self.__contacts_scrollarea.layout.addStretch(1)
         self.__contacts_scrollarea.layout.setSpacing(0)
         self.__contacts_scrollarea.layout.setContentsMargins(0, 0, 0, 0)
@@ -27,11 +43,11 @@ class ContactsWidget(QWidget):
     @property
     def contacts_scrollarea(self) -> Scrollarea:
         return self.__contacts_scrollarea
-    
+     
     @property
     def contacts(self) -> dict:
         return self.__contacts
-    
+
     def add_contact(self, contact: Contact) -> None:
 
         if not isinstance(contact, QWidget):
@@ -41,9 +57,9 @@ class ContactsWidget(QWidget):
 
         self.__contacts.update({contact.id : contact})
 
-    def __get_contacts_search(self) -> QLineEdit:
+    def __get_contacts_search(self, t) -> QLineEdit:
                 
-        contacts_search = QLineEdit(self)
+        contacts_search = ContactsSearch(t)
 
         line_edit_validator = RegexManager.get_regex_nickname_validator()
 

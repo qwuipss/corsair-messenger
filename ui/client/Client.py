@@ -142,7 +142,15 @@ class Client:
 
         response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 50 }, verify=False)
 
-        return response.json()
+        return response.json()["contacts"]
+
+    def search_contacts(self, text) -> dict:
+
+        headers = { "Authorization" : self.__auth_token }
+
+        response = requests.post(f"{Client.SERVER_URI}/contacts/search", headers=headers, json={ "pattern" : text, "offset" : 0, "count" : 50 }, verify=False)
+
+        return response.json()["contacts"]
 
     def pull_messages(self, contact_id: int, message_id: int) -> dict:
         

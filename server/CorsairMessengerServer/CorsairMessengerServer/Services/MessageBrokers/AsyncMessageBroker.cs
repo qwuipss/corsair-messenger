@@ -44,16 +44,18 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 
         private static byte[] GetSerializedDeliveredToServerSignalMessage(MessageEntity message)
         {
-            var callbackMessage = new MessageEntity
+            var serializedMessage = JsonSerializer.Serialize(new
             {
-                Id = message.Id,
-                SenderId = 0,
-                ReceiverId = message.ReceiverId,
-                Text = message.Text,
-                SendTime = message.SendTime,
-            };
+                message_id = message.Id,
+                sender_id = 0,
+                receiver_id = message.ReceiverId,
+                text = message.Text,
+                send_time = message.SendTime,
+            });
 
-            var buffer = GetSerializedMessage(callbackMessage);
+            var buffer = Encoding.UTF8.GetBytes(serializedMessage);
+
+            //var buffer = GetSerializedMessage(callbackMessage);
 
             return buffer;
         }
