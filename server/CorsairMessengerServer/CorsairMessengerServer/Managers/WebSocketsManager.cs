@@ -1,4 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities;
+using CorsairMessengerServer.Data.Entities.Request;
 using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Services.MessageBrokers;
@@ -17,11 +18,14 @@ namespace CorsairMessengerServer.Managers
 
         private readonly WebSocketsRepository _webSocketsRepository;
 
+        private readonly UsersRepository _usersRepository;
+
         private readonly IMessageBroker _messageBroker;
 
-        public WebSocketsManager(WebSocketsRepository webSocketsRepository, IMessageBroker messageBroker)
+        public WebSocketsManager(WebSocketsRepository webSocketsRepository, UsersRepository usersRepository, IMessageBroker messageBroker)
         {
             _webSocketsRepository = webSocketsRepository;
+            _usersRepository = usersRepository;
             _messageBroker = messageBroker;
         }
 
@@ -68,7 +72,10 @@ namespace CorsairMessengerServer.Managers
 
                         if (message is not null)
                         {
-                            await SendMessageAsync(message);
+                            if (await IsReceiverExist(message))
+                            {
+                                await SendMessageAsync(message);
+                            }
 
                             contentBuilder = new List<byte>();
                         }
@@ -85,6 +92,11 @@ namespace CorsairMessengerServer.Managers
             await OnDisconnectedAsync(webSocketConnection);
         }
 
+        private async Task<bool> IsReceiverExist(MessageEntity message)
+        {
+            return await _usersRepository.IsUserExist(message.ReceiverId);
+        }
+
         private static bool ReceiveMessage(byte[] buffer, WebSocketReceiveResult receiveResult, List<byte> contentBuilder)
         {
             contentBuilder.ReceiveBytes(buffer, receiveResult);
@@ -94,7 +106,7 @@ namespace CorsairMessengerServer.Managers
 
         private static async Task<MessageEntity?> TryParseMessageAsync(byte[] buffer, int socketId)
         {
-            MessageEntity? message = null;
+            MessageDeliveryRequestEntity? messageRequest;
 
             try
             {
@@ -105,15 +117,14 @@ namespace CorsairMessengerServer.Managers
 
                 var memoryStream = new MemoryStream(buffer);
 
-                message = (await JsonSerializer.DeserializeAsync<MessageEntity>(memoryStream, options))!;
+                messageRequest = (await JsonSerializer.DeserializeAsync<MessageDeliveryRequestEntity>(memoryStream, options))!;
             }
             catch
             {
-                return message;
+                return null;
             }
 
-            message.SenderId = socketId;
-            message.SendTime = DateTime.UtcNow;
+            var message = BuildMessageEntity(socketId, messageRequest);
 
             return message;
         }
@@ -130,5 +141,17 @@ namespace CorsairMessengerServer.Managers
         {
             await _messageBroker.SendMessageAsync(message);
         }
+
+        private static MessageEntity BuildMessageEntity(int socketId, MessageDeliveryRequestEntity messageRequest)
+        {
+            return new MessageEntity
+            {
+                SenderId = socketId,
+                ReceiverId = messageRequest.ReceiverId,
+                Text = messageRequest.Text,
+                SendTime = DateTime.UtcNow,
+            };
+        }
+
     }
 }

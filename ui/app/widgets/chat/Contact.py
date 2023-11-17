@@ -1,7 +1,7 @@
 from .Scrollarea import Scrollarea
 from .Message import Message
 from typing import Callable
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import QLabel
 from PyQt6.QtGui import QMouseEvent
 from typing import Callable
@@ -74,7 +74,7 @@ class Contact(QLabel):
 
         self.setObjectName("selected")
         self.setStyleSheet("")
-    
+
     def add_message(self, message: Message, self_author: bool) -> None:
 
         if not isinstance(message, Message):
@@ -82,6 +82,8 @@ class Contact(QLabel):
         
         if not isinstance(self_author, bool):
             raise TypeError(type(self_author)) 
+
+        message.wheelEvent = lambda event: self.__messages_scrollarea.wheelEvent(event)
 
         message_layout = QVBoxLayout()
 

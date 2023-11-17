@@ -1,4 +1,6 @@
 ﻿using CorsairMessengerServer.Data.Entities;
+using CorsairMessengerServer.Data.Entities.Request.Message;
+using CorsairMessengerServer.Data.Entities.Response.Message;
 using CorsairMessengerServer.Data.Repositories;
 using System.Net.WebSockets;
 using System.Text;
@@ -24,40 +26,35 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 
             await SendMessageIfPossibleAsync(message);
 
-            await SendMessageDeliveredToServerSignal(message);
+            await SendMessageDeliveryCallbackIfPossibleAsync(message);
         }
 
-        private static byte[] GetSerializedMessage(MessageEntity message)
+        private static byte[] GetMessageDeliveryResponse(MessageEntity message)
         {
-            var serializedMessage = JsonSerializer.Serialize(new 
-            { 
-                message_id = message.Id, 
-                sender_id = message.SenderId, 
-                text = message.Text, 
-                send_time = message.SendTime,
-            });
-
-            var buffer = Encoding.UTF8.GetBytes(serializedMessage);
-
-            return buffer;
-        }
-
-        private static byte[] GetSerializedDeliveredToServerSignalMessage(MessageEntity message)
-        {
-            var serializedMessage = JsonSerializer.Serialize(new
+            var serializedMessage = JsonSerializer.Serialize(new MessageDeliveryResponseEntity
             {
-                message_id = message.Id,
-                sender_id = 0,
-                receiver_id = message.ReceiverId,
-                text = message.Text,
-                send_time = message.SendTime,
+                Type = (int)MessageDeliveryBaseEntity.MessageResponseEntityType.New,
+                Id = message.Id,
+                Text = message.Text,
+                SenderId = message.SenderId,
+                SendTime = message.SendTime,
             });
 
-            var buffer = Encoding.UTF8.GetBytes(serializedMessage);
+            return GetBytes(serializedMessage);
+        }
 
-            //var buffer = GetSerializedMessage(callbackMessage);
+        private static byte[] GetSerializedMessageDeliveryCallback(MessageEntity message)
+        {
+            var serializedMessage = JsonSerializer.Serialize(new MessageDeliveryCallbackEntity
+            {
+                Type = (int)MessageDeliveryBaseEntity.MessageResponseEntityType.Callback,
+                Id = message.Id,
+                UserId = message.ReceiverId,
+                Text = message.Text,
+                SendTime = message.SendTime,
+            });
 
-            return buffer;
+            return GetBytes(serializedMessage);
         }
 
         private static async Task SendMessageIfPossibleAsync(byte[] buffer, WebSocket receiverSocket)
@@ -73,17 +70,17 @@ namespace CorsairMessengerServer.Services.MessageBrokers
         {
             if (_webSocketsRepository.TryGetWebSocket(message.ReceiverId, out var receiverSocket))
             {
-                var buffer = GetSerializedMessage(message);
+                var buffer = GetMessageDeliveryResponse(message);
 
                 await SendMessageIfPossibleAsync(buffer, receiverSocket);
             }
         }
 
-        private async Task SendMessageDeliveredToServerSignal(MessageEntity message)
+        private async Task SendMessageDeliveryCallbackIfPossibleAsync(MessageEntity message)
         {
             if (_webSocketsRepository.TryGetWebSocket(message.SenderId, out var receiverSocket))
             {
-                var buffer = GetSerializedDeliveredToServerSignalMessage(message);
+                var buffer = GetSerializedMessageDeliveryCallback(message);
 
                 await SendMessageIfPossibleAsync(buffer, receiverSocket);
             }
@@ -92,6 +89,11 @@ namespace CorsairMessengerServer.Services.MessageBrokers
         private async Task AddMessageToRepositoryAsync(MessageEntity message)
         {
             await _messagesRepository.AddMessageAsync(message);
+        }
+
+        private static byte[] GetBytes(string serializedMessage)
+        {
+            return Encoding.UTF8.GetBytes(serializedMessage);
         }
     }
 }

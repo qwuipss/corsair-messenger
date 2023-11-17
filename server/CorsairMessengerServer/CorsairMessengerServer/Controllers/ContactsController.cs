@@ -1,11 +1,9 @@
-﻿using CorsairMessengerServer.Data;
-using CorsairMessengerServer.Data.Repositories;
+﻿using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Models.Contacts;
 using CorsairMessengerServer.Models.Contacts.List;
 using CorsairMessengerServer.Models.Contacts.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CorsairMessengerServer.Controllers

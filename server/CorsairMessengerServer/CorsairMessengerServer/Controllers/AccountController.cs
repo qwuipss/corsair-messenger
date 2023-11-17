@@ -2,12 +2,10 @@
 using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Helpers;
-using CorsairMessengerServer.Managers;
 using CorsairMessengerServer.Models.Auth;
 using CorsairMessengerServer.Models.Register;
 using CorsairMessengerServer.Services.PasswordHasher;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;

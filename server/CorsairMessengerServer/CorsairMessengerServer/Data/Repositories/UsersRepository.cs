@@ -1,4 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities;
+using CorsairMessengerServer.Data.Entities.Api.User;
 using CorsairMessengerServer.Models.Contacts.List;
 using CorsairMessengerServer.Models.Contacts.Search;
 using Microsoft.EntityFrameworkCore;
@@ -49,15 +50,19 @@ namespace CorsairMessengerServer.Data.Repositories
             return result;
         }
 
-        /// <returns>
-        ///     Array of anonymous objects { Id: int, Nickname: string }
-        /// </returns>
-        public object[] GetContacts(int userId, ContactsListRequest request)
+        public async Task<bool> IsUserExist(int id)
+        {
+            var result = await _context.Users.AnyAsync(user => user.Id == id);
+
+            return result;
+        }
+
+        public UserResponseEntity[] GetContacts(int userId, ContactsListRequest request)
         {
             return _context.Messages
                 .Where(message => message.SenderId == userId)
                 .Include(message => message.Receiver)
-                .Select(message => new { message.Receiver!.Id, message.Receiver.Nickname })
+                .Select(message => new UserResponseEntity { Id = message.Receiver!.Id, Nickname = message.Receiver.Nickname })
                 .Distinct()
                 .OrderBy(user => user.Id)
                 .Skip(request.Offset)
@@ -65,14 +70,11 @@ namespace CorsairMessengerServer.Data.Repositories
                 .ToArray();
         }
 
-        /// <returns>
-        ///     Array of anonymous objects { Id: int, Nickname: string }
-        /// </returns>
-        public object[] SearchContacts(ContactsSearchRequest request)
+        public UserResponseEntity[] SearchContacts(ContactsSearchRequest request)
         {
             return _context.Users
                 .Where(user => EF.Functions.Like(user.Nickname!, $"%{request.Pattern}%"))
-                .Select(user => new { user.Id, user.Nickname })
+                .Select(user => new UserResponseEntity { Id = user.Id, Nickname = user.Nickname })
                 .OrderBy(user => user.Id)
                 .Skip(request.Offset)
                 .Take(request.Count)

@@ -1,5 +1,4 @@
-﻿using CorsairMessengerServer.Managers;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Security.Claims;
 

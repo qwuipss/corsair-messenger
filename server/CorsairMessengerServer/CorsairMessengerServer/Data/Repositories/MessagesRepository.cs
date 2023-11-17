@@ -1,10 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities;
-using CorsairMessengerServer.Models.Contacts.List;
-using CorsairMessengerServer.Models.Contacts.Search;
 using CorsairMessengerServer.Models.Messages;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using System.Text.Json;
 
 namespace CorsairMessengerServer.Data.Repositories
 {
@@ -30,7 +25,7 @@ namespace CorsairMessengerServer.Data.Repositories
         public object[] GetMessages(int userId, MessagesPullRequest request)
         {
             return _context.Messages
-                .Where(message => 
+                .Where(message =>
                    message.SenderId == userId && message.ReceiverId == request.UserId
                 || message.SenderId == request.UserId && message.ReceiverId == userId)
                 .Where(message => message.Id > request.MessageId)

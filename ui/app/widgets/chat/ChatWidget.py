@@ -6,6 +6,7 @@ from .Message import Message
 from client.Client import Client
 from client.MessageReceiveThread import MessageReceiveThread
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QWidget, QMainWindow
+
 class ChatWidget(QWidget):
 
     def __init__(self, main_window: QMainWindow, client: Client) -> None:
@@ -108,20 +109,33 @@ class ChatWidget(QWidget):
 
     def __message_received_slot(self, raw_message: dict) -> None:
 
+        message_type = int(raw_message["type"])
+
+        if message_type == 0:
+            self.__receive_new_message(raw_message)
+        elif message_type == 1:
+            self.__receive_delivery_callback_message(raw_message)
+        else:
+            raise ValueError(message_type)
+
+    def __receive_delivery_callback_message(self, raw_message: dict) -> None:
+
         message_id = int(raw_message["message_id"])
-        sender_id = int(raw_message["sender_id"])
+        user_id = int(raw_message["user_id"])
         text = raw_message["text"]
+        send_time = raw_message["send_time"] # todo
 
-        if sender_id == 0:
-
-            chat_id = int(raw_message["receiver_id"])
-            chat = self.__contacts_widget.contacts[chat_id]
-
-            chat.add_message(Message(message_id, text), True)
-
-            return
-
-        sender = self.__contacts_widget.contacts[sender_id]
         message = Message(message_id, text)
 
-        sender.add_message(message, sender_id != sender.id)
+        self.__contacts_widget.contacts[user_id].add_message(message, True)
+
+    def __receive_new_message(self, raw_message: dict) -> None:
+
+        message_id = int(raw_message["message_id"])
+        user_id = int(raw_message["sender_id"])
+        text = raw_message["text"]
+        send_time = raw_message["send_time"] # todo        
+
+        message = Message(message_id, text)
+
+        self.__contacts_widget.contacts[user_id].add_message(message, False)

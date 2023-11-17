@@ -1,6 +1,6 @@
-﻿using CorsairMessengerServer.Data.Entities;
+﻿using CorsairMessengerServer.Data.Entities.Api.User;
 
 namespace CorsairMessengerServer.Models.Contacts
 {
-    public record ContactsListResponse(object[] Contacts);
+    public record ContactsListResponse(UserResponseEntity[] Contacts);
 }

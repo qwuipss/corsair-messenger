@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QTextEdit
 from PyQt6.QtGui import QTextOption, QResizeEvent
+from PyQt6 import QtCore
 
 class Message(QTextEdit):
     
@@ -19,6 +20,8 @@ class Message(QTextEdit):
         self.textChanged.connect(self.__adjust_size)
         self.setText(text)
         self.setReadOnly(True)
+        self.verticalScrollBar().setDisabled(True)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
     @property
     def id(self) -> int:
@@ -41,5 +44,3 @@ class Message(QTextEdit):
 
         self.setFixedWidth(width)
         self.setFixedHeight(height)
-
-        

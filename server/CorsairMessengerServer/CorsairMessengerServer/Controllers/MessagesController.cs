@@ -1,8 +1,6 @@
 ﻿using CorsairMessengerServer.Data.Repositories;
-using CorsairMessengerServer.Models.Contacts;
 using CorsairMessengerServer.Models.Messages;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
