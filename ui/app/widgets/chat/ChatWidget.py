@@ -20,14 +20,15 @@ class ChatWidget(QWidget):
         super().__init__()
 
         self.__client = client
+        self.__main_window = main_window
 
-        self.__contacts_widget = ContactsWidget(lambda text: self.__search_contacts(main_window, text))
+        self.__contacts_widget = ContactsWidget(self.__search_contacts)
         self.__messages_widget = MessagesWidget(self.__client)
 
         self.setLayout(self.__get_main_layout())
         self.setStyleSheet(ChatWidgetQSS(main_window).qss)
 
-        self.__load_contacts(main_window)
+        self.__load_contacts()
         
         self.__message_receive_thread = MessageReceiveThread(client)
         self.__message_receive_thread.message_received.connect(self.__message_received_slot)
@@ -56,36 +57,42 @@ class ChatWidget(QWidget):
 
         return contacts_layout
     
-    def __load_contacts(self, main_window: QMainWindow) -> None:
+    def __load_contacts(self) -> None:
 
         contacts = self.__client.get_contacts()
 
         for raw_contact in contacts:
 
+            contact_id = int(raw_contact["user_id"])
+            nickname = raw_contact["nickname"]
+
             contact = Contact(
-                int(raw_contact["id"]), 
-                raw_contact["nickname"], 
+                contact_id, 
+                nickname,
                 self.__contact_selected_callback, 
-                self.__messages_widget.message_sent_callback, 
+                self.__message_sent_callback, 
                 self.__client.pull_messages, 
-                main_window
+                self.__main_window
                 )
 
             self.__contacts_widget.add_contact(contact)
 
-    def __search_contacts(self, main_window: QMainWindow, text) -> None:
+    def __search_contacts(self, pattern: str) -> None:
 
-        contacts = self.__client.search_contacts(text)
+        contacts = self.__client.search_contacts(pattern)
 
         for raw_contact in contacts:
 
+            contact_id = int(raw_contact["user_id"])
+            nickname = raw_contact["nickname"]
+
             contact = Contact(
-                int(raw_contact["id"]), 
-                raw_contact["nickname"], 
+                contact_id, 
+                nickname, 
                 self.__contact_selected_callback, 
-                self.__messages_widget.message_sent_callback, 
+                self.__message_sent_callback, 
                 self.__client.pull_messages, 
-                main_window
+                self.__main_window
                 )
 
             self.__contacts_widget.add_contact(contact)
@@ -107,6 +114,16 @@ class ChatWidget(QWidget):
         previous_contact.setObjectName("") 
         previous_contact.setStyleSheet("") 
 
+    def __message_sent_callback(self, receiver_id: int, text: str) -> None:
+        
+        if not isinstance(receiver_id, int):
+            raise TypeError(type(receiver_id))
+        
+        if not isinstance(text, str):
+            raise TypeError(type(text))
+
+        self.__client.send_message(receiver_id=receiver_id, text=text)
+
     def __message_received_slot(self, raw_message: dict) -> None:
 
         message_type = int(raw_message["type"])
@@ -120,22 +137,20 @@ class ChatWidget(QWidget):
 
     def __receive_delivery_callback_message(self, raw_message: dict) -> None:
 
-        message_id = int(raw_message["message_id"])
         user_id = int(raw_message["user_id"])
         text = raw_message["text"]
         send_time = raw_message["send_time"] # todo
 
-        message = Message(message_id, text)
+        message = Message(text)
 
         self.__contacts_widget.contacts[user_id].add_message(message, True)
 
     def __receive_new_message(self, raw_message: dict) -> None:
 
-        message_id = int(raw_message["message_id"])
-        user_id = int(raw_message["sender_id"])
+        sender_id = int(raw_message["sender_id"])
         text = raw_message["text"]
         send_time = raw_message["send_time"] # todo        
 
-        message = Message(message_id, text)
+        message = Message(text)
 
-        self.__contacts_widget.contacts[user_id].add_message(message, False)
+        self.__contacts_widget.contacts[sender_id].add_message(message, False)

@@ -13,16 +13,17 @@ class MessagesWidget(QWidget):
 
         self.__contact = None
         self.__client = client
+
         self.__layout = self.__get_messages_layout()
+
+    @property
+    def layout(self) -> QVBoxLayout:
+        return self.__layout
 
     @property
     def contact(self) -> Contact:
         return self.__contact
     
-    @property
-    def layout(self) -> QVBoxLayout:
-        return self.__layout
-
     @contact.setter
     def contact(self, contact: Contact) -> Contact:
 
@@ -30,16 +31,6 @@ class MessagesWidget(QWidget):
             raise TypeError(type(contact))
 
         self.__contact = contact
-
-    def message_sent_callback(self, receiver_id: int, text: str) -> None:
-        
-        if not isinstance(receiver_id, int):
-            raise TypeError(type(receiver_id))
-        
-        if not isinstance(text, str):
-            raise TypeError(type(text))
-
-        self.__client.send_message(receiver_id=receiver_id, text=text)
 
     def hide_contact_dialog(self) -> None:
 

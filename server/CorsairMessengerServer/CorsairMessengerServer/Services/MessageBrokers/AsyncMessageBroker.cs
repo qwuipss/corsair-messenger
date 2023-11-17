@@ -34,7 +34,6 @@ namespace CorsairMessengerServer.Services.MessageBrokers
             var serializedMessage = JsonSerializer.Serialize(new MessageDeliveryResponseEntity
             {
                 Type = (int)MessageDeliveryBaseEntity.MessageResponseEntityType.New,
-                Id = message.Id,
                 Text = message.Text,
                 SenderId = message.SenderId,
                 SendTime = message.SendTime,
@@ -48,7 +47,6 @@ namespace CorsairMessengerServer.Services.MessageBrokers
             var serializedMessage = JsonSerializer.Serialize(new MessageDeliveryCallbackEntity
             {
                 Type = (int)MessageDeliveryBaseEntity.MessageResponseEntityType.Callback,
-                Id = message.Id,
                 UserId = message.ReceiverId,
                 Text = message.Text,
                 SendTime = message.SendTime,

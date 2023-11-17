@@ -5,9 +5,6 @@ namespace CorsairMessengerServer.Data.Entities.Response.Message
 {
     public class MessageDeliveryCallbackEntity : MessageDeliveryBaseEntity
     {
-        [JsonPropertyName("message_id")]
-        public int Id { get; set; }
-
         [JsonPropertyName("user_id")]
         public int UserId { get; set; }
 

@@ -118,6 +118,6 @@ class Contact(QLabel):
 
         for raw_message in messages:
 
-            message = Message(raw_message["id"], raw_message["text"])
+            message = Message(raw_message["text"])
 
             self.add_message(message, int(raw_message["sender_id"]) != self.__id)

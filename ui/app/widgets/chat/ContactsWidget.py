@@ -1,35 +1,18 @@
-import typing
-from managers.RegexManager import RegexManager
-from ...SharedQSS import SharedQSS
+from .ContactsSearch import ContactsSearch
 from .Scrollarea import Scrollarea
 from .Contact import Contact
-from PyQt6 import QtGui, QtCore
+from typing import Callable
 from PyQt6.QtWidgets import QLineEdit, QWidget
-
-class ContactsSearch(QLineEdit):
-
-    def __init__(self, t) -> None:
-        
-        super().__init__()
-
-        self.__contacts_search_ = t 
-
-    def keyPressEvent(self, event: QtGui.QKeyEvent | None) -> None:
-        
-        super().keyPressEvent(event)
-
-        if event.key() == QtCore.Qt.Key.Key_Return:
-            self.__contacts_search_(self.text())
 
 class ContactsWidget(QWidget):
 
-    def __init__(self, t) -> None:
+    def __init__(self, contacts_search_requested_delegate: Callable[[str], None]) -> None:
         
         super().__init__()
 
         self.__contacts = {}
 
-        self.__contacts_search = self.__get_contacts_search(t)
+        self.__contacts_search = ContactsSearch(contacts_search_requested_delegate)
         self.__contacts_scrollarea = Scrollarea()
 
         self.__contacts_scrollarea.layout.addStretch(1)
@@ -56,20 +39,3 @@ class ContactsWidget(QWidget):
         self.__contacts_scrollarea.layout.insertWidget(0, contact)
 
         self.__contacts.update({contact.id : contact})
-
-    def __get_contacts_search(self, t) -> QLineEdit:
-                
-        contacts_search = ContactsSearch(t)
-
-        line_edit_validator = RegexManager.get_regex_nickname_validator()
-
-        placeholder_palette = contacts_search.palette()
-        placeholder_palette.setColor(QtGui.QPalette.ColorRole.PlaceholderText, QtGui.QColor(f"#{SharedQSS.COLOR_555555}"))  
-
-        contacts_search.setPalette(placeholder_palette)
-        contacts_search.setPlaceholderText("Search")
-        contacts_search.setValidator(line_edit_validator)
-        contacts_search.setObjectName("contactsSearch")
-
-        return contacts_search
-    

@@ -1,11 +1,10 @@
-import ssl
 import json
 import requests
-import urllib3
 from SharedConstants import SECOND_WINDOW
 from .MessageSerializer import MessageSerializer
 from websockets.sync.client import connect
 from os.path import dirname, realpath, exists
+
 
 class Client:
 
@@ -17,14 +16,26 @@ class Client:
 
     AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/auth.json"
 
+    LOCAL_STARTUP = True
+
     if SECOND_WINDOW:
         SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/authSecondWindow.json"
         __first_auth = True
 
     def __init__(self) -> None:
         
-        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-        self.__unverified_ssl_context = ssl._create_unverified_context()
+        if Client.LOCAL_STARTUP:
+            
+            from ssl import _create_unverified_context
+            from urllib3 import disable_warnings 
+            from urllib3.exceptions import InsecureRequestWarning 
+    
+            disable_warnings(InsecureRequestWarning)
+            self.__ssl_context = _create_unverified_context()
+            
+        else:
+
+            self.__ssl_context = None
 
         load_info = Client.__try_load_auth_token()
 
@@ -95,6 +106,29 @@ class Client:
             with open(Client.AUTH_TOKEN_LOAD_FILENAME, "w") as file:
                 file.write(json.dumps(data))
 
+    def auth(self, login: str, password: str) -> bool:
+        
+        if not isinstance(login, str):
+            raise ValueError(login)
+        
+        if not isinstance(password, str):
+            raise ValueError(password)
+
+        auth_response = requests.post(f"{Client.SERVER_URI}/account/login", json={ "login" : login, "password" : password }, verify=not Client.LOCAL_STARTUP)
+
+        if auth_response.status_code == 200:
+
+            self.__auth_token = "Bearer " + auth_response.json()["token"]
+
+            self.__connect_websocket()
+            self.__save_auth_token(self.__auth_token)
+
+            Client.__first_auth = False
+
+            return True
+        
+        return False
+
     def receive_message(self) -> None:
 
         if not self.__is_authorized:
@@ -113,51 +147,41 @@ class Client:
 
         self.__websocket.send(serialized_message)
 
-    def auth(self, login: str, password: str) -> bool:
-        
-        if not isinstance(login, str):
-            raise ValueError(login)
-        
-        if not isinstance(password, str):
-            raise ValueError(password)
-
-        auth_response = requests.post(f"{Client.SERVER_URI}/account/login", json={ "login" : login, "password" : password }, verify=False)
-
-        if auth_response.status_code == 200:
-
-            self.__auth_token = "Bearer " + auth_response.json()["token"]
-
-            self.__connect_websocket()
-            self.__save_auth_token(self.__auth_token)
-
-            Client.__first_auth = False
-
-            return True
-        
-        return False
-
     def get_contacts(self) -> dict:
         
+        if not self.__is_authorized:
+            raise ValueError(self.__is_authorized)
+
         headers = { "Authorization" : self.__auth_token }
 
-        response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 50 }, verify=False)
+        response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json={ "offset" : 0, "count" : 50 }, verify=not Client.LOCAL_STARTUP)
 
         return response.json()["contacts"]
 
-    def search_contacts(self, text) -> dict:
+    def search_contacts(self, pattern: str) -> dict:
 
-        headers = { "Authorization" : self.__auth_token }
+        if not isinstance(pattern, str):
+            raise TypeError(type(pattern))
 
-        response = requests.post(f"{Client.SERVER_URI}/contacts/search", headers=headers, json={ "pattern" : text, "offset" : 0, "count" : 50 }, verify=False)
+        response = requests.post(f"{Client.SERVER_URI}/contacts/search", json={ "pattern" : pattern, "offset" : 0, "count" : 50 }, verify=not Client.LOCAL_STARTUP)
 
-        return response.json()
+        return response.json()["contacts"]
 
-    def pull_messages(self, contact_id: int, message_id: int) -> dict:
+    def pull_messages(self, user_id: int, message_id: int) -> dict:
         
+        if not isinstance(user_id, int):
+            raise TypeError(type(user_id))
+        
+        if not isinstance(message_id, int):
+            raise TypeError(type(message_id))
+
+        if not self.__is_authorized:
+            raise ValueError(self.__is_authorized)
+
         headers = { "Authorization" : self.__auth_token }
 
         response = requests.get(f"{Client.SERVER_URI}/messages/pull", headers=headers, 
-                                json={ "message_id" : message_id, "user_id" : contact_id, "offset" : 0, "count" : 500 }, verify=False)
+                                json={ "message_id" : message_id, "user_id" : user_id, "offset" : 0, "count" : 500 }, verify=not Client.LOCAL_STARTUP)
 
         return response.json()
 
@@ -165,14 +189,17 @@ class Client:
 
         headers = { "Authorization" : self.__auth_token }
 
-        validate_response = requests.get(f"{Client.SERVER_URI}/account/validate", headers=headers, verify=False)
+        validate_response = requests.get(f"{Client.SERVER_URI}/account/validate", headers=headers, verify=not Client.LOCAL_STARTUP)
 
         return validate_response.status_code == 200
     
     def __connect_websocket(self) -> None:
 
+        if not self.__is_authorized:
+            raise ValueError(self.__is_authorized)
+
         headers = { "Authorization" : self.__auth_token }
 
-        self.__websocket = connect(Client.SERVER_WEBSOCKET_CONNECT_URI, ssl_context=self.__unverified_ssl_context, additional_headers=headers)
+        self.__websocket = connect(Client.SERVER_WEBSOCKET_CONNECT_URI, ssl_context=self.__ssl_context, additional_headers=headers)
 
         self.__is_authorized = True
