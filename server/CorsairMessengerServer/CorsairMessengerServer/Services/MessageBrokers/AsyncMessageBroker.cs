@@ -26,7 +26,10 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 
             await SendMessageIfPossibleAsync(message);
 
-            await SendMessageDeliveryCallbackIfPossibleAsync(message);
+            if (message.SenderId != message.ReceiverId)
+            {
+                await SendMessageDeliveryCallbackIfPossibleAsync(message);
+            }
         }
 
         private static byte[] GetMessageDeliveryResponse(MessageEntity message)

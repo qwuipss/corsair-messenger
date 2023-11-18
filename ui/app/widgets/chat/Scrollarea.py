@@ -14,7 +14,7 @@ class Scrollarea(QScrollArea):
     @property
     def layout(self) -> QVBoxLayout:
         return self.__layout
-    
+
     def __get_layout(self) -> QVBoxLayout:
 
         layout = QVBoxLayout(self)

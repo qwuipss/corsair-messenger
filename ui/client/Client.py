@@ -8,27 +8,27 @@ from os.path import dirname, realpath, exists
 
 class Client:
 
-    SERVER_IP_ADDRESS_PORT = "192.168.0.106:8080"
+    __SERVER_IP_ADDRESS_PORT = "192.168.0.106:8080"
 
-    SERVER_URI = f"https://{SERVER_IP_ADDRESS_PORT}"
+    __SERVER_URI = f"https://{__SERVER_IP_ADDRESS_PORT}"
 
-    SERVER_WEBSOCKET_CONNECT_URI = f"wss://{SERVER_IP_ADDRESS_PORT}"
+    __SERVER_WEBSOCKET_CONNECT_URI = f"wss://{__SERVER_IP_ADDRESS_PORT}"
 
-    AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/auth.json"
+    __AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/auth.json"
 
-    CONTACTS_LOAD_COUNT = 25
+    __CONTACTS_LOAD_COUNT = 25
 
-    MESSAGES_LOAD_COUNT = 50
+    MESSAGES_LOAD_COUNT = 15
 
-    LOCAL_STARTUP = True
+    __LOCAL_STARTUP = True
 
     if SECOND_WINDOW:
-        SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/authSecondWindow.json"
+        __SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/authSecondWindow.json"
         __first_auth = True
 
     def __init__(self) -> None:
         
-        if Client.LOCAL_STARTUP:
+        if Client.__LOCAL_STARTUP:
             
             from ssl import _create_unverified_context
             from urllib3 import disable_warnings 
@@ -70,10 +70,10 @@ class Client:
 
         if SECOND_WINDOW and not Client.__first_auth:
 
-            if not exists(Client.SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME):
+            if not exists(Client.__SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME):
                 return (False, "")
             
-            with open(Client.SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME, "r") as file:
+            with open(Client.__SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME, "r") as file:
                 try:
                     loaded_file = json.load(file)
                 except:
@@ -81,10 +81,10 @@ class Client:
 
         else:
 
-            if not exists(Client.AUTH_TOKEN_LOAD_FILENAME):
+            if not exists(Client.__AUTH_TOKEN_LOAD_FILENAME):
                 return (False, "")
 
-            with open(Client.AUTH_TOKEN_LOAD_FILENAME, "r") as file:
+            with open(Client.__AUTH_TOKEN_LOAD_FILENAME, "r") as file:
                 try:
                     loaded_file = json.load(file)
                     Client.__first_auth = False
@@ -104,10 +104,10 @@ class Client:
         data = { "token" : auth_token }
 
         if SECOND_WINDOW and not Client.__first_auth:
-            with open(Client.SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME, "w") as file:
+            with open(Client.__SECOND_WINDOW_AUTH_TOKEN_LOAD_FILENAME, "w") as file:
                 file.write(json.dumps(data))
         else:
-            with open(Client.AUTH_TOKEN_LOAD_FILENAME, "w") as file:
+            with open(Client.__AUTH_TOKEN_LOAD_FILENAME, "w") as file:
                 file.write(json.dumps(data))
 
     def auth(self, login: str, password: str) -> bool:
@@ -118,7 +118,7 @@ class Client:
         if not isinstance(password, str):
             raise ValueError(password)
 
-        auth_response = requests.post(f"{Client.SERVER_URI}/account/login", json={ "login" : login, "password" : password }, verify=not Client.LOCAL_STARTUP)
+        auth_response = requests.post(f"{Client.__SERVER_URI}/account/login", json={ "login" : login, "password" : password }, verify=not Client.__LOCAL_STARTUP)
 
         if auth_response.status_code == 200:
 
@@ -161,9 +161,9 @@ class Client:
 
         headers = { "Authorization" : self.__auth_token }
 
-        json = { "offset" : offset, "count" : Client.CONTACTS_LOAD_COUNT }
+        json = { "offset" : offset, "count" : Client.__CONTACTS_LOAD_COUNT }
 
-        response = requests.get(f"{Client.SERVER_URI}/contacts/get", headers=headers, json=json, verify=not Client.LOCAL_STARTUP)
+        response = requests.get(f"{Client.__SERVER_URI}/contacts/get", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
 
         return response.json()["contacts"]
 
@@ -175,9 +175,9 @@ class Client:
         if not isinstance(offset, int):
             raise TypeError(type(offset))
 
-        json = { "pattern" : pattern, "offset" : offset, "count" : Client.CONTACTS_LOAD_COUNT }
+        json = { "pattern" : pattern, "offset" : offset, "count" : Client.__CONTACTS_LOAD_COUNT }
 
-        response = requests.post(f"{Client.SERVER_URI}/contacts/search", json=json, verify=not Client.LOCAL_STARTUP)
+        response = requests.post(f"{Client.__SERVER_URI}/contacts/search", json=json, verify=not Client.__LOCAL_STARTUP)
 
         return response.json()["contacts"]
 
@@ -196,7 +196,7 @@ class Client:
 
         json = { "message_id" : message_id, "user_id" : user_id, "count" : Client.MESSAGES_LOAD_COUNT }
 
-        response = requests.get(f"{Client.SERVER_URI}/messages/load", headers=headers, json=json, verify=not Client.LOCAL_STARTUP)
+        response = requests.get(f"{Client.__SERVER_URI}/messages/load", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
 
         return response.json()
 
@@ -204,7 +204,7 @@ class Client:
 
         headers = { "Authorization" : self.__auth_token }
 
-        validate_response = requests.get(f"{Client.SERVER_URI}/account/validate", headers=headers, verify=not Client.LOCAL_STARTUP)
+        validate_response = requests.get(f"{Client.__SERVER_URI}/account/validate", headers=headers, verify=not Client.__LOCAL_STARTUP)
 
         return validate_response.status_code == 200
     
@@ -215,6 +215,6 @@ class Client:
 
         headers = { "Authorization" : self.__auth_token }
 
-        self.__websocket = connect(Client.SERVER_WEBSOCKET_CONNECT_URI, ssl_context=self.__ssl_context, additional_headers=headers)
+        self.__websocket = connect(Client.__SERVER_WEBSOCKET_CONNECT_URI, ssl_context=self.__ssl_context, additional_headers=headers)
 
         self.__is_authorized = True

@@ -10,7 +10,7 @@ class MessagesWidget(QWidget):
 
         self.__contact = None
 
-        self.__layout = self.__get_messages_layout()
+        self.__layout = QVBoxLayout()
 
     @property
     def layout(self) -> QVBoxLayout:
@@ -45,10 +45,3 @@ class MessagesWidget(QWidget):
         self.__layout.addWidget(currentContactName)
         self.__layout.addWidget(contact.messages_scrollarea)
         self.__layout.addWidget(contact.message_edit)
-
-    def __get_messages_layout(self) -> QVBoxLayout:
-
-        messages_layout = QVBoxLayout()
-
-        return messages_layout
-    

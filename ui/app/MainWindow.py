@@ -51,13 +51,13 @@ class MainWindow(QMainWindow):
             
         if SECOND_WINDOW and not MainWindow.__second_window_geometry_set:
             
-            self.setGeometry(int(rect.width() * .6),int(rect.width() * .3), rect.width(), rect.height())
+            self.setGeometry(-int(rect.width() * 1.1), int(rect.height() * .2), rect.width(), rect.height())
 
             MainWindow.__second_window_geometry_set = True
 
         else:
 
-            self.setGeometry(0, int(rect.width() * .1), rect.width(), rect.height())
+            self.setGeometry(int(rect.width() * .2), int(rect.height() * .2), rect.width(), rect.height())
 
     def __switch_login_to_chat(self) -> None:
 

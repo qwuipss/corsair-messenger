@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QTextEdit
-from PyQt6.QtGui import QTextOption, QResizeEvent
+from PyQt6.QtGui import QTextOption, QResizeEvent, QTextCursor
 from PyQt6 import QtCore
 
 class Message(QTextEdit):
@@ -24,6 +24,7 @@ class Message(QTextEdit):
         self.horizontalScrollBar().setDisabled(True)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.verticalScrollBar().valueChanged.connect(self.__prevent_scroll_on_selection_if_needed)
 
     @property
     def id(self) -> int:
@@ -46,3 +47,10 @@ class Message(QTextEdit):
 
         self.setFixedWidth(width)
         self.setFixedHeight(height)
+
+    def __prevent_scroll_on_selection_if_needed(self):
+
+        if self.verticalScrollBar().value() != 0:
+            self.textCursor().movePosition(QTextCursor.MoveOperation.End)
+            self.verticalScrollBar().setValue(0)
+            

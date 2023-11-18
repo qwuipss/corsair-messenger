@@ -31,7 +31,7 @@ class ChatWidget(QWidget):
         self.__load_contacts()
         
         self.__message_receive_thread = MessageReceiveThread(client)
-        self.__message_receive_thread.message_received.connect(self.__message_received_slot)
+        self.__message_receive_thread.message_received.connect(self.__message_received_handler)
         self.__message_receive_thread.start()
 
     def __get_main_layout(self) -> QHBoxLayout:
@@ -77,17 +77,17 @@ class ChatWidget(QWidget):
 
             self.__contacts_widget.add_contact(contact)
 
-    def __search_contacts(self, pattern: str) -> None:
+    def __search_contacts(self, pattern: str) -> None: #todo
 
         contacts = self.__client.search_contacts(pattern)
 
         for raw_contact in contacts:
 
-            contact_id = int(raw_contact["user_id"])
+            user_id = int(raw_contact["user_id"])
             nickname = raw_contact["nickname"]
 
             contact = Contact(
-                contact_id, 
+                user_id, 
                 nickname, 
                 self.__contact_selected_callback, 
                 self.__message_sent_callback, 
@@ -124,7 +124,7 @@ class ChatWidget(QWidget):
 
         self.__client.send_message(receiver_id=receiver_id, text=text)
 
-    def __message_received_slot(self, raw_message: dict) -> None:
+    def __message_received_handler(self, raw_message: dict) -> None:
 
         message_type = int(raw_message["type"])
 
@@ -144,7 +144,7 @@ class ChatWidget(QWidget):
 
         message = Message(message_id, text)
 
-        self.__contacts_widget.contacts[user_id].add_message(message, True)
+        self.__contacts_widget.contacts[user_id].add_new_message(message, True)
 
     def __receive_new_message(self, raw_message: dict) -> None:
 
@@ -155,4 +155,4 @@ class ChatWidget(QWidget):
 
         message = Message(message_id, text)
 
-        self.__contacts_widget.contacts[sender_id].add_message(message, False)
+        self.__contacts_widget.contacts[sender_id].add_new_message(message, False)
