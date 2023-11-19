@@ -15,7 +15,7 @@ class Contact(QLabel):
             name: str, 
             contact_selected_callback: Callable[['Contact'], None], 
             message_sent_callback: Callable[[int, str], None],
-            messages_history_load_delegate: Callable[[int, int, int], tuple[bool, Message]],
+            messages_history_load_delegate: Callable[[int, int], tuple[bool, dict]],
             main_window: QMainWindow
             ) -> None:
         
@@ -39,6 +39,7 @@ class Contact(QLabel):
 
         self.__messages_scrollarea.layout.addStretch(1)
 
+        self.__is_history_messages_exist = True
         self.__is_first_messages_loaded = False
         self.__is_scrolled_down_on_first_messages_loading = True
         self.__scrollbar_max_value_before_loading_messages_history = None
@@ -132,7 +133,7 @@ class Contact(QLabel):
         scrollbar.rangeChanged.disconnect(self.__scroll_down_on_first_messages_loading)
         scrollbar.rangeChanged.connect(self.__range_changed_handler)
 
-    def __load_first_messages(self):
+    def __load_first_messages(self) -> None:
 
         if self.__is_first_messages_loaded:
             raise ValueError(self.__is_first_messages_loaded)
@@ -155,6 +156,9 @@ class Contact(QLabel):
 
     def __load_messages_history(self) -> None:
         
+        if not self.__is_history_messages_exist:
+            return
+
         messages_layout = self.__messages_scrollarea.layout
         
         if messages_layout.count() == 1:
@@ -164,7 +168,7 @@ class Contact(QLabel):
 
         self.__scrollbar_max_value_before_loading_messages_history = self.__messages_scrollarea.verticalScrollBar().maximum()
 
-        messages = self.__messages_history_load_delegate(self.__id, first_message_id)
+        (self.__is_history_messages_exist, messages) = self.__messages_history_load_delegate(self.__id, first_message_id)
 
         for raw_message in messages:
 
@@ -203,7 +207,7 @@ class Contact(QLabel):
             maximum = scrollbar.maximum()
             scrollbar.setValue(maximum - self.__scrollbar_max_value_before_loading_messages_history)
 
-    def __scroll_down_on_first_messages_loading(self):
+    def __scroll_down_on_first_messages_loading(self) -> None:
 
         scrollbar = self.__messages_scrollarea.verticalScrollBar()
 

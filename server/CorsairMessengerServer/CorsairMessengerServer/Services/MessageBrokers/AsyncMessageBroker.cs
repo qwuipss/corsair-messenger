@@ -22,12 +22,10 @@ namespace CorsairMessengerServer.Services.MessageBrokers
 
         public async Task SendMessageAsync(MessageEntity message)
         {
-            await AddMessageToRepositoryAsync(message);
-
-            await SendMessageIfPossibleAsync(message);
-
             if (message.SenderId != message.ReceiverId)
             {
+                await AddMessageToRepositoryAsync(message);
+                await SendMessageIfPossibleAsync(message);
                 await SendMessageDeliveryCallbackIfPossibleAsync(message);
             }
         }

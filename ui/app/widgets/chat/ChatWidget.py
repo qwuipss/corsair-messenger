@@ -108,6 +108,8 @@ class ChatWidget(QWidget):
         previous_contact = self.__messages_widget.contact
         self.__messages_widget.contact = contact
 
+        contact.message_edit.setFocus()
+
         if previous_contact is None:
             return
 

@@ -181,7 +181,7 @@ class Client:
 
         return response.json()["contacts"]
 
-    def load_messages(self, user_id: int, message_id: int) -> Iterable[dict]:
+    def load_messages(self, user_id: int, message_id: int) -> tuple[bool, Iterable[dict]]:
         
         if not isinstance(user_id, int):
             raise TypeError(type(user_id))
@@ -198,7 +198,9 @@ class Client:
 
         response = requests.get(f"{Client.__SERVER_URI}/messages/load", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
 
-        return response.json()["messages"]
+        messages = response.json()["messages"]
+
+        return (len(messages) == Client.MESSAGES_LOAD_COUNT, messages)
 
     def __check_auth_token_validity(self) -> bool:
 
