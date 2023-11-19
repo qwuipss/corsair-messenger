@@ -198,7 +198,7 @@ class Client:
 
         response = requests.get(f"{Client.__SERVER_URI}/messages/load", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
 
-        return response.json()
+        return response.json()["messages"]
 
     def __check_auth_token_validity(self) -> bool:
 

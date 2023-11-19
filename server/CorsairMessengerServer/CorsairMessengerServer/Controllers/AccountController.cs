@@ -38,11 +38,11 @@ namespace CorsairMessengerServer.Controllers
             return Ok();
         }
 
-        [HttpPost("change-password")]
-        public async Task<ActionResult<AuthResponse>> ChangePasswordAsync([FromBody] AuthRequest request, [FromServices] IPasswordHasher hasher)
-        {
-            return BadRequest();
-        }
+        //[HttpPost("change-password")]
+        //public async Task<ActionResult<AuthResponse>> ChangePasswordAsync([FromBody] AuthRequest request, [FromServices] IPasswordHasher hasher)
+        //{
+        //    return BadRequest();
+        //}
 
         [AllowAnonymous]
         [HttpPost("login")]
@@ -64,7 +64,10 @@ namespace CorsairMessengerServer.Controllers
 
             var token = await GetAuthTokenAsync(user);
 
-            var response = new AuthResponse(token);
+            var response = new AuthResponse
+            {
+                Token = token,
+            };
 
             return Ok(response);
         }
@@ -114,7 +117,10 @@ namespace CorsairMessengerServer.Controllers
 
             var token = await GetAuthTokenAsync(user);
 
-            var response = new AuthResponse(token);
+            var response = new AuthResponse
+            {
+                Token = token,
+            };
 
             return Ok(response);
         }

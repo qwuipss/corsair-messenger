@@ -27,7 +27,12 @@ namespace CorsairMessengerServer.Controllers
 
             var messages = _messagesRepository.GetMessages(userId, request);
 
-            return Ok(messages);
+            var response = new MessagesListResponse
+            {
+                Messages = messages,
+            };
+
+            return Ok(response);
         }
     }
 }

@@ -1,4 +1,16 @@
-﻿namespace CorsairMessengerServer.Models.Register
+﻿using System.Text.Json.Serialization;
+
+namespace CorsairMessengerServer.Models.Register
 {
-    public record RegisterRequest(string Email, string Nickname, string Password);
+    public class RegisterRequest
+    {
+        [JsonPropertyName("email")]
+        public required string Email { get; set; }
+
+        [JsonPropertyName("nickname")]
+        public required string Nickname { get; set; }
+
+        [JsonPropertyName("password")]
+        public required string Password { get; set; }
+    }
 }

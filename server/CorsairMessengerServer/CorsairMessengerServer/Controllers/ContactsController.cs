@@ -29,7 +29,12 @@ namespace CorsairMessengerServer.Controllers
 
             var contacts = _usersRepository.GetContacts(userId, request);
 
-            return Ok(new ContactsListResponse(contacts));
+            var response = new ContactsListResponse
+            {
+                Contacts = contacts,
+            };
+
+            return Ok(response);
         }
 
         [AllowAnonymous]
@@ -38,7 +43,12 @@ namespace CorsairMessengerServer.Controllers
         {
             var contacts = _usersRepository.SearchContacts(request);
 
-            return Ok(new ContactsListResponse(contacts));
+            var response = new ContactsListResponse
+            {
+                Contacts = contacts,
+            };
+
+            return Ok(response);
         }
     }
 }

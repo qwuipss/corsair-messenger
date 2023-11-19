@@ -2,7 +2,7 @@
 
 namespace CorsairMessengerServer.Models.Messages
 {
-    public record MessagesLoadRequest()
+    public class MessagesLoadRequest
     {
         private const int COUNT_MAX_VALUE = 100;
 
@@ -10,6 +10,30 @@ namespace CorsairMessengerServer.Models.Messages
 
         private int _messageId;
 
+        [JsonPropertyName("user_id")]
+        public int UserId { get; set; }
+
+        [JsonPropertyName("message_id")]
+        public int MessageId
+        {
+            get
+            {
+                return _messageId;
+            }
+            set
+            {
+                if (value < 0)
+                {
+                    _messageId = int.MaxValue;
+                }
+                else
+                {
+                    _messageId = value;
+                }
+            }
+        }
+
+        [JsonPropertyName("count")]
         public int Count
         {
             get
@@ -29,29 +53,6 @@ namespace CorsairMessengerServer.Models.Messages
                 else
                 {
                     _count = value;
-                }
-            }
-        }
-
-        [JsonPropertyName("user_id")]
-        public int UserId { get; set; }
-
-        [JsonPropertyName("message_id")]
-        public int MessageId 
-        {
-            get 
-            {
-                return _messageId;
-            }
-            set 
-            {
-                if (value < 0)
-                {
-                    _messageId = int.MaxValue;
-                }
-                else
-                {
-                    _messageId = value;
                 }
             }
         }
