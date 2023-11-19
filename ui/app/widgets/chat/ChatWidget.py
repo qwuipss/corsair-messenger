@@ -77,12 +77,17 @@ class ChatWidget(QWidget):
     def __search_contacts(self, pattern: str) -> None:
 
         contacts = self.__client.search_contacts(pattern)
+        contacts_widget = self.__contacts_widget
 
         for raw_contact in contacts:
 
-            contact = self.__create_contact(raw_contact)
+            user_id = int(raw_contact["user_id"])
 
-            self.__contacts_widget.add_contact(contact)
+            if user_id not in contacts_widget.contacts:
+
+                contact = self.__create_contact(raw_contact)
+
+                contacts_widget.add_contact(contact)
 
     def __create_contact(self, raw_contact: dict) -> Contact:
 

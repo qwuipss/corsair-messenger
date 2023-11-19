@@ -1,4 +1,3 @@
-import typing
 from PyQt6 import QtGui, QtCore
 from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame
 
@@ -10,7 +9,7 @@ class Scrollarea(QScrollArea):
 
         self.__layout = self.__get_layout()
 
-        self.verticalScrollBar().hide()
+        self.verticalScrollBar().setObjectName("hidden")
 
     @property
     def layout(self) -> QVBoxLayout:
@@ -39,7 +38,8 @@ class Scrollarea(QScrollArea):
         scrollbar = self.verticalScrollBar()
 
         if scrollbar.maximum() != 0:
-            scrollbar.show()
+            scrollbar.setObjectName("showed")
+            scrollbar.setStyleSheet("")
 
     def leaveEvent(self, event: QtCore.QEvent | None) -> None:
         
@@ -47,5 +47,6 @@ class Scrollarea(QScrollArea):
 
         scrollbar = self.verticalScrollBar()
 
-        if not scrollbar.isHidden():
-            scrollbar.hide()
+        if scrollbar.objectName() != "hidden":
+            scrollbar.setObjectName("hidden")
+            scrollbar.setStyleSheet("")

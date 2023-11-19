@@ -35,6 +35,7 @@ class Client:
             from urllib3.exceptions import InsecureRequestWarning 
     
             disable_warnings(InsecureRequestWarning)
+
             self.__ssl_context = _create_unverified_context()
             
         else:
@@ -122,6 +123,8 @@ class Client:
 
         if auth_response.status_code == 200:
 
+            self.__is_authorized = True
+            
             self.__auth_token = "Bearer " + auth_response.json()["token"]
 
             self.__connect_websocket()

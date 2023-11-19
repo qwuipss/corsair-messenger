@@ -1,5 +1,4 @@
 from .Contact import Contact
-from client.Client import Client
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
 
 class MessagesWidget(QWidget):

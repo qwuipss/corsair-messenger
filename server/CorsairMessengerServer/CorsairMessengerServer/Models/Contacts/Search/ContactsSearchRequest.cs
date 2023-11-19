@@ -8,30 +8,8 @@ namespace CorsairMessengerServer.Models.Contacts.Search
 
         private int _count;
 
-        private int _offset;
-
         [JsonPropertyName("pattern")]
         public required string Pattern { get; set; }
-
-        [JsonPropertyName("offset")]
-        public int Offset
-        {
-            get
-            {
-                return _offset;
-            }
-            set
-            {
-                if (value < 0)
-                {
-                    _offset = 0;
-                }
-                else
-                {
-                    _offset = value;
-                }
-            }
-        }
 
         [JsonPropertyName("count")]
         public int Count

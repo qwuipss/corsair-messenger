@@ -21,6 +21,7 @@ class ChatWidgetQSS:
         width_005 = int(width * .005)
         width_01 = int(width * .01)
         width_002 = int(width * .002)
+        width_0105 = int(width * .0105)
 
         height_1 = int(height * .1)
         height_008 = int(height * .008)
@@ -30,18 +31,25 @@ class ChatWidgetQSS:
         color_101010 = "101010" 
         color_141414 = "141414"
 
+        layouts_margin = QSSHelper.margin_side("left", f"{width_004}px solid #{SharedQSS.COLOR_0c0c0c}")
+
         self.__qss = """
             QScrollBar::vertical{
                 """ + QSSHelper.concat(
-                        QSSHelper.background("transparent"),
+                        QSSHelper.background_color(color_101010),
                         QSSHelper.width(width_004),
                     ) + \
             """}
-            QScrollBar::handle::vertical{
+            QScrollBar#showed::handle::vertical{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color("777777"),
                         QSSHelper.min_height(height_008),
                         QSSHelper.border_radius(width_002),
+                    ) + \
+            """}
+            QScrollBar#hidden::handle::vertical{
+                """ + QSSHelper.concat(
+                        QSSHelper.background_color(color_101010),
                     ) + \
             """}
             QScrollBar::sub-page::vertical, QScrollBar::add-page::vertical{
@@ -61,6 +69,7 @@ class ChatWidgetQSS:
                         QSSHelper.font_size(width_015),
                         QSSHelper.min_height(int(width * .043)),
                         QSSHelper.padding(0, 0, 0, width_005),
+                        QSSHelper.border_radius(width_0105),
                     ) + \
             """}
             QLabel#currentContactName{
@@ -70,6 +79,7 @@ class ChatWidgetQSS:
                         QSSHelper.background_color(color_101010),
                         QSSHelper.font_weight(font_weight_550),
                         QSSHelper.padding(0, 0, 0, width_0067),
+                        layouts_margin,
                     ) + \
             """}
             Contact::hover{
@@ -101,7 +111,6 @@ class ChatWidgetQSS:
                         QSSHelper.padding(0, 0, 0, width_0067),
                         QSSHelper.font_weight(font_weight_550),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
-                        QSSHelper.margin_side("right", f"{width_004}px solid #{SharedQSS.COLOR_0c0c0c}"),
                     ) + \
             """}
             MessageEdit{
@@ -113,6 +122,17 @@ class ChatWidgetQSS:
                         QSSHelper.color(SharedQSS.COLOR_f2f2f2),
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
                         QSSHelper.padding(width_005, width_01, width_005, width_01),
+                        layouts_margin,
+                    ) + \
+            """}
+            Scrollarea#messages{
+                """ + QSSHelper.concat(
+                        layouts_margin,
+                    ) + \
+            """}
+            #contactsScrollwidget{
+                """ + QSSHelper.concat(
+                        QSSHelper.background_color(color_101010),
                     ) + \
             """}
         """

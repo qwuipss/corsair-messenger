@@ -76,7 +76,6 @@ namespace CorsairMessengerServer.Data.Repositories
                 .Where(user => EF.Functions.Like(user.Nickname!, $"%{request.Pattern}%"))
                 .Select(user => new UserResponseEntity { Id = user.Id, Nickname = user.Nickname })
                 .OrderBy(user => user.Id)
-                .Skip(request.Offset)
                 .Take(request.Count)
                 .ToArray();
         }
