@@ -151,7 +151,7 @@ class Client:
 
         self.__websocket.send(serialized_message)
 
-    def get_contacts(self, offset: int) -> Iterable[dict]:
+    def get_contacts(self, offset: int) -> tuple[bool, Iterable[dict]]:
         
         if not self.__is_authorized:
             raise ValueError(self.__is_authorized)
@@ -165,17 +165,16 @@ class Client:
 
         response = requests.get(f"{Client.__SERVER_URI}/contacts/get", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
 
-        return response.json()["contacts"]
+        contacts = response.json()["contacts"]
 
-    def search_contacts(self, pattern: str, offset: int) -> Iterable[dict]:
+        return (len(contacts) == Client.__CONTACTS_LOAD_COUNT, contacts)
+
+    def search_contacts(self, pattern: str) -> Iterable[dict]:
 
         if not isinstance(pattern, str):
             raise TypeError(type(pattern))
 
-        if not isinstance(offset, int):
-            raise TypeError(type(offset))
-
-        json = { "pattern" : pattern, "offset" : offset, "count" : Client.__CONTACTS_LOAD_COUNT }
+        json = { "pattern" : pattern, "count" : Client.__CONTACTS_LOAD_COUNT }
 
         response = requests.post(f"{Client.__SERVER_URI}/contacts/search", json=json, verify=not Client.__LOCAL_STARTUP)
 

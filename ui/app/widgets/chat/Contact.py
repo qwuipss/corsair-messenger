@@ -1,7 +1,6 @@
 from .Scrollarea import Scrollarea
 from .Message import Message
 from .MessageEdit import MessageEdit
-from client.Client import Client
 from typing import Callable
 from PyQt6 import QtCore
 from PyQt6.QtGui import QMouseEvent

@@ -10,6 +10,7 @@ class ContactsWidget(QWidget):
         
         super().__init__()
 
+        self.__contacts_loading_offset = 0
         self.__contacts = {}
 
         self.__contacts_search = ContactsSearch(contacts_search_requested_delegate)
@@ -18,6 +19,10 @@ class ContactsWidget(QWidget):
         self.__contacts_scrollarea.layout.addStretch(1)
         self.__contacts_scrollarea.layout.setSpacing(0)
         self.__contacts_scrollarea.layout.setContentsMargins(0, 0, 0, 0)
+
+    @property
+    def contacts_loading_offset(self) -> int:
+        return self.__contacts_loading_offset
 
     @property
     def contacts_search(self) -> QLineEdit:
@@ -39,3 +44,6 @@ class ContactsWidget(QWidget):
         self.__contacts_scrollarea.layout.insertWidget(0, contact)
 
         self.__contacts.update({contact.id : contact})
+
+    def __load_contacts_on_scrollbar_down(self) -> None:
+        pass

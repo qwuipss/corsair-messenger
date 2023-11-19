@@ -19,6 +19,8 @@ class ChatWidget(QWidget):
 
         super().__init__()
 
+        self.__is_contacts_exist = True
+
         self.__client = client
         self.__main_window = main_window
 
@@ -59,43 +61,44 @@ class ChatWidget(QWidget):
     
     def __load_contacts(self) -> None:
 
-        contacts = self.__client.get_contacts(0) #todo
+        if not self.__is_contacts_exist:
+            return
+
+        contacts_widget = self.__contacts_widget
+
+        (self.__is_contacts_exist, contacts) = self.__client.get_contacts(contacts_widget.contacts_loading_offset)
 
         for raw_contact in contacts:
 
-            contact_id = int(raw_contact["user_id"])
-            nickname = raw_contact["nickname"]
+            contact = self.__create_contact(raw_contact)
 
-            contact = Contact(
-                contact_id, 
-                nickname,
-                self.__contact_selected_callback, 
-                self.__message_sent_callback, 
-                self.__client.load_messages, 
-                self.__main_window
-                )
+            contacts_widget.add_contact(contact)
 
-            self.__contacts_widget.add_contact(contact)
-
-    def __search_contacts(self, pattern: str) -> None: #todo
+    def __search_contacts(self, pattern: str) -> None:
 
         contacts = self.__client.search_contacts(pattern)
 
         for raw_contact in contacts:
 
-            user_id = int(raw_contact["user_id"])
-            nickname = raw_contact["nickname"]
-
-            contact = Contact(
-                user_id, 
-                nickname, 
-                self.__contact_selected_callback, 
-                self.__message_sent_callback, 
-                self.__client.load_messages, 
-                self.__main_window
-                )
+            contact = self.__create_contact(raw_contact)
 
             self.__contacts_widget.add_contact(contact)
+
+    def __create_contact(self, raw_contact: dict) -> Contact:
+
+        user_id = int(raw_contact["user_id"])
+        nickname = raw_contact["nickname"]
+
+        contact = Contact(
+            user_id, 
+            nickname, 
+            self.__contact_selected_callback, 
+            self.__message_sent_callback, 
+            self.__client.load_messages, 
+            self.__main_window
+            )
+        
+        return contact
 
     def __contact_selected_callback(self, contact: Contact) -> None:
 
