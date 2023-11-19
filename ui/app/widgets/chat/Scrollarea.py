@@ -1,3 +1,4 @@
+import typing
 from PyQt6 import QtGui, QtCore
 from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame
 

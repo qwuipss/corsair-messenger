@@ -1,6 +1,7 @@
 from .Scrollarea import Scrollarea
 from .Message import Message
 from .MessageEdit import MessageEdit
+from client.Client import Client
 from typing import Callable
 from PyQt6 import QtCore
 from PyQt6.QtGui import QMouseEvent
@@ -29,6 +30,8 @@ class Contact(QLabel):
 
         super().__init__(name)
 
+        self.__first_access = True
+
         self.__id = id
         self.__contact_selected_callback = contact_selected_callback
         self.__messages_history_load_delegate = messages_history_load_delegate
@@ -42,11 +45,12 @@ class Contact(QLabel):
         self.__scrollbar_value_before_add_new_message = None
         self.__last_message_self_authority = None
 
-        self.__messages_scrollarea.verticalScrollBar().rangeChanged.connect(self.__range_changed_handler)
-        self.__messages_scrollarea.verticalScrollBar().valueChanged.connect(self.__load_messages_history_if_needed)
         
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+        
+        self.__up = True
+        self._a()
 
     @property
     def id(self) -> int:
@@ -54,10 +58,6 @@ class Contact(QLabel):
 
     @property
     def messages_scrollarea(self) -> Scrollarea:
-
-        if self.__messages_scrollarea.verticalScrollBar().maximum() == 0:
-            self.__load_messages_history()
-
         return self.__messages_scrollarea
     
     @property
@@ -87,6 +87,8 @@ class Contact(QLabel):
         message_layout = self.__create_message_layout(message, self_authority)
 
         self.__messages_scrollarea.layout.insertLayout(1, message_layout)
+
+        self.__scrollbar_value_before_add_new_message = self.__messages_scrollarea.verticalScrollBar().maximum()
 
     def __create_message_layout(self, message: Message, self_authority: bool) -> QVBoxLayout:
 
@@ -125,7 +127,7 @@ class Contact(QLabel):
 
         return message_edit
     
-    def __load_messages_history(self) -> None:
+    def _a(self):
 
         messages_layout = self.__messages_scrollarea.layout
         
@@ -148,12 +150,65 @@ class Contact(QLabel):
 
             self.__add_history_message(message, sender_id != self.__id)
 
+        scrollbar = self.__messages_scrollarea.verticalScrollBar()
+        scrollbar.rangeChanged.connect(self._u)
+
+    def _u(self):
+
+        scrollbar = self.__messages_scrollarea.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
+
+        if self.__up:
+            self.__messages_scrollarea.verticalScrollBar().valueChanged.connect(self.__load_messages_history_if_needed)
+            self.__up = False
+
+    def _s(self): 
+
+        scrollbar = self.__messages_scrollarea.verticalScrollBar()
+        scrollbar.rangeChanged.disconnect(self._u)
+        self.__messages_scrollarea.verticalScrollBar().rangeChanged.connect(self.__range_changed_handler)
+
+    def __load_messages_history(self) -> None:
+
+        if self.__first_access:
+            self._s()
+
+        messages_layout = self.__messages_scrollarea.layout
+        
+        if messages_layout.count() == 1:
+            first_message_id = -1
+        else:
+            first_message_id = messages_layout.itemAt(1).layout().itemAt(0).widget().id
+
+        self.__scrollbar_max_value_before_loading_messages_history = self.__messages_scrollarea.verticalScrollBar().maximum()
+
+        messages = self.__messages_history_load_delegate(self.__id, first_message_id)
+
+        for raw_message in messages:
+
+            message_id = raw_message["message_id"]
+            sender_id = raw_message["sender_id"]
+            text = raw_message["text"]
+
+            message = Message(message_id, text)
+
+            self.__add_history_message(message, sender_id != self.__id)
+
+
+        if self.__first_access:
+            self.__first_access = False
+
     def __load_messages_history_if_needed(self) -> None:
         
         scrollbar = self.__messages_scrollarea.verticalScrollBar() 
 
         if scrollbar.value() == 0:
             self.__load_messages_history()
+
+    def __range_changed_handler(self) -> None:
+
+        self.__return_scrollbar_on_position_before_loading_messages()
+        self.__scroll_down_on_new_message_if_needed()
 
     def __scroll_down_on_new_message_if_needed(self) -> None:
         
@@ -162,18 +217,7 @@ class Contact(QLabel):
         if self.__last_message_self_authority or self.__scrollbar_value_before_add_new_message == scrollbar.value():
             scrollbar.setValue(scrollbar.maximum())
 
-    def __range_changed_handler(self) -> None:
-
-        self.__scroll_down_on_new_message_if_needed()
-        self.__return_scrollbar_on_position_before_loading_messages()
-
-        # if self.__messages_scrollarea_first_access:
-        #     scrollbar = self.__messages_scrollarea.verticalScrollBar()
-        #     maximunm = scrollbar.maximum()
-        #     scrollbar.setValue(maximunm)
-        #     self.__messages_scrollarea_first_access = False
-
-    def __return_scrollbar_on_position_before_loading_messages(self):
+    def __return_scrollbar_on_position_before_loading_messages(self) -> None:
 
         scrollbar = self.__messages_scrollarea.verticalScrollBar()
         

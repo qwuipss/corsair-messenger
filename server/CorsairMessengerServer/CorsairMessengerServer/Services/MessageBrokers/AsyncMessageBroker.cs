@@ -24,12 +24,12 @@ namespace CorsairMessengerServer.Services.MessageBrokers
         {
             await AddMessageToRepositoryAsync(message);
 
-            await SendMessageIfPossibleAsync(message);
-
             if (message.SenderId != message.ReceiverId)
             {
-                await SendMessageDeliveryCallbackIfPossibleAsync(message);
+                await SendMessageIfPossibleAsync(message);
             }
+
+            await SendMessageDeliveryCallbackIfPossibleAsync(message);
         }
 
         private static byte[] GetMessageDeliveryResponse(MessageEntity message)
