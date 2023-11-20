@@ -112,16 +112,34 @@ class QSSHelper:
 
         return f"padding: {top}px {right}px {bottom}px {left}px;"
 
+
     @staticmethod
-    def margin_side(side: str, style: str):
+    def margin(top: int, right: int, bottom: int, left: int) -> str:
+
+        if not isinstance(top, int):
+            raise TypeError(type(top))
+        
+        if not isinstance(right, int):
+            raise TypeError(type(right))
+        
+        if not isinstance(bottom, int):
+            raise TypeError(type(bottom))
+        
+        if not isinstance(left, int):
+            raise TypeError(type(left))
+
+        return f"margin: {top}px {right}px {bottom}px {left}px;"
+
+    @staticmethod
+    def margin_side(side: str, size: int):
 
         if not isinstance(side, str):
             raise TypeError(type(side))
         
-        if not isinstance(style, str):
-            raise TypeError(type(style))
+        if not isinstance(size, int):
+            raise TypeError(type(size))
 
-        return f"margin-{side}: {style};"        
+        return f"margin-{side}: {size}px;"        
 
     @staticmethod
     def color(hex_color: str) -> str:
@@ -138,3 +156,4 @@ class QSSHelper:
             raise TypeError(type(spacing))
 
         return f"letter-spacing: {spacing}px;"
+    

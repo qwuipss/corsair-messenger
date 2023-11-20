@@ -14,7 +14,7 @@ class ContactsWidget(QWidget):
         self.__contacts = {}
 
         self.__contacts_search = ContactsSearch(contacts_search_requested_delegate)
-        self.__contacts_scrollarea = Scrollarea()
+        self.__contacts_scrollarea = Scrollarea("contactsScrollbarShowed", "contactsScrollbarHidden")
 
         self.__contacts_scrollarea.widget().setObjectName("contactsScrollwidget")
 

@@ -33,11 +33,11 @@ class Contact(QLabel):
         self.__contact_selected_callback = contact_selected_callback
         self.__messages_history_load_delegate = messages_history_load_delegate
 
-        self.__messages_scrollarea = Scrollarea()
+        self.__messages_scrollarea = Scrollarea("messagesScrollbarShowed", "messagesScrollbarHidden")
         self.__message_edit = self.__get_message_edit(main_window, lambda text: message_sent_callback(receiver_id=self.__id, text=text))
 
         self.__messages_scrollarea.layout.addStretch(1)
-        self.__messages_scrollarea.setObjectName("messages")
+        self.__messages_scrollarea.setObjectName("messagesScrollarea")
 
         self.__is_history_messages_exist = True
         self.__is_first_messages_loaded = False

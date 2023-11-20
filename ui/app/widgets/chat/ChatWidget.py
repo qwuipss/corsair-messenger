@@ -83,11 +83,11 @@ class ChatWidget(QWidget):
 
             user_id = int(raw_contact["user_id"])
 
-            if user_id not in contacts_widget.contacts:
+            # if user_id not in contacts_widget.contacts:
 
-                contact = self.__create_contact(raw_contact)
+            contact = self.__create_contact(raw_contact)
 
-                contacts_widget.add_contact(contact)
+            contacts_widget.add_contact(contact)
 
     def __create_contact(self, raw_contact: dict) -> Contact:
 

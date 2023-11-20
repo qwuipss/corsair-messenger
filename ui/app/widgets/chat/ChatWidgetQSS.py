@@ -22,6 +22,8 @@ class ChatWidgetQSS:
         width_01 = int(width * .01)
         width_002 = int(width * .002)
         width_0105 = int(width * .0105)
+        width_003 = int(width * .003)
+        width_0059 = int(width * .0059)
 
         height_1 = int(height * .1)
         height_008 = int(height * .008)
@@ -30,37 +32,62 @@ class ChatWidgetQSS:
 
         color_101010 = "101010" 
         color_141414 = "141414"
+        color_777777 = "777777"
 
-        layouts_margin = QSSHelper.margin_side("left", f"{width_004}px solid #{SharedQSS.COLOR_0c0c0c}")
+        layouts_margin = QSSHelper.margin_side("left", width_004)
 
         self.__qss = """
-            QScrollBar::vertical{
+            QScrollBar::handle::vertical{
                 """ + QSSHelper.concat(
-                        QSSHelper.background_color(color_101010),
-                        QSSHelper.width(width_004),
-                    ) + \
-            """}
-            QScrollBar#showed::handle::vertical{
-                """ + QSSHelper.concat(
-                        QSSHelper.background_color("777777"),
                         QSSHelper.min_height(height_008),
                         QSSHelper.border_radius(width_002),
                     ) + \
             """}
-            QScrollBar#hidden::handle::vertical{
+            QScrollBar#messagesScrollbarShowed::vertical, QScrollBar#messagesScrollbarHidden::vertical{
+                """ + QSSHelper.concat(
+                        QSSHelper.width(width_004 + width_003),
+                    ) + \
+            """}
+            QScrollBar#messagesScrollbarShowed::vertical{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_101010),
+                        QSSHelper.margin(width_0059, width_003, width_0059, 0),
                     ) + \
             """}
-            QScrollBar::sub-page::vertical, QScrollBar::add-page::vertical{
+            QScrollBar#messagesScrollbarShowed::handle::vertical{
                 """ + QSSHelper.concat(
-                        QSSHelper.background("none"),
+                        QSSHelper.background_color(color_777777),
+                    ) + \
+            """}            
+            QScrollBar#contactsScrollbarShowed::handle::vertical{
+                """ + QSSHelper.concat(
+                        QSSHelper.background_color(color_777777),
                     ) + \
             """}
+            QScrollBar#contactsScrollbarShowed::vertical, QScrollBar#contactsScrollbarHidden::vertical{
+                """ + QSSHelper.concat(
+                        QSSHelper.width(width_004),
+                        QSSHelper.background_color(color_101010),
+                        QSSHelper.padding(width_0059, 0, width_0059, 0),
+                    ) + \
+            """}
+            QScrollBar#messagesScrollbarHidden::vertical,
+            QScrollBar#messagesScrollbarHidden::handle::vertical,
+            QScrollBar::sub-page::vertical, QScrollBar::add-page::vertical,
             QScrollBar::up-arrow::vertical, QScrollBar::down-arrow::vertical,
             QScrollBar::add-line::vertical, QScrollBar::sub-line::vertical{
                 """ + QSSHelper.concat(
                         QSSHelper.background("transparent"),
+                    ) + \
+            """}
+            Scrollarea#messagesScrollarea{
+                """ + QSSHelper.concat(
+                        layouts_margin,
+                    ) + \
+            """}
+            QWidget#contactsScrollwidget{
+                """ + QSSHelper.concat(
+                        QSSHelper.background_color(color_101010),
                     ) + \
             """}
             Contact{
@@ -69,6 +96,7 @@ class ChatWidgetQSS:
                         QSSHelper.font_size(width_015),
                         QSSHelper.min_height(int(width * .043)),
                         QSSHelper.padding(0, 0, 0, width_005),
+                        QSSHelper.margin_side("right", width_002),
                         QSSHelper.border_radius(width_0105),
                     ) + \
             """}
@@ -123,16 +151,6 @@ class ChatWidgetQSS:
                         QSSHelper.selection_background_color(SharedQSS.COLOR_555555),
                         QSSHelper.padding(width_005, width_01, width_005, width_01),
                         layouts_margin,
-                    ) + \
-            """}
-            Scrollarea#messages{
-                """ + QSSHelper.concat(
-                        layouts_margin,
-                    ) + \
-            """}
-            #contactsScrollwidget{
-                """ + QSSHelper.concat(
-                        QSSHelper.background_color(color_101010),
                     ) + \
             """}
         """
