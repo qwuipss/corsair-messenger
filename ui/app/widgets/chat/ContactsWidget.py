@@ -40,7 +40,7 @@ class ContactsWidget(QWidget):
 
     def add_contact(self, contact: Contact) -> None:
 
-        if not isinstance(contact, QWidget):
+        if not isinstance(contact, Contact):
             raise TypeError(type(contact)) 
 
         self.__contacts_scrollarea.layout.insertWidget(0, contact)
