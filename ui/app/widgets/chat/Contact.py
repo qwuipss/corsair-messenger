@@ -104,6 +104,8 @@ class Contact(QLabel):
         self.__scrollbar_value_before_add_new_message = self.__messages_scrollarea.verticalScrollBar().maximum()
         self.__last_message_self_authority = self_authority
 
+        self.__last_message_label.setText(message.text)
+
     def unset_selected(self) -> None:
 
         object_name = self.objectName()
