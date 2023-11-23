@@ -15,10 +15,11 @@ class Message(QTextEdit):
         super().__init__()
 
         self.__id = id
+        self.__text = text
 
         self.setWordWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)        
         self.textChanged.connect(self.__adjust_size)
-        self.setText(text)
+        self.setText(self.__text)
         self.setReadOnly(True)
         self.verticalScrollBar().setDisabled(True)
         self.horizontalScrollBar().setDisabled(True)
@@ -29,6 +30,10 @@ class Message(QTextEdit):
     @property
     def id(self) -> int:
         return self.__id
+
+    @property
+    def text(self) -> str:
+        return self.__text
 
     def resizeEvent(self, _: QResizeEvent) -> None:
 

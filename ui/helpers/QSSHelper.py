@@ -72,12 +72,31 @@ class QSSHelper:
         return f"font-family: {font_family};"
     
     @staticmethod
-    def border_radius(border_radius: int) -> str:
+    def border_radius(
+        border_top_left_radius: int, 
+        border_top_right_radius: int, 
+        border_bottom_left_radius: int, 
+        border_bottom_right_radius: int
+        ) -> str:
 
-        if not isinstance(border_radius, int):
-            raise TypeError(type(border_radius))
+        if not isinstance(border_top_left_radius, int):
+            raise TypeError(type(border_top_left_radius))
+        
+        if not isinstance(border_top_right_radius, int):
+            raise TypeError(type(border_top_right_radius))
+        
+        if not isinstance(border_bottom_left_radius, int):
+            raise TypeError(type(border_bottom_left_radius))
+        
+        if not isinstance(border_bottom_right_radius, int):
+            raise TypeError(type(border_bottom_right_radius))
 
-        return f"border-radius: {border_radius}px;"
+        return f"""
+                border-top-left-radius: {border_top_left_radius}px;
+                border-top-right-radius: {border_top_right_radius}px;
+                border-bottom-left-radius: {border_bottom_left_radius}px; 
+                border-bottom-right-radius: {border_bottom_right_radius}px;
+                """
 
     @staticmethod
     def background_color(hex_color: str) -> str:
@@ -111,7 +130,6 @@ class QSSHelper:
             raise TypeError(type(left))
 
         return f"padding: {top}px {right}px {bottom}px {left}px;"
-
 
     @staticmethod
     def margin(top: int, right: int, bottom: int, left: int) -> str:

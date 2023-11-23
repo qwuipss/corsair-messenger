@@ -2,7 +2,7 @@ from .ContactsSearch import ContactsSearch
 from .Scrollarea import Scrollarea
 from .Contact import Contact
 from typing import Callable
-from PyQt6.QtWidgets import QLineEdit, QWidget
+from PyQt6.QtWidgets import QLineEdit, QWidget, QVBoxLayout
 
 class ContactsWidget(QWidget):
 
@@ -41,9 +41,19 @@ class ContactsWidget(QWidget):
     def add_contact(self, contact: Contact) -> None:
 
         if not isinstance(contact, Contact):
-            raise TypeError(type(contact)) 
+            raise TypeError(type(contact))      
 
-        self.__contacts_scrollarea.layout.insertWidget(0, contact)
+        contact_layout = QVBoxLayout()
+
+        contact_layout.setSpacing(0)
+
+        contact.setContentsMargins(0,0,0,0)
+        contact.last_message_label.setContentsMargins(0,0,0,0)
+
+        contact_layout.addWidget(contact)
+        contact_layout.addWidget(contact.last_message_label)
+
+        self.__contacts_scrollarea.layout.insertLayout(0, contact_layout)
 
         self.__contacts.update({contact.id : contact})
 

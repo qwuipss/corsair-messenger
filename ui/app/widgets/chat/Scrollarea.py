@@ -35,7 +35,7 @@ class Scrollarea(QScrollArea):
         self.setWidgetResizable(True)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setFrameShape(QFrame.Shape(0))
+        self.setFrameShape(QFrame.Shape.NoFrame)
         self.setWidget(widget)
 
         return layout
@@ -46,9 +46,11 @@ class Scrollarea(QScrollArea):
 
         scrollbar = self.verticalScrollBar()
 
-        if scrollbar.maximum() != 0:
-            scrollbar.setObjectName(self.__showed_object_name)
-            scrollbar.setStyleSheet("")
+        if scrollbar.maximum() == 0:
+            return
+        
+        scrollbar.setObjectName(self.__showed_object_name)
+        scrollbar.setStyleSheet("")
 
     def leaveEvent(self, event: QtCore.QEvent | None) -> None:
         
@@ -56,6 +58,8 @@ class Scrollarea(QScrollArea):
 
         scrollbar = self.verticalScrollBar()
 
-        if scrollbar.objectName() != self.__hidden_object_name:
-            scrollbar.setObjectName(self.__hidden_object_name)
-            scrollbar.setStyleSheet("")
+        if scrollbar.objectName() == self.__hidden_object_name:
+            return
+        
+        scrollbar.setObjectName(self.__hidden_object_name)
+        scrollbar.setStyleSheet("")

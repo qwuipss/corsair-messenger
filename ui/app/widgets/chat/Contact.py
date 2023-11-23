@@ -1,9 +1,10 @@
 from .Scrollarea import Scrollarea
 from .Message import Message
 from .MessageEdit import MessageEdit
+from .LastMessage import LastMessage
 from typing import Callable
 from PyQt6 import QtCore
-from PyQt6.QtGui import QMouseEvent
+from PyQt6.QtGui import QMouseEvent, QEnterEvent
 from PyQt6.QtWidgets import QVBoxLayout, QTextEdit, QLabel, QMainWindow, QLabel
 
 class Contact(QLabel):
@@ -46,10 +47,19 @@ class Contact(QLabel):
         self.__scrollbar_value_before_add_new_message = None
         self.__last_message_self_authority = None
 
-        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop | QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
         
         self.__load_first_messages()
+
+        self.__last_message_text = self.__get_last_message_text()
+
+        self.__last_message_label = LastMessage(
+            self.__last_message_text,
+            self.__set_hovered,
+            self.__unset_hovered,
+            self.__set_selected,
+            )
 
     @property
     def id(self) -> int:
@@ -63,14 +73,27 @@ class Contact(QLabel):
     def message_edit(self) -> QTextEdit:
         return self.__message_edit
     
+    @property
+    def last_message_label(self) -> QLabel:
+        return self.__last_message_label
+    
+    def enterEvent(self, event: QEnterEvent | None):
+        
+        super().enterEvent(event)
+
+        self.__set_hovered()
+
+    def leaveEvent(self, event: QtCore.QEvent | None) -> None:
+        
+        super().leaveEvent(event)
+
+        self.__unset_hovered()
+
     def mousePressEvent(self, event: QMouseEvent | None) -> None:
 
         super().mousePressEvent(event)
 
-        self.__contact_selected_callback(self)
-
-        self.setObjectName("selected")
-        self.setStyleSheet("")
+        self.__set_selected()
 
     def add_new_message(self, message: Message, self_authority: bool) -> None:
 
@@ -80,6 +103,58 @@ class Contact(QLabel):
 
         self.__scrollbar_value_before_add_new_message = self.__messages_scrollarea.verticalScrollBar().maximum()
         self.__last_message_self_authority = self_authority
+
+    def unset_selected(self) -> None:
+
+        object_name = self.objectName()
+
+        if object_name != "selected":
+            return 
+
+        self.setObjectName("") 
+        self.setStyleSheet("") 
+        
+        self.__last_message_label.setObjectName("")
+        self.__last_message_label.setStyleSheet("")
+
+    def __set_hovered(self) -> None:
+        
+        object_name = self.objectName()
+
+        if object_name == "hovered" or object_name == "selected":
+            return
+
+        self.setObjectName("hovered")
+        self.setStyleSheet("")
+        
+        self.__last_message_label.setObjectName("hovered")
+        self.__last_message_label.setStyleSheet("")
+
+    def __unset_hovered(self) -> None:
+
+        if self.objectName() != "hovered":
+            return
+
+        self.setObjectName("")
+        self.setStyleSheet("")
+
+        self.__last_message_label.setObjectName("")
+        self.__last_message_label.setStyleSheet("")
+
+    def __set_selected(self) -> None:
+
+        self.__contact_selected_callback(self)
+
+        object_name = self.objectName()
+
+        if object_name == "selected":
+            return
+
+        self.setObjectName("selected")
+        self.setStyleSheet("")
+
+        self.__last_message_label.setObjectName("selected")
+        self.__last_message_label.setStyleSheet("")
 
     def __add_history_message(self, message: Message, self_authority: bool) -> None:
 
@@ -164,7 +239,7 @@ class Contact(QLabel):
         if messages_layout.count() == 1:
             first_message_id = -1
         else:
-            first_message_id = messages_layout.itemAt(1).layout().itemAt(0).widget().id
+            first_message_id = self.__get_first_message_id()
 
         self.__scrollbar_max_value_before_loading_messages_history = self.__messages_scrollarea.verticalScrollBar().maximum()
 
@@ -216,3 +291,10 @@ class Contact(QLabel):
         if self.__is_scrolled_down_on_first_messages_loading:
             scrollbar.valueChanged.connect(self.__load_messages_history_if_needed)
             self.__is_scrolled_down_on_first_messages_loading = False
+
+    def __get_first_message_id(self) -> int:
+        return self.__messages_scrollarea.layout.itemAt(1).layout().itemAt(0).widget().id
+    
+    def __get_last_message_text(self) -> int:
+        return self.__messages_scrollarea.layout.itemAt(self.__messages_scrollarea.layout.count() - 1).layout().itemAt(0).widget().text
+        

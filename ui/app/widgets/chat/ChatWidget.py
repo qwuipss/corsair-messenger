@@ -110,10 +110,14 @@ class ChatWidget(QWidget):
         if not isinstance(contact, Contact):
             raise TypeError(type(contact))
         
+        previous_contact = self.__messages_widget.contact
+
+        if previous_contact == contact:
+            return
+
         self.__messages_widget.hide_contact_dialog()
         self.__messages_widget.show_contact_dialog(contact)
 
-        previous_contact = self.__messages_widget.contact
         self.__messages_widget.contact = contact
 
         contact.message_edit.setFocus()
@@ -121,8 +125,7 @@ class ChatWidget(QWidget):
         if previous_contact is None:
             return
 
-        previous_contact.setObjectName("") 
-        previous_contact.setStyleSheet("") 
+        previous_contact.unset_selected()
 
     def __message_sent_callback(self, receiver_id: int, text: str) -> None:
         
