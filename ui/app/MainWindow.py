@@ -8,6 +8,7 @@ from PyQt6 import QtGui
 from os.path import dirname, realpath
 
 #self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+
 class MainWindow(QMainWindow):
 
     if SECOND_WINDOW:
@@ -16,6 +17,8 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         
         super().__init__()
+
+        self.setWindowTitle("CORSAIR")
 
         self.__screen_size = QApplication.primaryScreen().size()
 
@@ -29,7 +32,7 @@ class MainWindow(QMainWindow):
             central_widget = ChatWidget(self, self.__client)
         else:
             central_widget = LoginWidget(self, self.__client, self.__switch_login_to_chat)
-
+        
         self.setCentralWidget(central_widget)        
         self.setStyleSheet(MainWindowQSS().qss)
 

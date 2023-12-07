@@ -22,13 +22,13 @@ namespace CorsairMessengerServer.Controllers
     {
         private const int AUTH_TOKEN_LIFETIME_MINUTES = 365 * 24 * 60;
 
-        private readonly UsersRepository _userRepository;
+        private readonly UsersRepository _usersRepository;
 
         private readonly IDistributedCache _cache;
 
         public AccountController(UsersRepository userRepository, IDistributedCache cache)
         {
-            _userRepository = userRepository;
+            _usersRepository = userRepository;
             _cache = cache;
         }
 
@@ -48,7 +48,7 @@ namespace CorsairMessengerServer.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> LoginAsync([FromBody] AuthRequest request, [FromServices] IPasswordHasher hasher)
         {
-            var user = await _userRepository.GetUserByLoginAsync(request.Login, true);
+            var user = await _usersRepository.GetUserByLoginAsync(request.Login, true);
 
             if (user is null)
             {
@@ -97,14 +97,14 @@ namespace CorsairMessengerServer.Controllers
                 return BadRequest(new { Field = nameof(password) });
             }
 
-            var isNicknameExist = await _userRepository.IsNicknameExistAsync(nickname);
+            var isNicknameExist = await _usersRepository.IsNicknameExistAsync(nickname);
 
             if (isNicknameExist)
             {
                 return Conflict(new { Field = nameof(nickname) });
             }
 
-            var isEmailExist = await _userRepository.IsEmailExistAsync(email);
+            var isEmailExist = await _usersRepository.IsEmailExistAsync(email);
 
             if (isEmailExist)
             {
@@ -113,7 +113,7 @@ namespace CorsairMessengerServer.Controllers
 
             var user = CreateUser(nickname, email, password, hasher);
 
-            await _userRepository.AddUserAsync(user);
+            await _usersRepository.AddUserAsync(user);
 
             var token = await GetAuthTokenAsync(user);
 

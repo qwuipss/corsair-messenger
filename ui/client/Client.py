@@ -8,7 +8,7 @@ from os.path import dirname, realpath, exists
 
 class Client:
 
-    __SERVER_IP_ADDRESS_PORT = "192.168.0.109:8080"
+    __SERVER_IP_ADDRESS_PORT = "localhost:8080"
 
     __SERVER_URI = f"https://{__SERVER_IP_ADDRESS_PORT}"
 
@@ -16,7 +16,7 @@ class Client:
 
     __AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/auth.json"
 
-    __CONTACTS_LOAD_COUNT = 25
+    CONTACTS_LOAD_COUNT = 15
 
     MESSAGES_LOAD_COUNT = 15
 
@@ -164,20 +164,20 @@ class Client:
 
         headers = { "Authorization" : self.__auth_token }
 
-        json = { "offset" : offset, "count" : Client.__CONTACTS_LOAD_COUNT }
+        json = { "offset" : offset, "count" : Client.CONTACTS_LOAD_COUNT }
 
         response = requests.get(f"{Client.__SERVER_URI}/contacts/get", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
 
         contacts = response.json()["contacts"]
 
-        return (len(contacts) == Client.__CONTACTS_LOAD_COUNT, contacts)
+        return (len(contacts) == Client.CONTACTS_LOAD_COUNT, contacts)
 
     def search_contacts(self, pattern: str) -> Iterable[dict]:
 
         if not isinstance(pattern, str):
             raise TypeError(type(pattern))
 
-        json = { "pattern" : pattern, "count" : Client.__CONTACTS_LOAD_COUNT }
+        json = { "pattern" : pattern, "count" : Client.CONTACTS_LOAD_COUNT }
 
         response = requests.post(f"{Client.__SERVER_URI}/contacts/search", json=json, verify=not Client.__LOCAL_STARTUP)
 

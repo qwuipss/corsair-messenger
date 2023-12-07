@@ -74,7 +74,7 @@ class Contact(QLabel):
         return self.__message_edit
     
     @property
-    def last_message_label(self) -> QLabel:
+    def last_message_label(self) -> LastMessage:
         return self.__last_message_label
     
     def enterEvent(self, event: QEnterEvent | None):
@@ -298,5 +298,8 @@ class Contact(QLabel):
         return self.__messages_scrollarea.layout.itemAt(1).layout().itemAt(0).widget().id
     
     def __get_last_message_text(self) -> int:
-        return self.__messages_scrollarea.layout.itemAt(self.__messages_scrollarea.layout.count() - 1).layout().itemAt(0).widget().text
-        
+
+        if self.__messages_scrollarea.layout.count() > 1:
+            return self.__messages_scrollarea.layout.itemAt(self.__messages_scrollarea.layout.count() - 1).layout().itemAt(0).widget().text
+        else:
+            return ""

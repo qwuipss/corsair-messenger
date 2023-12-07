@@ -97,13 +97,15 @@ class ChatWidgetQSS:
                         QSSHelper.padding(0, 0, 0, width_005),
                         QSSHelper.margin_side("right", width_002),
                         QSSHelper.border_radius(width_0088, width_0088, 0, 0),
+                        QSSHelper.min_height(int(width_015 * 1.75)),
                     ) + \
             """}
             LastMessage{
                 """ + QSSHelper.concat(
                         QSSHelper.background_color(color_101010),
-                        QSSHelper.font_size(int(width *.0127)),
+                        QSSHelper.font_size(int(width * .0127)),
                         QSSHelper.padding(0, 0, 0, width_005),
+                        QSSHelper.min_height(int(width_015 * 1.25)),
                         QSSHelper.margin_side("right", width_002),
                         QSSHelper.color("595959"),
                         QSSHelper.border_radius(0, 0, width_0088, width_0088),

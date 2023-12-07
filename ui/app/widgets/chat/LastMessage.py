@@ -11,7 +11,7 @@ class LastMessage(QLabel):
             hovered_callback: Callable[[], None],
             unhovered_callback: Callable[[], None], 
             selected_callback: Callable[[], None]
-            ):
+            ) -> None:
 
         if not isinstance(text, str):
             raise TypeError(type(text))
@@ -25,7 +25,12 @@ class LastMessage(QLabel):
         if not isinstance(selected_callback, Callable):
             raise TypeError(type(selected_callback))
         
-        super().__init__(text)
+        super().__init__()
+
+        self.__font_metrics = self.fontMetrics()
+        self.__text_width = int(self.width() * 0.45)
+
+        self.setText(text)
 
         self.__hovered_callback = hovered_callback
         self.__unhovered_callback = unhovered_callback
@@ -33,6 +38,29 @@ class LastMessage(QLabel):
         self.__selected_callback = selected_callback
 
         self.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+
+    def setText(self, text: str | None) -> None:
+        
+        remain_width = self.__text_width
+
+        chars_count = 0
+        is_limit_exceeded = False
+
+        for char in text:
+
+            remain_width -= self.__font_metrics.horizontalAdvance(char) * 1.115
+            
+            if remain_width > 0:
+                chars_count += 1
+            else:
+                is_limit_exceeded = True
+                break
+
+        if is_limit_exceeded:
+            text_continuing = "..."
+            super().setText(text[:chars_count - len(text_continuing)] + text_continuing)
+        else:
+            super().setText(text)
 
     def enterEvent(self, event: QEnterEvent | None) -> None:
         

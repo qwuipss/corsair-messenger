@@ -24,7 +24,7 @@ class ChatWidget(QWidget):
         self.__client = client
         self.__main_window = main_window
 
-        self.__contacts_widget = ContactsWidget(self.__search_contacts)
+        self.__contacts_widget = ContactsWidget(self.__search_contacts, self.__load_contacts)
         self.__messages_widget = MessagesWidget()
 
         self.setLayout(self.__get_main_layout())
