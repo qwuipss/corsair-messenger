@@ -16,9 +16,13 @@ class Client:
 
     __AUTH_TOKEN_LOAD_FILENAME = f"{dirname(realpath(__file__))}/auth.json"
 
-    CONTACTS_LOAD_COUNT = 15
+    CONTACTS_FIRST_LOAD_COUNT = 15
 
-    MESSAGES_LOAD_COUNT = 15
+    __CONTACTS_SEARCH_LOAD_COUNT = 15
+
+    CONTACTS_AFTER_LOAD_COUNT = 5
+
+    MESSAGES_LOAD_COUNT = 10
 
     __LOCAL_STARTUP = True
 
@@ -154,7 +158,7 @@ class Client:
 
         self.__websocket.send(serialized_message)
 
-    def get_contacts(self, offset: int) -> tuple[bool, Iterable[dict]]:
+    def get_contacts(self, offset: int, count: int) -> tuple[bool, Iterable[dict]]:
         
         if not self.__is_authorized:
             raise ValueError(self.__is_authorized)
@@ -164,20 +168,20 @@ class Client:
 
         headers = { "Authorization" : self.__auth_token }
 
-        json = { "offset" : offset, "count" : Client.CONTACTS_LOAD_COUNT }
+        json = { "offset" : offset, "count" : count }
 
         response = requests.get(f"{Client.__SERVER_URI}/contacts/get", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
 
         contacts = response.json()["contacts"]
 
-        return (len(contacts) == Client.CONTACTS_LOAD_COUNT, contacts)
+        return (len(contacts) == count, contacts)
 
     def search_contacts(self, pattern: str) -> Iterable[dict]:
 
         if not isinstance(pattern, str):
             raise TypeError(type(pattern))
 
-        json = { "pattern" : pattern, "count" : Client.CONTACTS_LOAD_COUNT }
+        json = { "pattern" : pattern, "count" : Client.__CONTACTS_SEARCH_LOAD_COUNT }
 
         response = requests.post(f"{Client.__SERVER_URI}/contacts/search", json=json, verify=not Client.__LOCAL_STARTUP)
 

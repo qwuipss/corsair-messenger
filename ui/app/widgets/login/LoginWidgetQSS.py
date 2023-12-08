@@ -15,6 +15,7 @@ class LoginWidgetQSS:
         
         width_3 = int(width * .3)
         width_02 = int(width * .02)
+        width_0088 = int(width * .0088)
 
         font_weight_550 = 550
 
@@ -39,7 +40,7 @@ class LoginWidgetQSS:
                         QSSHelper.background_color(SharedQSS.COLOR_cccccc),
                         QSSHelper.font_size(int(width * .016)),
                         QSSHelper.font_weight(500),
-                        QSSHelper.border_radius(int(width * .0088)),
+                        QSSHelper.border_radius(width_0088, width_0088, width_0088, width_0088),
                         QSSHelper.width(width_3),
                     ) + \
             """}

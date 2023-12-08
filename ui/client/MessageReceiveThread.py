@@ -6,6 +6,8 @@ class MessageReceiveThread(QThread):
 
     message_received = pyqtSignal(dict)
 
+    websocket_connection_error_detected = pyqtSignal(Exception)
+
     def __init__(self, client: Client) -> None:
         
         super().__init__()
@@ -16,6 +18,9 @@ class MessageReceiveThread(QThread):
         
         while True:
             
-            message = self.__client.receive_message()
-            
-            self.message_received.emit(loads(message))
+            try:
+                message = self.__client.receive_message()
+                self.message_received.emit(loads(message))
+            except Exception as exc:
+                self.websocket_connection_error_detected.emit(exc)
+                

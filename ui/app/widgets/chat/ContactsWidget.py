@@ -24,6 +24,8 @@ class ContactsWidget(QWidget):
         self.__contacts_loading_offset = 0
         self.__contacts = {}
 
+        self.__scrollbar_value_before_add_new_contacts = 0
+
         self.__contacts_search = ContactsSearch(contacts_search_requested_delegate)
         self.__contacts_scrollarea = Scrollarea("contactsScrollbarShowed", "contactsScrollbarHidden")
 
@@ -36,10 +38,22 @@ class ContactsWidget(QWidget):
         self.__contacts_scrollarea.layout.setContentsMargins(0, 0, 0, 0)
 
         self.__contacts_scrollarea.verticalScrollBar().valueChanged.connect(self.__load_contacts_on_scrollbar_down)
+        self.__contacts_scrollarea.verticalScrollBar().rangeChanged.connect(self.__return_scrollbar_on_position_before_loading_contacts)
 
     @property
     def contacts_loading_offset(self) -> int:
         return self.__contacts_loading_offset
+    
+    @contacts_loading_offset.setter
+    def contacts_loading_offset(self, value: int) -> None:
+
+        if not isinstance(value, int):
+            raise TypeError(type(value))
+        
+        if value < 0:
+            raise ValueError(value) 
+
+        self.__contacts_loading_offset = value
 
     @property
     def contacts_search(self) -> QLineEdit:
@@ -68,11 +82,12 @@ class ContactsWidget(QWidget):
         contact_layout.addWidget(contact)
         contact_layout.addWidget(contact.last_message_label)
 
-        if self.__contacts_scrollarea.layout.count() > 1:
-            self.__contacts_scrollarea.layout.addLayout(contact_layout)
+        contacts_count = self.__contacts_scrollarea.layout.count()
+
+        if contacts_count > 1:
+            self.__contacts_scrollarea.layout.insertLayout(contacts_count - 1, contact_layout)
         else:
             self.__contacts_scrollarea.layout.insertLayout(0, contact_layout)
-
 
         self.__contacts.update({contact.id : contact})
 
@@ -80,6 +95,13 @@ class ContactsWidget(QWidget):
         
         scrollbar = self.__contacts_scrollarea.verticalScrollBar()
 
-        if scrollbar.value() == scrollbar.maximum():
-            self.__contacts_loading_offset += Client.CONTACTS_LOAD_COUNT
+        value = scrollbar.value()
+
+        if value == scrollbar.maximum():
             self.__contacts_load_requested_delegate()
+            self.__contacts_loading_offset += Client.CONTACTS_AFTER_LOAD_COUNT
+            self.__scrollbar_value_before_add_new_contacts = value
+
+    def __return_scrollbar_on_position_before_loading_contacts(self) -> None:
+        
+        self.__contacts_scrollarea.verticalScrollBar().setValue(self.__scrollbar_value_before_add_new_contacts)

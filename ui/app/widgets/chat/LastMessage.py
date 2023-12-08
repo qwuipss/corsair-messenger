@@ -48,7 +48,7 @@ class LastMessage(QLabel):
 
         for char in text:
 
-            remain_width -= self.__font_metrics.horizontalAdvance(char) * 1.115
+            remain_width -= self.__font_metrics.horizontalAdvance(char) * 1.1
             
             if remain_width > 0:
                 chars_count += 1

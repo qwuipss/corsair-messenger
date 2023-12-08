@@ -21,11 +21,13 @@ namespace CorsairMessengerServer.Middlewares
                 return;
             }
 
-            var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-
             var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
             var socketId = int.Parse(userId);
+
+            await webSocketsManager.ClosePreviousConnectionIfExist(socketId);
+
+            var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
             var webSocketConnection = webSocketsManager.OnConnected(socketId, webSocket);
 

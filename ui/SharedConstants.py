@@ -1,1 +1,1 @@
-SECOND_WINDOW = False
+SECOND_WINDOW = True

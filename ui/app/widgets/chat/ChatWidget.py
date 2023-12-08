@@ -1,3 +1,4 @@
+import os
 from .ContactsWidget import ContactsWidget
 from .MessagesWidget import MessagesWidget
 from .ChatWidgetQSS import ChatWidgetQSS
@@ -21,6 +22,9 @@ class ChatWidget(QWidget):
 
         self.__is_contacts_exist = True
 
+        self.__local_message_id = 0
+        self.__pending_callback_messages_storage = {}
+
         self.__client = client
         self.__main_window = main_window
 
@@ -34,6 +38,7 @@ class ChatWidget(QWidget):
         
         self.__message_receive_thread = MessageReceiveThread(client)
         self.__message_receive_thread.message_received.connect(self.__message_received_handler)
+        self.__message_receive_thread.websocket_connection_error_detected.connect(lambda _: os._exit(-1))
         self.__message_receive_thread.start()
 
     def __get_main_layout(self) -> QHBoxLayout:
@@ -64,15 +69,21 @@ class ChatWidget(QWidget):
         if not self.__is_contacts_exist:
             return
 
-        contacts_widget = self.__contacts_widget
-
-        (self.__is_contacts_exist, contacts) = self.__client.get_contacts(contacts_widget.contacts_loading_offset)
+        if self.__contacts_widget.contacts_loading_offset == 0:
+            count = Client.CONTACTS_FIRST_LOAD_COUNT
+            offset = 0
+            self.__contacts_widget.contacts_loading_offset += Client.CONTACTS_FIRST_LOAD_COUNT
+        else:
+            count = Client.CONTACTS_AFTER_LOAD_COUNT
+            offset = self.__contacts_widget.contacts_loading_offset
+             
+        (self.__is_contacts_exist, contacts) = self.__client.get_contacts(offset, count)
 
         for raw_contact in contacts:
 
             contact = self.__create_contact(raw_contact)
 
-            contacts_widget.add_contact(contact)
+            self.__contacts_widget.add_contact(contact)
 
     def __search_contacts(self, pattern: str) -> None:
 
@@ -135,7 +146,11 @@ class ChatWidget(QWidget):
         if not isinstance(text, str):
             raise TypeError(type(text))
 
-        self.__client.send_message(receiver_id=receiver_id, text=text)
+        self.__local_message_id += 1
+
+        self.__client.send_message(receiver_id=receiver_id, text=text, local_message_id=self.__local_message_id)
+
+        self.__pending_callback_messages_storage.update({self.__local_message_id : (receiver_id, text)})
 
     def __message_received_handler(self, raw_message: dict) -> None:
 
@@ -150,10 +165,12 @@ class ChatWidget(QWidget):
 
     def __receive_delivery_callback_message(self, raw_message: dict) -> None:
 
+        local_message_id = int(raw_message["local_message_id"])
         message_id = int(raw_message["message_id"])
-        user_id = int(raw_message["user_id"])
-        text = raw_message["text"]
         send_time = raw_message["send_time"] # todo
+        (user_id, text) = self.__pending_callback_messages_storage[local_message_id]
+
+        self.__pending_callback_messages_storage.pop(local_message_id) 
 
         message = Message(message_id, text)
 

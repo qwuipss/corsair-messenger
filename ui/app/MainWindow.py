@@ -39,10 +39,14 @@ class MainWindow(QMainWindow):
     @staticmethod
     def __add_app_font() -> None:
 
-        font_path = f"{dirname(realpath(__file__))}/appFont.ttf"
+        font_path = f"{dirname(realpath(__file__))}\\appFont.ttf"
         
         QtGui.QFontDatabase.addApplicationFont(font_path)
         
+    def __switch_chat_to_login(self, _: Exception) -> None:
+
+        self.setCentralWidget(LoginWidget(self, self.__client, self.__switch_login_to_chat))       
+
     def __set_window_size(self) -> None:
 
         self.setFixedWidth(int(self.__screen_size.width() * .7))

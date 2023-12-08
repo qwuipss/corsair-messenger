@@ -3,6 +3,7 @@ using CorsairMessengerServer.Data.Entities.Request;
 using CorsairMessengerServer.Data.Repositories;
 using CorsairMessengerServer.Extensions;
 using CorsairMessengerServer.Services.MessageBrokers;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text.Json;
 
@@ -38,6 +39,15 @@ namespace CorsairMessengerServer.Managers
             return webSocketConnection;
         }
 
+        public async Task ClosePreviousConnectionIfExist(int socketId)
+        {
+            if (_webSocketsRepository.TryGetWebSocket(socketId, out var previousWebSocket))
+            {
+                await previousWebSocket.CloseAsync(
+                    WebSocketCloseStatus.PolicyViolation, "new connection detected", CancellationToken.None);
+            }
+        }
+
         public async Task OnDisconnectedAsync(WebSocketConnection webSocketConnection)
         {
             await _webSocketsRepository.RemoveWebSocketAsync(webSocketConnection.SocketId);
@@ -68,13 +78,13 @@ namespace CorsairMessengerServer.Managers
                 {
                     if (ReceiveMessage(buffer, receiveResult, contentBuilder))
                     {
-                        var message = await TryParseMessageAsync(contentBuilder.ToArray(), socketId);
+                        var (IsParsed, Message, DeliveryRequest) = await TryParseMessageAsync(contentBuilder.ToArray(), socketId);
 
-                        if (message is not null)
+                        if (IsParsed)
                         {
-                            if (await IsReceiverExist(message))
+                            if (await IsReceiverExist(Message!))
                             {
-                                await SendMessageAsync(message);
+                                await SendMessageAsync(Message!, DeliveryRequest!);
                             }
 
                             contentBuilder = new List<byte>();
@@ -104,7 +114,7 @@ namespace CorsairMessengerServer.Managers
             return receiveResult.EndOfMessage;
         }
 
-        private static async Task<MessageEntity?> TryParseMessageAsync(byte[] buffer, int socketId)
+        private static async Task<(bool IsParsed, MessageEntity? Message, MessageDeliveryRequestEntity? DeliveryRequest)> TryParseMessageAsync(byte[] buffer, int socketId)
         {
             MessageDeliveryRequestEntity? messageRequest;
 
@@ -121,12 +131,12 @@ namespace CorsairMessengerServer.Managers
             }
             catch
             {
-                return null;
+                return (false, null, null);
             }
 
             var message = BuildMessageEntity(socketId, messageRequest);
 
-            return message;
+            return (true, message, messageRequest);
         }
 
         /// <summary>
@@ -137,8 +147,9 @@ namespace CorsairMessengerServer.Managers
             await Task.Delay(RECEIVING_PAUSE_DELAY_MS);
         }
 
-        private async Task SendMessageAsync(MessageEntity message)
+        private async Task SendMessageAsync(MessageEntity message, MessageDeliveryRequestEntity deliveryRequestMessage)
         {
+            await _messageBroker.SendMessageDeliveryCallbackIfPossibleAsync(message, deliveryRequestMessage);
             await _messageBroker.SendMessageAsync(message);
         }
 

@@ -1,4 +1,5 @@
 ﻿using CorsairMessengerServer.Data.Entities;
+using CorsairMessengerServer.Data.Entities.Request;
 using CorsairMessengerServer.Data.Entities.Request.Message;
 using CorsairMessengerServer.Data.Entities.Response.Message;
 using CorsairMessengerServer.Data.Repositories;
@@ -26,7 +27,16 @@ namespace CorsairMessengerServer.Services.MessageBrokers
             {
                 await AddMessageToRepositoryAsync(message);
                 await SendMessageIfPossibleAsync(message);
-                await SendMessageDeliveryCallbackIfPossibleAsync(message);
+            }
+        }
+
+        public async Task SendMessageDeliveryCallbackIfPossibleAsync(MessageEntity message, MessageDeliveryRequestEntity deliveryRequestMessage)
+        {
+            if (_webSocketsRepository.TryGetWebSocket(message.SenderId, out var receiverSocket))
+            {
+                var buffer = GetSerializedMessageDeliveryCallback(message, deliveryRequestMessage);
+
+                await SendMessageIfPossibleAsync(buffer, receiverSocket);
             }
         }
 
@@ -44,14 +54,13 @@ namespace CorsairMessengerServer.Services.MessageBrokers
             return GetBytes(serializedMessage);
         }
 
-        private static byte[] GetSerializedMessageDeliveryCallback(MessageEntity message)
+        private static byte[] GetSerializedMessageDeliveryCallback(MessageEntity message, MessageDeliveryRequestEntity deliveryRequestMessage)
         {
             var serializedMessage = JsonSerializer.Serialize(new MessageDeliveryCallbackEntity
             {
                 Type = (int)MessageDeliveryBaseEntity.MessageResponseEntityType.Callback,
                 Id = message.Id,
-                UserId = message.ReceiverId,
-                Text = message.Text,
+                LocalId = deliveryRequestMessage.LocalId,
                 SendTime = message.SendTime,
             });
 
@@ -72,16 +81,6 @@ namespace CorsairMessengerServer.Services.MessageBrokers
             if (_webSocketsRepository.TryGetWebSocket(message.ReceiverId, out var receiverSocket))
             {
                 var buffer = GetMessageDeliveryResponse(message);
-
-                await SendMessageIfPossibleAsync(buffer, receiverSocket);
-            }
-        }
-
-        private async Task SendMessageDeliveryCallbackIfPossibleAsync(MessageEntity message)
-        {
-            if (_webSocketsRepository.TryGetWebSocket(message.SenderId, out var receiverSocket))
-            {
-                var buffer = GetSerializedMessageDeliveryCallback(message);
 
                 await SendMessageIfPossibleAsync(buffer, receiverSocket);
             }
