@@ -77,19 +77,7 @@ namespace CorsairMessengerServer.Controllers
         public async Task<ActionResult<AuthResponse>> RegisterAsync([FromBody] RegisterRequest request, [FromServices] IPasswordHasher hasher)
         {
             var nickname = request.Nickname;
-
-            if (!nickname.Length.InRange(NICKNAME_MIN_LENGTH, NICKNAME_MAX_LENGTH) || !RegexHelper.IsNickname(nickname))
-            {
-                return BadRequest(new { Field = nameof(nickname) });
-            }
-
             var email = request.Email;
-
-            if (!RegexHelper.IsEmail(email))
-            {
-                return BadRequest(new { Field = nameof(email) });
-            }
-
             var password = request.Password;
 
             if (!password.Length.InRange(PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH))

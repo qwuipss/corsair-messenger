@@ -7,6 +7,6 @@ namespace CorsairMessengerServer.Models.Contacts
     {
         [JsonRequired]
         [JsonPropertyName("contacts")]
-        public UserResponseEntity[]? Contacts { get; set; }
+        public required UserResponseEntity[]? Contacts { get; set; }
     }
 }
