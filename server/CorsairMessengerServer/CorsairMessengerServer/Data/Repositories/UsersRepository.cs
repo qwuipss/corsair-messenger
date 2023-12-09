@@ -57,27 +57,35 @@ namespace CorsairMessengerServer.Data.Repositories
             return result;
         }
 
-        public UserResponseEntity[] GetContacts(int userId, ContactsListRequest request)
+        public async Task<UserResponseEntity[]> GetContactsAsync(int userId, ContactsListRequest request)
         {
-            return _context.Messages
-                .Where(message => message.SenderId == userId)
+            return await _context.Messages
+                .Where(message => message.SenderId == userId || message.ReceiverId == userId)
                 .Include(message => message.Receiver)
                 .Select(message => new UserResponseEntity { Id = message.Receiver!.Id, Nickname = message.Receiver.Nickname })
                 .Distinct()
                 .OrderBy(user => user.Id)
                 .Skip(request.Offset)
                 .Take(request.Count)
-                .ToArray();
+                .ToArrayAsync();
         }
 
-        public UserResponseEntity[] SearchContacts(ContactsSearchRequest request)
+        public async Task<UserResponseEntity?> GetContactAsync(int userId)
         {
-            return _context.Users
+            return await _context.Users
+                .Where(user => user.Id == userId)
+                .Select(user => new UserResponseEntity { Id = user.Id, Nickname = user.Nickname })
+                .SingleOrDefaultAsync();
+        }
+
+        public async Task<UserResponseEntity[]> SearchContactsAsync(ContactsSearchRequest request)
+        {
+            return await _context.Users
                 .Where(user => EF.Functions.Like(user.Nickname!, $"%{request.Pattern}%"))
                 .Select(user => new UserResponseEntity { Id = user.Id, Nickname = user.Nickname })
                 .OrderBy(user => user.Id)
                 .Take(request.Count)
-                .ToArray();
+                .ToArrayAsync();
         }
     }
 }

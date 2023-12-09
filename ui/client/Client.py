@@ -1,7 +1,7 @@
 import json
 import requests
 from SharedConstants import SECOND_WINDOW
-from .MessageSerializer import MessageSerializer
+from json import JSONEncoder
 from collections.abc import Iterable
 from websockets.sync.client import connect
 from os.path import dirname, realpath, exists
@@ -154,7 +154,7 @@ class Client:
         if not self.__is_authorized:
             raise ValueError(self.__is_authorized)
         
-        serialized_message = MessageSerializer().encode(message)
+        serialized_message = JSONEncoder().encode(message)
 
         self.__websocket.send(serialized_message)
 
@@ -170,11 +170,29 @@ class Client:
 
         json = { "offset" : offset, "count" : count }
 
-        response = requests.get(f"{Client.__SERVER_URI}/contacts/get", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
+        response = requests.get(f"{Client.__SERVER_URI}/contacts/get-many", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
 
         contacts = response.json()["contacts"]
 
         return (len(contacts) == count, contacts)
+
+    def get_contact(self, id: int) -> dict:
+
+        if not self.__is_authorized:
+            raise ValueError(self.__is_authorized)
+        
+        if not isinstance(id, int):
+            raise TypeError(type(id))
+
+        headers = { "Authorization" : self.__auth_token }
+
+        json = { "id" : id }
+
+        response = requests.get(f"{Client.__SERVER_URI}/contacts/get-single", headers=headers, json=json, verify=not Client.__LOCAL_STARTUP)
+
+        contact = response.json()["contact"]
+
+        return contact
 
     def search_contacts(self, pattern: str) -> Iterable[dict]:
 

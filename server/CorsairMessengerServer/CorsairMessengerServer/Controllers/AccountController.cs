@@ -139,8 +139,8 @@ namespace CorsairMessengerServer.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(ClaimTypes.Sid, sessionId),
+                new(ClaimTypes.NameIdentifier, userId),
+                new(ClaimTypes.Sid, sessionId),
             };
 
             var jwt = new JwtSecurityToken(

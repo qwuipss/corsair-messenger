@@ -85,20 +85,27 @@ class ChatWidget(QWidget):
 
             self.__contacts_widget.add_contact(contact)
 
+        self.__contacts_widget.show_contacts()
+
     def __search_contacts(self, pattern: str) -> None:
 
+        if self.__contacts_widget.search_view_active:
+            self.__contacts_widget.remove_searched_contacts_if_needed()
+
         contacts = self.__client.search_contacts(pattern)
-        contacts_widget = self.__contacts_widget
 
         for raw_contact in contacts:
 
-            user_id = int(raw_contact["user_id"])
-
-            # if user_id not in contacts_widget.contacts:
-
             contact = self.__create_contact(raw_contact)
 
-            contacts_widget.add_contact(contact)
+            self.__contacts_widget.add_searched_contact(contact)
+
+        if not self.__contacts_widget.search_view_active:
+            self.__contacts_widget.search_view_active = True
+
+        self.__contacts_widget.show_searched_contacts()
+
+        self.__contacts_widget.contacts_scrollarea.verticalScrollBar().setValue(0)
 
     def __create_contact(self, raw_contact: dict) -> Contact:
 
@@ -168,9 +175,8 @@ class ChatWidget(QWidget):
         local_message_id = int(raw_message["local_message_id"])
         message_id = int(raw_message["message_id"])
         send_time = raw_message["send_time"] # todo
-        (user_id, text) = self.__pending_callback_messages_storage[local_message_id]
 
-        self.__pending_callback_messages_storage.pop(local_message_id) 
+        (user_id, text) = self.__pending_callback_messages_storage.pop(local_message_id)
 
         message = Message(message_id, text)
 
@@ -183,6 +189,20 @@ class ChatWidget(QWidget):
         text = raw_message["text"]
         send_time = raw_message["send_time"] # todo        
 
+        if sender_id not in self.__contacts_widget.contacts:
+            self.__add_new_contact(sender_id)
+
         message = Message(message_id, text)
 
         self.__contacts_widget.contacts[sender_id].add_new_message(message, False)
+
+    def __add_new_contact(self, contact_id: int) -> None:
+        
+        if not isinstance(contact_id, int):
+            raise TypeError(type(contact_id))
+        
+        raw_contact = self.__client.get_contact(contact_id)
+
+        contact = self.__create_contact(raw_contact)
+
+        self.__contacts_widget.add_and_show_contact(contact)

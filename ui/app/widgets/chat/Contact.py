@@ -77,6 +77,10 @@ class Contact(QLabel):
     def last_message_label(self) -> LastMessage:
         return self.__last_message_label
     
+    @property
+    def has_messages(self) -> bool:
+        return self.__messages_scrollarea.layout.count() == 1
+
     def enterEvent(self, event: QEnterEvent | None):
         
         super().enterEvent(event)

@@ -1,5 +1,5 @@
 from PyQt6 import QtGui, QtCore
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame
+from PyQt6.QtWidgets import QVBoxLayout, QWidget, QScrollArea, QFrame, QLabel
 
 class Scrollarea(QScrollArea):
 

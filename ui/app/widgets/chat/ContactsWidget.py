@@ -4,6 +4,7 @@ from .Contact import Contact
 from typing import Callable
 from PyQt6.QtWidgets import QLineEdit, QWidget, QVBoxLayout
 from client.Client import Client
+from PyQt6 import QtCore
 
 class ContactsWidget(QWidget):
 
@@ -26,8 +27,12 @@ class ContactsWidget(QWidget):
 
         self.__scrollbar_value_before_add_new_contacts = 0
 
-        self.__contacts_search = ContactsSearch(contacts_search_requested_delegate)
+        self.__contacts_search = ContactsSearch(contacts_search_requested_delegate, self.show_contacts)
         self.__contacts_scrollarea = Scrollarea("contactsScrollbarShowed", "contactsScrollbarHidden")
+
+        self.__searched_contacts_layouts_list = []
+
+        self.search_view_active = False
 
         self.__contacts_load_requested_delegate = contacts_load_requested_delegate
 
@@ -67,29 +72,77 @@ class ContactsWidget(QWidget):
     def contacts(self) -> dict:
         return self.__contacts
 
+    def show_searched_contacts(self) -> None:
+
+        self.__clear_contacts_scrollarea()
+
+        self.__fill_contacts_scrollarea(self.__searched_contacts_layouts_list)
+
+    def show_contacts(self) -> None:
+        
+        self.remove_searched_contacts_if_needed()
+        self.__clear_contacts_scrollarea()
+        
+        self.search_view_active = False
+
+        contacts_layouts = []
+
+        for contact in self.__contacts.values():
+
+            contact_layout = self.__create_contact_layout(contact)
+
+            contacts_layouts.append(contact_layout)
+
+        self.__fill_contacts_scrollarea(contacts_layouts)
+
+        if self.__contacts_scrollarea.widget().underMouse():
+            self.__contacts_scrollarea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+    def add_and_show_contact(self, contact: Contact) -> None:
+
+        if not isinstance(contact, Contact):
+            raise TypeError(type(contact))      
+
+        self.add_contact(contact)
+
+        contact_layout = self.__create_contact_layout(contact)
+
+        self.__contacts_scrollarea.layout.insertLayout(self.__contacts_scrollarea.layout.count() - 1, contact_layout)
+
     def add_contact(self, contact: Contact) -> None:
 
         if not isinstance(contact, Contact):
             raise TypeError(type(contact))      
 
+        self.__contacts.update({contact.id : contact})
+    
+    def add_searched_contact(self, contact: Contact) -> None:
+
+        if not isinstance(contact, Contact):
+            raise TypeError(type(contact))      
+
+        contact_layout = self.__create_contact_layout(contact)
+
+        self.__searched_contacts_layouts_list.append(contact_layout)
+
+        self.__contacts.update({contact.id : contact})
+
+    def __create_contact_layout(self, contact: Contact) -> QVBoxLayout:
+
+        if not isinstance(contact, Contact):
+            raise TypeError(type(contact))  
+
         contact_layout = QVBoxLayout()
 
         contact_layout.setSpacing(0)
 
-        contact.setContentsMargins(0,0,0,0)
-        contact.last_message_label.setContentsMargins(0,0,0,0)
+        contact.setContentsMargins(0, 0, 0, 0)
+        contact.last_message_label.setContentsMargins(0, 0, 0, 0)
 
         contact_layout.addWidget(contact)
         contact_layout.addWidget(contact.last_message_label)
 
-        contacts_count = self.__contacts_scrollarea.layout.count()
-
-        if contacts_count > 1:
-            self.__contacts_scrollarea.layout.insertLayout(contacts_count - 1, contact_layout)
-        else:
-            self.__contacts_scrollarea.layout.insertLayout(0, contact_layout)
-
-        self.__contacts.update({contact.id : contact})
+        return contact_layout
 
     def __load_contacts_on_scrollbar_down(self) -> None:
         
@@ -105,3 +158,39 @@ class ContactsWidget(QWidget):
     def __return_scrollbar_on_position_before_loading_contacts(self) -> None:
         
         self.__contacts_scrollarea.verticalScrollBar().setValue(self.__scrollbar_value_before_add_new_contacts)
+
+    def __fill_contacts_scrollarea(self, contacts_layouts: list) -> None:
+
+        if not isinstance(contacts_layouts, list):
+            raise TypeError(type(contacts_layouts))          
+
+        for contact_layout in contacts_layouts:
+            self.__contacts_scrollarea.layout.insertLayout(self.__contacts_scrollarea.layout.count() - 1, contact_layout)
+
+    def __clear_contacts_scrollarea(self) -> None:
+
+        if self.__contacts_scrollarea.layout.count() == 1:
+            return
+
+        for _ in range(self.__contacts_scrollarea.layout.count() - 1):
+            
+            contact_layout = self.__contacts_scrollarea.layout.takeAt(0)
+            
+            for _ in range(contact_layout.count()):
+
+                widget = contact_layout.takeAt(0).widget()
+
+                widget.setParent(None)
+
+    def remove_searched_contacts_if_needed(self) -> None:
+
+        if len(self.__searched_contacts_layouts_list) != 0:
+
+            for contact_layout in self.__searched_contacts_layouts_list:
+
+                contact = contact_layout.itemAt(0).widget()
+
+                if contact.has_messages: 
+                    self.__contacts.pop(contact.id)
+
+            self.__searched_contacts_layouts_list.clear()
