@@ -1,4 +1,4 @@
-# Base Information  
+# Base information  
 Messenger based on websockets techonology with ASP.NET server side in bound with Redis and PostgreSQL and adaptive autoscaling PyQt interface
 
 # Demo interface  
