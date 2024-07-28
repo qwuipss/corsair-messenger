@@ -7,6 +7,6 @@ Messenger based on websockets techonology with ASP.NET server side in bound with
 
 + Conversation window (two-person view)  
 **qwuipss** side:
-![image](https://github.com/user-attachments/assets/7cde2445-4140-471f-9659-46fa13aee528)
+![image](https://github.com/user-attachments/assets/eb9c8a6e-d60c-4cfe-80de-95b9068c567f)
 **clynqz** side:
-![image](https://github.com/user-attachments/assets/bec3d859-1cdc-4abc-b014-360eadd721e9)
+![image](https://github.com/user-attachments/assets/9cb62218-7c2b-4509-8953-47dc18b407b8)
